@@ -10,17 +10,18 @@ import com.example.lomanalyzer.security.AuditLog
 import com.example.lomanalyzer.security.TokenVault
 import com.example.lomanalyzer.storage.DatabaseFactory
 import com.example.lomanalyzer.storage.dao.*
+import com.example.lomanalyzer.vk.*
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
 val appModule = module {
     single { ConfigManager() }
-
-    single {
-        get<ConfigManager>().initialize()
-    }
-
+    single { get<ConfigManager>().initialize() }
     single { Logger() }
-
     single { MetricsCollector() }
 
     single {
@@ -36,10 +37,7 @@ val appModule = module {
         val config = get<AppConfig>()
         DatabaseFactory(config.appDataDir.resolve("lom_analyzer.db")).also { it.initialize() }
     }
-
-    single {
-        get<DatabaseFactory>().database
-    }
+    single { get<DatabaseFactory>().database }
 
     // DAOs
     single { SessionDao(get()) }
@@ -61,7 +59,7 @@ val appModule = module {
     single { DedupGroupDao(get()) }
     single { LinkDao(get()) }
 
-    // AuditLog wired with real DAO
+    // AuditLog
     single<AuditDao> { get<AuditLogDao>() }
     single { AuditLog(logger = get(), dao = get()) }
 
@@ -86,4 +84,59 @@ val appModule = module {
             logger = get(),
         )
     }
+
+    // VK — HTTP client
+    single {
+        HttpClient(CIO) {
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                })
+            }
+        }
+    }
+
+    // VK — API layer
+    single { VkRateLimiter(logger = get()) }
+    single { VkBackoff(logger = get()) }
+    single { VkApiClient(httpClient = get(), rateLimiter = get(), backoff = get()) }
+    single { VkExecuteBatcher(apiClient = get()) }
+    single { PaginationManager(apiClient = get()) }
+
+    // VK — Collectors
+    single {
+        BaselineCollector(
+            paginationManager = get(),
+            postDao = get(),
+            checkpointDao = get(),
+            progressReporter = get(),
+            logger = get(),
+        )
+    }
+    single {
+        CurrentCollector(
+            paginationManager = get(),
+            postDao = get(),
+            checkpointDao = get(),
+            progressReporter = get(),
+            logger = get(),
+        )
+    }
+    single {
+        ReposterCollector(
+            apiClient = get(),
+            postDao = get(),
+            repostRelationDao = get(),
+            logger = get(),
+        )
+    }
+    single {
+        DiscoveryEngine(
+            postDao = get(),
+            authorDao = get(),
+            logger = get(),
+        )
+    }
+    single { OAuthFlow(tokenVault = get(), logger = get()) }
 }

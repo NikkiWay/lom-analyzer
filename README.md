@@ -78,6 +78,17 @@ You must enter the master password each time you start the application.
 
 After unlocking, the main window shows a setup screen where you can create analysis sessions. Each session tracks a topic query and region, and progresses through a 35-stage pipeline from data collection through risk scoring and export.
 
+## VK API Setup
+
+To use VK data collection you need a VK developer application:
+
+1. Go to [VK Apps](https://vk.com/apps?act=manage) and create a new Standalone app.
+2. Note the **App ID** (client_id).
+3. The redirect URI is `https://oauth.vk.com/blank.html` (VK default for Implicit Flow).
+4. On first analysis run, the app opens an embedded browser for VK OAuth. After granting access, the token is encrypted and stored in `<appDataDir>/token_vault.bin`.
+
+Required permissions: `wall`, `friends`, `groups`, `stats`.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
