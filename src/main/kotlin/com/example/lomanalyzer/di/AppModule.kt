@@ -4,8 +4,10 @@ import com.example.lomanalyzer.config.AppConfig
 import com.example.lomanalyzer.config.ConfigManager
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.observability.MetricsCollector
+import com.example.lomanalyzer.analysis.anomaly.*
 import com.example.lomanalyzer.analysis.content.*
 import com.example.lomanalyzer.analysis.dedup.*
+import com.example.lomanalyzer.analysis.risk.*
 import com.example.lomanalyzer.analysis.lom.*
 import com.example.lomanalyzer.analysis.topic.*
 import com.example.lomanalyzer.nlp.*
@@ -201,6 +203,15 @@ val appModule = module {
             logger = get(),
         )
     }
+
+    // Anomaly detection
+    single { HolidayCalendar() }
+    single { SeasonalityNormalizer(calendar = get()) }
+    single { RollingZScore() }
+    single { VolumeSpikeDetector(calendar = get()) }
+    single { ToneShiftDetectorNegative(calendar = get()) }
+    single { ToneShiftDetectorPositive(calendar = get()) }
+    single { BlockBootstrap() }
 
     // Content analysis
     single { DictionarySentiment() }
