@@ -197,6 +197,7 @@ val appModule = module {
     single { EventActivityScorer(normalizer = get(), logger = get()) }
     single { ReferenceCalibrator() }
     single { RoleCombinator }
+    single { ClusterRoleClassifier() }
     single {
         BaseInfluenceScorer(
             postDao = get(),

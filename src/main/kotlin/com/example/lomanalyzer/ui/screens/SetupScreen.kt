@@ -27,6 +27,7 @@ fun SetupScreen() {
     var referenceTexts by remember { mutableStateOf("") }
     var baselineDays by remember { mutableStateOf("60") }
     var currentDays by remember { mutableStateOf("30") }
+    var roleMode by remember { mutableStateOf("QUADRANT") }
     var lastCreatedId by remember { mutableStateOf<Int?>(null) }
 
     Column(
@@ -56,6 +57,14 @@ fun SetupScreen() {
                 label = { Text("Baseline days") }, modifier = Modifier.width(120.dp))
             OutlinedTextField(currentDays, { currentDays = it },
                 label = { Text("Current days") }, modifier = Modifier.width(120.dp))
+        }
+
+        Text("Role Mode", style = MaterialTheme.typography.subtitle2)
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            RadioButton(roleMode == "QUADRANT", { roleMode = "QUADRANT" })
+            Text("Quadrant")
+            RadioButton(roleMode == "GMM", { roleMode = "GMM" })
+            Text("GMM (n >= 50)")
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {

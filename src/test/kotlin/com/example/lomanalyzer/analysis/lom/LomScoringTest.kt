@@ -174,8 +174,13 @@ class LomScoringTest {
     }
 
     @Test
+    fun `reference gamma validator MILD_RECOMPUTED for moderate gamma`() {
+        assertEquals("MILD_RECOMPUTED", ReferenceGammaValidator.validate(0.60))
+    }
+
+    @Test
     fun `reference gamma validator AUDIENCE_ONLY for distant gamma`() {
-        assertEquals("AUDIENCE_ONLY_REFERENCE", ReferenceGammaValidator.validate(0.60))
-        assertEquals("AUDIENCE_ONLY_REFERENCE", ReferenceGammaValidator.validate(0.25))
+        assertEquals("AUDIENCE_ONLY_REFERENCE", ReferenceGammaValidator.validate(0.70))
+        assertEquals("AUDIENCE_ONLY_REFERENCE", ReferenceGammaValidator.validate(0.20))
     }
 }

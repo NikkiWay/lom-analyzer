@@ -1,8 +1,10 @@
-# LOM Analyzer — MVP Milestone
+# LOM Analyzer — Project Status
 
-## What MVP Includes
+**Milestone: Full Analytical Pipeline** (post-MVP Phase 4 complete)
 
-The MVP implements a complete end-to-end pipeline for opinion leader identification and risk analysis on VKontakte data:
+## What Is Implemented
+
+The system implements a complete end-to-end pipeline for opinion leader identification and risk analysis on VKontakte data, including all methodological extensions:
 
 ### Core Infrastructure
 - **Config**: XDG-like path resolution, ConfigManager, ResourceLoader with SHA-256 verification
@@ -43,11 +45,14 @@ The MVP implements a complete end-to-end pipeline for opinion leader identificat
 - **Deduplication**: ExactHasher (Stage 1, ALL posts >= 30 chars), BoundedJaccard (Stage 2, topical >= 100 chars)
 - **Originality**: 5 types (ORIGINAL, REPOST_WITH_COMMENT, PURE_REPOST, DETECTED_COPY, MEDIA_ONLY)
 - **Base scoring**: ClosedProfileImputer (Q25), AudienceComponent, EngagementDensityComponent
-- **Gamma calibration**: MVP OLS regression with clip [0.25, 0.65], fallback 0.45
+- **Gamma calibration**: Theil-Sen primary (≥20 authors), OLS fallback (<20), MAD-based R², bootstrap 1000
 - **Normalization**: RobustNormalizer (Robust Sigmoid, cascade fallback, CV_IQR bootstrap)
-- **Bootstrap**: Two-level 100x30 for I_base CI (parallelized via Dispatchers.Default)
+- **Bootstrap**: Full two-level 300×100 for I_base CI (parallelized via Dispatchers.Default)
 - **Event scoring**: TopicFocus (leave-one-out prior), TopicalVolume (k_window), DisseminationReach (M_reach), ContentOriginality
-- **Reference calibration**: OK-branch + AUDIENCE_ONLY_REFERENCE
+- **T orthogonalization**: Theil-Sen + MAD R² + permutation p-value → Set A/B weight selection
+- **Reference calibration**: Full 3-branch (OK / MILD_RECOMPUTED / AUDIENCE_ONLY_REFERENCE)
+- **MILD_RECOMPUTED**: E-quantile recomputation under session γ with correlation safeguard
+- **GMM role classification**: 2-3 component EM on (I_base, I_event), BIC selection, n_eff >= 50
 - **Role classification**: 4x2 matrix → 8 combined roles + BASELINE_UNKNOWN, sqrt(n_eff) confidence
 - **Content analysis**: DictionarySentiment (200 RuSentiLex lemmas), NegationHandler, SentimentBootstrap (10 variants)
 - **Term extraction**: TF-IDF top-10 per author
@@ -67,18 +72,19 @@ The MVP implements a complete end-to-end pipeline for opinion leader identificat
 - CsvExporter: privacy-first (PiiHasher) default + raw mode
 - SafeExporter: enforces privacy-first
 
-## What Is Deliberately Deferred to Post-MVP
+## What Is Deliberately Deferred
 
-| Feature | Deferred To | Reason |
-|---------|-------------|--------|
-| Theil-Sen regression (gamma) | Prompt 18 | MVP uses OLS as simplified placeholder |
-| MAD-based R² diagnostic | Prompt 18 | Requires Theil-Sen |
-| T orthogonalization | Prompt 18 | Theil-Sen + bootstrap p-value prerequisite |
-| MILD_RECOMPUTED gamma divergence | Prompt 20 | E-quantile recomputation under session gamma |
-| Bootstrap upgrade (300x100) | Prompt 19 | Performance; MVP uses 100x30 |
-| Huber M-estimator (sentiment) | Prompt 19 | MVP uses median |
-| Full 20-variant sentiment bootstrap | Prompt 19 | MVP uses 10 variants |
-| Discovery rules 2-3 + full DPS | Prompt 19 | MVP has rule 1 only |
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Theil-Sen regression (gamma) | DONE | Primary for ≥20 authors, OLS fallback |
+| MAD-based R² diagnostic | DONE | Replaces OLS R² |
+| T orthogonalization | DONE | Theil-Sen + permutation p-value |
+| MILD_RECOMPUTED gamma divergence | DONE | Full 3-branch with correlation safeguard |
+| Bootstrap upgrade (300x100) | DONE | Parallelized across CPU cores |
+| Huber M-estimator (sentiment) | DONE | With bootstrap 200 CI |
+| Full 20-variant sentiment bootstrap | DONE | 3 negator sets × 3 windows × 3 thresholds |
+| Discovery rules 2-3 + full DPS | DONE | All 3 rules + DPS ranking |
+| GMM role classification | DONE | 2-3 component EM, BIC selection |
 | Routine protection (GiantActivation) | Prompt 23 | N_topic_baseline check |
 | Holiday-mean seasonality | Prompt 23 | MVP uses weekly only |
 | Multi-year holiday support | Prompt 23 | MVP has 2025-2026 |
@@ -90,6 +96,20 @@ The MVP implements a complete end-to-end pipeline for opinion leader identificat
 | GMM optional mode | Future | Requires n_eff >= 50 |
 | Lets-Plot Batik rendering | UI polish | Data model ready |
 | ViewModels backed by DAOs | Full integration | Screens use placeholder data |
+
+## MILD_RECOMPUTED Approximation Limits
+
+The MILD_RECOMPUTED branch (0.1 < |Δγ| ≤ 0.2) recomputes E-quantiles under session γ using the independence approximation:
+
+```
+q_p(E|γ_sess) ≈ q_p(ln_r_bar) - γ_sess * q_p(ln_F)
+```
+
+**Limitations:**
+1. This approximation assumes quantile additivity, which holds exactly only for independent variables. When ln_F and ln_r_bar are correlated (common in social media), the approximation error increases.
+2. When the IQR ratio proxy exceeds 0.6 (suggesting high correlation), the flag `MILD_RECOMPUTED_HIGH_CORRELATION` is set, warning that approximation accuracy may exceed 15%.
+3. The reference threshold τ^ref_base = 0.78 is used as-is (not recomputed), with flag `REF_THRESHOLD_APPROXIMATED`.
+4. For production use with high-stakes decisions, prefer collecting a fresh reference base at the session γ rather than relying on the MILD_RECOMPUTED approximation.
 
 ## How to Build and Run
 
