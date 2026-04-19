@@ -18,7 +18,7 @@ data class RiskCiResult(
  */
 class BlockBootstrap(
     private val blockDays: Int = 7,
-    private val iterations: Int = 100,
+    private val iterations: Int = 300,
 ) {
     companion object {
         private val RISK_BOUNDARIES = listOf(0.15, 0.35, 0.55)

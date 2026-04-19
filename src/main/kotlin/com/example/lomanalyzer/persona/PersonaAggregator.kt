@@ -35,8 +35,9 @@ class PersonaAggregator(
         for (author in authorData) {
             val lom = lomByAuthor[author.authorId]
 
-            // Median aggregation for MVP (Huber in Prompt 19)
-            val medianSentiment = medianOrNull(author.sentimentScores)
+            // Huber M-estimator aggregation per v6 §12.4
+            val huberResult = com.example.lomanalyzer.analysis.content.HuberAggregator
+                .aggregate(author.sentimentScores)
             val visualRatio = com.example.lomanalyzer.analysis.content.VisualActivityEstimator
                 .compute(author.mediaPostCount, author.totalPostCount)
 
@@ -58,7 +59,11 @@ class PersonaAggregator(
                 it[PersonaAggregates.gammaUsed] = lom?.get(LomScores.gammaUsed)
                 it[PersonaAggregates.kWindow] = lom?.get(LomScores.kWindow)
                 it[PersonaAggregates.tOrthogonalized] = lom?.get(LomScores.tOrthogonalized) ?: false
-                it[PersonaAggregates.avgSentimentHuber] = medianSentiment
+                it[PersonaAggregates.avgSentimentHuber] = huberResult.huberMean
+                it[PersonaAggregates.avgSentimentHuberCiLo] = huberResult.ciLo
+                it[PersonaAggregates.avgSentimentHuberCiHi] = huberResult.ciHi
+                it[PersonaAggregates.sentimentUnstableRatio] = huberResult.unstableRatio
+                it[PersonaAggregates.authorToneMixedFlag] = huberResult.toneMixedFlag
                 it[PersonaAggregates.visualActivityRatio] = visualRatio
                 it[PersonaAggregates.topTerms] = author.topTerms
                 it[PersonaAggregates.discoverySource] = author.discoverySource
@@ -73,6 +78,7 @@ class PersonaAggregator(
         ))
     }
 
+    @Suppress("unused") // Kept as utility
     private fun medianOrNull(values: List<Float>): Float? {
         if (values.isEmpty()) return null
         val sorted = values.sorted()

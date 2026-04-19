@@ -147,6 +147,7 @@ val appModule = module {
         DiscoveryEngine(
             postDao = get(),
             authorDao = get(),
+            repostRelationDao = get(),
             logger = get(),
         )
     }

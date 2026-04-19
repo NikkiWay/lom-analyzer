@@ -6,9 +6,14 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlin.random.Random
 
+/**
+ * Two-level bootstrap configuration per v6 §16.1.
+ * Full: 300 outer × 100 inner. Gamma and orthogonalization remain fixed.
+ * Leave-one-out prior is recomputed inside each inner iteration scope.
+ */
 data class BootstrapConfig(
-    val outerIterations: Int = 100,
-    val innerIterations: Int = 30,
+    val outerIterations: Int = 300,
+    val innerIterations: Int = 100,
     val ciLowerPct: Double = 0.05,
     val ciUpperPct: Double = 0.95,
 )
@@ -27,10 +32,11 @@ data class AuthorBaselineData(
 )
 
 /**
- * Simplified two-level bootstrap (100x30 for MVP).
- * Outer: resample authors with replacement, recompute normalization.
+ * Full two-level bootstrap (300×100) per v6 §16.1.
+ * Outer: resample authors with replacement, recompute median/IQR normalization.
  * Inner: resample posts per author, recompute r_bar.
- * Expose BootstrapConfig so Prompt 19 can upgrade to 300x100.
+ * Parallelized across CPU cores via Dispatchers.Default.
+ * Gamma and orthogonalization results remain fixed (session point estimates).
  */
 class BootstrapEstimator(
     private val config: BootstrapConfig = BootstrapConfig(),
@@ -45,10 +51,10 @@ class BootstrapEstimator(
     ): Map<Int, BootstrapResult> = coroutineScope {
         if (authors.isEmpty()) return@coroutineScope emptyMap()
 
-        val chunkSize = (config.outerIterations + 3) / 4
+        val coreCount = Runtime.getRuntime().availableProcessors().coerceAtLeast(2)
+        val chunkSize = (config.outerIterations + coreCount - 1) / coreCount
         val chunks = (0 until config.outerIterations).chunked(chunkSize)
 
-        // Each chunk runs in parallel on Dispatchers.Default
         val allIterResults = chunks.map { iterRange ->
             async(Dispatchers.Default) {
                 val rng = Random(iterRange.first())
@@ -84,7 +90,7 @@ class BootstrapEstimator(
         val n = authors.size
         val resampled = (0 until n).map { authors[rng.nextInt(n)] }
 
-        // Inner bootstrap: resample posts per author
+        // Inner bootstrap: resample posts per author, recompute r_bar
         val authorRawScores = resampled.map { author ->
             val rBar = innerBootstrapMeanReaction(author.postReactions, rng)
             val aRaw = AudienceComponent.computeRaw(author.followers)
@@ -92,6 +98,7 @@ class BootstrapEstimator(
             Triple(author.authorId, aRaw, eRaw)
         }
 
+        // Recompute normalization stats per outer iteration
         val aValues = authorRawScores.map { it.second }
         val eValues = authorRawScores.map { it.third }
         val aStats = normalizer.computeStats(aValues)
@@ -109,8 +116,7 @@ class BootstrapEstimator(
         val n = posts.size
         var total = 0.0
         repeat(config.innerIterations) {
-            val idx = rng.nextInt(n)
-            total += EngagementDensityComponent.weightedReaction(posts[idx])
+            total += EngagementDensityComponent.weightedReaction(posts[rng.nextInt(n)])
         }
         return total / config.innerIterations
     }

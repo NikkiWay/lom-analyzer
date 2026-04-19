@@ -174,6 +174,6 @@ class ContentAnalysisTest {
             listOf("хороший", "отличный", "замечательный"),
         )
         assertTrue(result.agreement in 0f..1f)
-        assertEquals(10, result.variantLabels.size)
+        assertEquals(20, result.variantLabels.size)
     }
 }
