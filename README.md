@@ -66,6 +66,8 @@ SQLite database at `<appDataDir>/lom_analyzer.db` with WAL mode. Schema is manag
 
 ## First Launch
 
+The app enforces a **single-instance lock** — if another instance is already running, the new one exits with a message. Stale locks are auto-removed.
+
 On first launch the application will prompt you to **create a master password**. This password is used to derive an AES-256-GCM encryption key (via PBKDF2, 100 000 iterations) that protects your VK API token at rest.
 
 - **New vault** — you will be asked to enter and confirm a password. The encrypted vault is stored at `<appDataDir>/token_vault.bin`.
@@ -73,6 +75,8 @@ On first launch the application will prompt you to **create a master password**.
 - **On exit** — the token is securely wiped from memory and the vault key is cleared.
 
 You must enter the master password each time you start the application.
+
+After unlocking, the main window shows a setup screen where you can create analysis sessions. Each session tracks a topic query and region, and progresses through a 35-stage pipeline from data collection through risk scoring and export.
 
 ## License
 

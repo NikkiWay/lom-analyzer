@@ -36,6 +36,9 @@ dependencies {
     // kotlinx-serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+
     // SQLite
     implementation("org.xerial:sqlite-jdbc:3.47.1.0")
 

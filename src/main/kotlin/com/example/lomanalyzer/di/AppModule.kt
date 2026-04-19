@@ -4,6 +4,7 @@ import com.example.lomanalyzer.config.AppConfig
 import com.example.lomanalyzer.config.ConfigManager
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.observability.MetricsCollector
+import com.example.lomanalyzer.orchestration.*
 import com.example.lomanalyzer.security.AuditDao
 import com.example.lomanalyzer.security.AuditLog
 import com.example.lomanalyzer.security.TokenVault
@@ -63,4 +64,26 @@ val appModule = module {
     // AuditLog wired with real DAO
     single<AuditDao> { get<AuditLogDao>() }
     single { AuditLog(logger = get(), dao = get()) }
+
+    // Orchestration
+    single { SessionManager(sessionDao = get(), logger = get()) }
+    single {
+        val config = get<AppConfig>()
+        SingleInstanceLock(appDataDir = config.appDataDir, logger = get())
+    }
+    single { ActiveSessionRegistry() }
+    single { CancellationController() }
+    single { ProgressReporter() }
+    single { CheckpointManager(checkpointDao = get(), logger = get()) }
+    single { RetentionManager(sessionDao = get(), logger = get()) }
+    single {
+        PipelineOrchestrator(
+            sessionManager = get(),
+            registry = get(),
+            checkpointManager = get(),
+            progressReporter = get(),
+            cancellationController = get(),
+            logger = get(),
+        )
+    }
 }
