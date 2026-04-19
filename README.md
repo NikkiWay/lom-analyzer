@@ -4,7 +4,9 @@ Desktop application for automated identification and analysis of opinion leaders
 
 ## Status
 
-**pre-MVP** — project skeleton only, no business logic implemented yet.
+**v1.0 Released** — full analytical pipeline with 35 processing stages, 9 UI screens, 294 unit/integration tests.
+
+See [Release Notes](docs/release_notes_v1_0.md) | [User Manual](docs/user_manual.md) | [Project Status](PROJECT_STATUS.md)
 
 ## Technology Stack
 

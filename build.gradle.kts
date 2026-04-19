@@ -88,8 +88,19 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "lom-analyzer"
+            packageName = "LomAnalyzer"
             packageVersion = "1.0.0"
+            description = "Opinion Leader Analysis System for VKontakte"
+            vendor = "LOM Analyzer Project"
+            licenseFile.set(project.file("LICENSE"))
+
+            windows {
+                menuGroup = "LOM Analyzer"
+                upgradeUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+            }
+            linux {
+                debMaintainer = "lom-analyzer@example.com"
+            }
         }
     }
 }
