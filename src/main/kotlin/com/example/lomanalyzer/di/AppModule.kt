@@ -4,6 +4,7 @@ import com.example.lomanalyzer.config.AppConfig
 import com.example.lomanalyzer.config.ConfigManager
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.observability.MetricsCollector
+import com.example.lomanalyzer.nlp.*
 import com.example.lomanalyzer.orchestration.*
 import com.example.lomanalyzer.preprocessing.*
 import com.example.lomanalyzer.security.AuditDao
@@ -140,6 +141,25 @@ val appModule = module {
         )
     }
     single { OAuthFlow(tokenVault = get(), logger = get()) }
+
+    // NLP
+    single {
+        val config = get<AppConfig>()
+        PythonServiceManager(
+            pythonEnvPath = config.pythonEnvPath,
+            httpClient = get(),
+            logger = get(),
+        )
+    }
+    single { LocalKotlinNlpService(lemmatizer = get(), languageDetector = get()) }
+    single {
+        NlpServiceSelector(
+            pythonServiceManager = get(),
+            localService = get(),
+            httpClient = get(),
+            logger = get(),
+        )
+    }
 
     // Preprocessing
     single { LanguageDetectorProxy() }

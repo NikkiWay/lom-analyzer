@@ -1,0 +1,9 @@
+# Python 3.12 required.
+fastapi>=0.110
+uvicorn>=0.29
+pymorphy3>=2.0
+dostoevsky>=0.6
+natasha>=1.6
+langdetect>=1.0.9
+sentence-transformers>=2.7
+fasttext-wheel>=0.9.2

@@ -89,6 +89,23 @@ To use VK data collection you need a VK developer application:
 
 Required permissions: `wall`, `friends`, `groups`, `stats`.
 
+## Python NLP Sidecar
+
+The application uses a Python FastAPI sidecar for FULL NLP mode (pymorphy3, dostoevsky, natasha, rubert-tiny2, langdetect). If the sidecar is unavailable, it falls back to Kotlin-native Snowball stemmer and heuristic language detection.
+
+### Setup (reuse venv from Prompt 01 spike)
+
+```bash
+cd nlp/python
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+The app auto-starts the sidecar on analysis launch. Set `pythonEnvPath` in AppConfig to point to the venv directory.
+
+See [`nlp/python/README.md`](nlp/python/README.md) for manual debugging instructions.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
