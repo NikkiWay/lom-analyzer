@@ -33,4 +33,20 @@ class SessionManager(
 
     fun getStatus(row: ResultRow): SessionStatus =
         SessionStatus.valueOf(row[AnalysisSessions.status])
+
+    fun forkSession(sourceSessionId: Int, newParams: SessionParams): Int {
+        val newId = sessionDao.insert(
+            name = newParams.name,
+            topicQuery = newParams.topicQuery,
+            region = newParams.region,
+            nlpMode = newParams.nlpMode,
+            baselineWindowDays = newParams.baselineWindowDays,
+            currentWindowDays = newParams.currentWindowDays,
+        )
+        sessionDao.setSessionFamily(newId, sourceSessionId)
+        logger.event(AppEvent.SESSION_FORKED, mapOf(
+            "source_id" to sourceSessionId, "new_id" to newId,
+        ))
+        return newId
+    }
 }

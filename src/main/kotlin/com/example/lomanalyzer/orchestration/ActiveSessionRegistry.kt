@@ -1,22 +1,59 @@
 package com.example.lomanalyzer.orchestration
 
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
+
+/**
+ * Full state machine per v6 §7.2: {IDLE, ANALYZING, RECOVERY_AWAITING}.
+ */
+enum class RegistryState { IDLE, ANALYZING, RECOVERY_AWAITING }
+
+class AnotherSessionActiveException(
+    val activeSessionId: Int,
+    val activeSessionName: String,
+) : RuntimeException("Another session active: #$activeSessionId ($activeSessionName)")
 
 class ActiveSessionRegistry {
-    private val activeSessionId = AtomicInteger(-1)
+    private val lock = ReentrantLock()
+    private var state = RegistryState.IDLE
+    private var sessionId = -1
+    private var sessionName = ""
 
     val analysisInProgress: Boolean
-        get() = activeSessionId.get() >= 0
+        get() = lock.withLock { state != RegistryState.IDLE }
 
-    fun tryStartAnalysis(sessionId: Int): Boolean =
-        activeSessionId.compareAndSet(-1, sessionId)
+    fun getCurrentState(): RegistryState = lock.withLock { state }
 
-    fun endAnalysis(sessionId: Int) {
-        activeSessionId.compareAndSet(sessionId, -1)
+    fun tryStartAnalysis(sessionId: Int, sessionName: String = "Session #$sessionId"): Boolean =
+        lock.withLock {
+            if (state != RegistryState.IDLE) return@withLock false
+            this.state = RegistryState.ANALYZING
+            this.sessionId = sessionId
+            this.sessionName = sessionName
+            true
+        }
+
+    fun transitionToRecovery() = lock.withLock {
+        if (state == RegistryState.ANALYZING) {
+            state = RegistryState.RECOVERY_AWAITING
+        }
     }
 
-    fun currentSessionId(): Int? {
-        val id = activeSessionId.get()
-        return if (id >= 0) id else null
+    fun endAnalysis(sessionId: Int) = lock.withLock {
+        if (this.sessionId == sessionId) {
+            state = RegistryState.IDLE
+            this.sessionId = -1
+            this.sessionName = ""
+        }
+    }
+
+    fun currentSessionId(): Int? = lock.withLock {
+        if (sessionId >= 0 && state != RegistryState.IDLE) sessionId else null
+    }
+
+    fun forceReset() = lock.withLock {
+        state = RegistryState.IDLE
+        sessionId = -1
+        sessionName = ""
     }
 }

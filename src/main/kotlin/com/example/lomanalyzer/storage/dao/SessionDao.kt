@@ -70,4 +70,11 @@ class SessionDao(private val db: Database) {
     fun hardDelete(id: Int) = transaction(db) {
         AnalysisSessions.deleteWhere { AnalysisSessions.id eq id }
     }
+
+    fun setSessionFamily(id: Int, familySourceId: Int) = transaction(db) {
+        AnalysisSessions.update({ AnalysisSessions.id eq id }) {
+            it[sessionFamilyId] = familySourceId
+            it[updatedAt] = Instant.now().toEpochMilli()
+        }
+    }
 }

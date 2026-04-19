@@ -53,6 +53,7 @@ class StorageTest {
             "analysis_session", "anomaly_author_link", "anomaly_event", "anomaly_post_link",
             "audit_log", "author", "collection_checkpoint", "community",
             "dedup_group", "holiday_day_stats", "lom_score", "persona_aggregate",
+            "persona_history_link",
             "post", "post_metrics_snapshot", "processed_text", "recovery_choice",
             "repost_relation", "risk_anomaly_link", "risk_signal",
             "sentiment_result", "session_author", "session_community",

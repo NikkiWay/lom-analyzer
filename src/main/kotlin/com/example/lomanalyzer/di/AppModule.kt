@@ -270,6 +270,19 @@ val appModule = module {
     // Export
     single { CsvExporter(logger = get()) }
     single { SafeExporter(csvExporter = get()) }
+    single { com.example.lomanalyzer.export.JsonExporter(logger = get()) }
+
+    // Persona history
+    single { com.example.lomanalyzer.persona.PersonaHistoryManager(get()) }
+
+    // Recovery
+    single {
+        RecoveryTimeoutWatcher(
+            registry = get(),
+            sessionManager = get(),
+            logger = get(),
+        )
+    }
 
     // Navigation
     single { AppNavigator(logger = get()) }

@@ -111,6 +111,13 @@ q_p(E|γ_sess) ≈ q_p(ln_r_bar) - γ_sess * q_p(ln_F)
 3. The reference threshold τ^ref_base = 0.78 is used as-is (not recomputed), with flag `REF_THRESHOLD_APPROXIMATED`.
 4. For production use with high-stakes decisions, prefer collecting a fresh reference base at the session γ rather than relying on the MILD_RECOMPUTED approximation.
 
+## Concurrency Policy
+
+- Only one session may be in ANALYZING state at a time (enforced by ActiveSessionRegistry).
+- Two sessions in COLLECTING phase may run in parallel but share the Python sidecar semaphore (4 permits).
+- RECOVERY_AWAITING blocks new ANALYZING attempts until resolved (30-minute timeout → auto-CANCELLED).
+- PAUSED_PENDING_RECOVERY sessions persist across app restarts and prompt the user on next launch.
+
 ## How to Build and Run
 
 ### Prerequisites
