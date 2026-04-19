@@ -4,6 +4,7 @@ import com.example.lomanalyzer.config.AppConfig
 import com.example.lomanalyzer.config.ConfigManager
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.observability.MetricsCollector
+import com.example.lomanalyzer.analysis.topic.*
 import com.example.lomanalyzer.nlp.*
 import com.example.lomanalyzer.orchestration.*
 import com.example.lomanalyzer.preprocessing.*
@@ -157,6 +158,19 @@ val appModule = module {
             pythonServiceManager = get(),
             localService = get(),
             httpClient = get(),
+            logger = get(),
+        )
+    }
+
+    // Topic filtering
+    single { TopicRelevanceFilter() }
+    single {
+        TopicFilterExecutor(
+            postDao = get(),
+            processedTextDao = get(),
+            ngramMatcher = NgramMatcher(emptyList(), emptyList(), emptyList()),
+            topicFilter = get(),
+            progressReporter = get(),
             logger = get(),
         )
     }
