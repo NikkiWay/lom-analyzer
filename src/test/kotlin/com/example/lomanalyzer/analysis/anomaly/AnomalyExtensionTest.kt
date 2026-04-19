@@ -133,8 +133,8 @@ class AnomalyExtensionTest {
     fun `loadForSession sets partial coverage for unknown years`() {
         val cal = HolidayCalendar()
         cal.loadForSession(
-            LocalDate.of(2030, 1, 1),
-            LocalDate.of(2030, 12, 31),
+            LocalDate.of(2035, 1, 1),
+            LocalDate.of(2035, 12, 31),
         )
         assertTrue(cal.partialCoverage)
     }

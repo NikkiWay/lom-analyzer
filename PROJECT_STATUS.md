@@ -149,6 +149,30 @@ cd tools/nlp_model_benchmark
 does not justify the 23x size increase (29MB → 680MB) for a desktop application.
 See `tools/nlp_model_benchmark/benchmarks/nlp_model_comparison.md`.
 
+## Sensitivity Analysis Harness
+
+### Running
+The sensitivity harness tests 45 pipeline parameters at low/high sensitivity ranges:
+```bash
+./gradlew sensitivityReport
+```
+
+### Parameters
+45 parameters across 10 categories: TOPIC, GAMMA, NORM, BOOTSTRAP, SCORING, ANOMALY, RISK, DEDUP, REFERENCE, ROLE, ORIGINALITY, SENTIMENT, DISCOVERY.
+
+### Output
+Reports are generated at `reports/sensitivity/sensitivity_report_<timestamp>.md` with:
+- Chi-square role distribution comparison
+- Mean risk delta
+- Anomaly count delta
+- Impact classification (HIGH/MEDIUM/LOW)
+
+### Extended Test Corpus
+- 500 posts, 50 authors, 10 communities, 60 days
+- Ground truth: topic relevance, sentiment, originality, roles (20), anomalies (10)
+- Located at `src/main/resources/resources/test_corpus.json`
+- Methodology: `tools/test_corpus_methodology.md`
+
 ## How to Build and Run
 
 ### Prerequisites
