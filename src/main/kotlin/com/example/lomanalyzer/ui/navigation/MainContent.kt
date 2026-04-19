@@ -1,6 +1,8 @@
 package com.example.lomanalyzer.ui.navigation
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -38,7 +40,13 @@ fun MainContent() {
 @Composable
 @Suppress("FunctionNaming")
 private fun NavSidebar(current: NavRoute, navigator: AppNavigator) {
-    Column(modifier = Modifier.width(180.dp).fillMaxHeight().padding(8.dp)) {
+    Column(
+        modifier = Modifier
+            .widthIn(min = 120.dp, max = 200.dp)
+            .fillMaxHeight()
+            .verticalScroll(rememberScrollState())
+            .padding(8.dp),
+    ) {
         NavButton("Setup", NavRoute.SETUP, current, navigator)
         NavButton("Collection", NavRoute.COLLECTION, current, navigator)
         NavButton("Validation", NavRoute.TOPIC_VALIDATION, current, navigator)

@@ -21,16 +21,17 @@ fun CiBar(
     barColor: Color = MaterialTheme.colors.primary,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(modifier = Modifier.fillMaxWidth().height(20.dp).background(Color.LightGray)) {
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth().height(20.dp).background(Color.LightGray)) {
             val lo = (ciLo ?: value).coerceIn(0f, 1f)
             val hi = (ciHi ?: value).coerceIn(0f, 1f)
             val v = value.coerceIn(0f, 1f)
+            val totalWidth = maxWidth
             // CI range
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(hi - lo)
-                    .offset(x = (lo * 200).dp)
+                    .width(totalWidth * (hi - lo))
+                    .offset(x = totalWidth * lo)
                     .background(barColor.copy(alpha = 0.3f))
             )
             // Point estimate
@@ -38,7 +39,7 @@ fun CiBar(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(3.dp)
-                    .offset(x = (v * 200).dp)
+                    .offset(x = totalWidth * v)
                     .background(barColor)
             )
         }

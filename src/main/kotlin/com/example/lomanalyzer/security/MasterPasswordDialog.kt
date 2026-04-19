@@ -1,6 +1,8 @@
 package com.example.lomanalyzer.security
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -27,12 +29,12 @@ fun MasterPasswordDialog(
     DialogWindow(
         onCloseRequest = onDismiss,
         title = if (isNewVault) "Create Master Password" else "Enter Master Password",
-        state = DialogState(width = 400.dp, height = if (isNewVault) 320.dp else 250.dp),
-        resizable = false,
+        state = DialogState(width = 400.dp, height = if (isNewVault) 350.dp else 250.dp),
+        resizable = true,
     ) {
         MaterialTheme {
             Column(
-                modifier = Modifier.fillMaxSize().padding(24.dp),
+                modifier = Modifier.fillMaxSize().padding(24.dp).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {

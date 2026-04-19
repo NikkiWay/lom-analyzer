@@ -91,14 +91,14 @@ private fun MetricsRow(m: ValidationMetrics) {
 @Composable
 @Suppress("FunctionNaming")
 private fun ThresholdRow(threshold: Float, onChanged: (Float) -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Text("Threshold: %.2f".format(threshold))
         Spacer(Modifier.width(8.dp))
         Slider(
             value = threshold,
             onValueChange = onChanged,
             valueRange = 0.1f..0.9f,
-            modifier = Modifier.width(200.dp),
+            modifier = Modifier.weight(1f),
         )
     }
 }
@@ -106,12 +106,12 @@ private fun ThresholdRow(threshold: Float, onChanged: (Float) -> Unit) {
 @Composable
 @Suppress("FunctionNaming")
 private fun StopPhraseRow(value: String, onValueChange: (String) -> Unit, onAdd: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             label = { Text("Add stop-phrase") },
-            modifier = Modifier.width(250.dp),
+            modifier = Modifier.weight(1f),
             singleLine = true,
         )
         Spacer(Modifier.width(8.dp))

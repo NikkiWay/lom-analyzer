@@ -17,7 +17,7 @@ fun TimeSeriesChart(
     title: String = "",
     lineColor: Color = Color(0xFF1565C0),
     anomalyColor: Color = Color(0xFFD32F2F),
-    modifier: Modifier = Modifier.fillMaxWidth().height(200.dp),
+    modifier: Modifier = Modifier.fillMaxWidth().heightIn(min = 80.dp, max = 250.dp),
 ) {
     Column {
         if (title.isNotEmpty()) Text(title, fontSize = 12.sp)

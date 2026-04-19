@@ -1,6 +1,8 @@
 package com.example.lomanalyzer.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -15,7 +17,7 @@ fun LomDetailScreen() {
     val navigator = remember { get<AppNavigator>(AppNavigator::class.java) }
     val authorId by navigator.selectedAuthorId.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             TextButton(onClick = { navigator.back() }) { Text("< Back") }
             Text("Actor Detail #${authorId ?: "-"}", style = MaterialTheme.typography.h5)
@@ -25,11 +27,11 @@ fun LomDetailScreen() {
 
         // Decomposition placeholder — populated by viewmodel
         Text("I_base decomposition", style = MaterialTheme.typography.subtitle1)
-        CiBar(0.65f, 0.55f, 0.75f, modifier = Modifier.width(250.dp))
+        CiBar(0.65f, 0.55f, 0.75f, modifier = Modifier.fillMaxWidth())
 
         Spacer(Modifier.height(8.dp))
         Text("I_event decomposition", style = MaterialTheme.typography.subtitle1)
-        CiBar(0.45f, 0.35f, 0.55f, modifier = Modifier.width(250.dp))
+        CiBar(0.45f, 0.35f, 0.55f, modifier = Modifier.fillMaxWidth())
 
         Spacer(Modifier.height(8.dp))
         Text("Role", style = MaterialTheme.typography.subtitle1)

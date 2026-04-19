@@ -1,6 +1,8 @@
 package com.example.lomanalyzer.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -11,7 +13,7 @@ import com.example.lomanalyzer.ui.components.QualityGauge
 @Composable
 @Suppress("FunctionNaming")
 fun SessionQualityScreen() {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
         Text("Session Quality Score", style = MaterialTheme.typography.h5)
         Spacer(Modifier.height(16.dp))
 
@@ -28,21 +30,14 @@ fun SessionQualityScreen() {
             Triple("Reference Freshness", 0f, false),
         )
 
-        Row(
+        @OptIn(ExperimentalLayoutApi::class)
+        FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            for ((label, value, isGate) in components.take(5)) {
-                QualityGauge(label, value, isGate, Modifier.weight(1f))
-            }
-        }
-        Spacer(Modifier.height(8.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            for ((label, value, isGate) in components.drop(5)) {
-                QualityGauge(label, value, isGate, Modifier.weight(1f))
+            for ((label, value, isGate) in components) {
+                QualityGauge(label, value, isGate, Modifier.width(120.dp))
             }
         }
     }

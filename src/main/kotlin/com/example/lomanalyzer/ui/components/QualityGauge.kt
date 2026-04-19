@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -19,7 +20,7 @@ fun QualityGauge(label: String, value: Float, isGate: Boolean = false, modifier:
         else -> Color(0xFFF44336)
     }
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label, fontSize = 10.sp)
+        Text(label, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Box(Modifier.fillMaxWidth().height(8.dp).background(Color.LightGray)) {
             Box(Modifier.fillMaxHeight().fillMaxWidth(value.coerceIn(0f, 1f)).background(color))
         }

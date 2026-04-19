@@ -1,6 +1,9 @@
 package com.example.lomanalyzer.ui.screens
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -19,12 +22,15 @@ fun LomDashboardScreen() {
     val rows = remember { emptyList<LomTableRow>() }
     val points = remember { emptyList<ScatterPoint>() }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
         Text("LOM Dashboard", style = MaterialTheme.typography.h5)
         Spacer(Modifier.height(8.dp))
 
         // Role filter chips
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.horizontalScroll(rememberScrollState()),
+        ) {
             FilterChip("All", roleFilter == null) { roleFilter = null }
             FilterChip("AUTH", roleFilter == "AUTH") { roleFilter = "AUTH" }
             FilterChip("GIANT", roleFilter == "GIANT") { roleFilter = "GIANT" }

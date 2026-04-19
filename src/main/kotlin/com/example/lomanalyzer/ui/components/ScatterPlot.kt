@@ -1,7 +1,7 @@
 package com.example.lomanalyzer.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,7 +19,7 @@ fun ScatterPlot(
     tauBase: Float,
     tauEvent: Float,
     @Suppress("unused") tauRefBase: Float?,
-    modifier: Modifier = Modifier.fillMaxWidth().height(400.dp),
+    modifier: Modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp, max = 400.dp),
 ) {
     val desc = "Scatter: ${points.size} actors, " +
         "base=${"%.2f".format(tauBase)} " +

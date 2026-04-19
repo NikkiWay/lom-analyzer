@@ -1,6 +1,8 @@
 package com.example.lomanalyzer.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -17,7 +19,7 @@ fun DynamicsScreen() {
     val volumeData = remember { emptyList<TimePoint>() }
     val sentimentData = remember { emptyList<TimePoint>() }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
         Text("Dynamics", style = MaterialTheme.typography.h5)
         Spacer(Modifier.height(16.dp))
 

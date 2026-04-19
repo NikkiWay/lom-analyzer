@@ -1,9 +1,10 @@
 package com.example.lomanalyzer.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.lomanalyzer.orchestration.SessionManager
@@ -31,7 +32,10 @@ fun SetupScreen() {
     var lastCreatedId by remember { mutableStateOf<Int?>(null) }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Session Setup", style = MaterialTheme.typography.h5)
@@ -49,25 +53,31 @@ fun SetupScreen() {
         OutlinedTextField(
             referenceTexts, { referenceTexts = it },
             label = { Text("Reference texts (3-10)") },
-            modifier = fw.height(100.dp), maxLines = 10,
+            modifier = fw.heightIn(min = 80.dp, max = 150.dp), maxLines = 10,
         )
 
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
             OutlinedTextField(baselineDays, { baselineDays = it },
-                label = { Text("Baseline days") }, modifier = Modifier.width(120.dp))
+                label = { Text("Baseline") }, modifier = Modifier.weight(1f), singleLine = true)
             OutlinedTextField(currentDays, { currentDays = it },
-                label = { Text("Current days") }, modifier = Modifier.width(120.dp))
+                label = { Text("Current") }, modifier = Modifier.weight(1f), singleLine = true)
         }
 
         Text("Role Mode", style = MaterialTheme.typography.subtitle2)
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             RadioButton(roleMode == "QUADRANT", { roleMode = "QUADRANT" })
             Text("Quadrant")
             RadioButton(roleMode == "GMM", { roleMode = "GMM" })
-            Text("GMM (n >= 50)")
+            Text("GMM (n>=50)")
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
             Button(onClick = {
                 val id = sessionManager.createSession(SessionParams(
                     name = name.ifBlank { "Unnamed" },
@@ -79,7 +89,9 @@ fun SetupScreen() {
                 lastCreatedId = id
             }) { Text("Create Session") }
 
-            Button(onClick = { navigator.navigate(NavRoute.COLLECTION) }) { Text("Start Collection") }
+            Button(onClick = { navigator.navigate(NavRoute.COLLECTION) }) {
+                Text("Start Collection")
+            }
         }
 
         lastCreatedId?.let { Text("Created session #$it") }
