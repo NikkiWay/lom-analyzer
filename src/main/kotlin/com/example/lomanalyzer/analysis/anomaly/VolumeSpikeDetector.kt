@@ -9,6 +9,7 @@ data class AnomalyDetection(
     val zScore: Double,
     val description: String,
     val isHolidayDay: Boolean = false,
+    val routineProtectionApplied: Boolean = false,
 )
 
 /**
