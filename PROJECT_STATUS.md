@@ -118,6 +118,37 @@ q_p(E|γ_sess) ≈ q_p(ln_r_bar) - γ_sess * q_p(ln_F)
 - RECOVERY_AWAITING blocks new ANALYZING attempts until resolved (30-minute timeout → auto-CANCELLED).
 - PAUSED_PENDING_RECOVERY sessions persist across app restarts and prompt the user on next launch.
 
+## Reference Base Builder
+
+### Running
+```bash
+export VK_TOKEN=your_vk_api_token
+cd tools/reference_base_builder
+# Run via Kotlin script or compile as standalone JAR
+```
+
+### Expected Runtime
+- 4-8 hours at 3 req/s with execute batching (15,000 accounts)
+- Requires VK API token with `wall`, `groups`, `users` permissions
+- Checkpointing every 500 accounts for resumability
+- Output: `reference_base.json` with SHA-256
+
+### Methodology
+See `tools/reference_base_builder/ref_base_methodology.md`
+
+## NLP Model Benchmark
+
+### Running
+```bash
+cd tools/nlp_model_benchmark
+# Requires Python environment with sentence-transformers
+```
+
+### Current Recommendation
+**Keep rubert-tiny2 for v1.0.** The ~6% correlation improvement from ruBERT-base
+does not justify the 23x size increase (29MB → 680MB) for a desktop application.
+See `tools/nlp_model_benchmark/benchmarks/nlp_model_comparison.md`.
+
 ## How to Build and Run
 
 ### Prerequisites
