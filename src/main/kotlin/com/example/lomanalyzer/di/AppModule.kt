@@ -177,12 +177,17 @@ val appModule = module {
         )
     }
 
+    // Resources
+    single { com.example.lomanalyzer.config.ResourceLoader(logger = get()) }
+
     // LOM scoring
     single { GammaCalibrator() }
     single { RobustNormalizer() }
     single { BootstrapEstimator() }
     single { DisseminationReachComponent() }
     single { EventActivityScorer(normalizer = get(), logger = get()) }
+    single { ReferenceCalibrator() }
+    single { RoleCombinator }
     single {
         BaseInfluenceScorer(
             postDao = get(),
