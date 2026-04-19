@@ -177,10 +177,12 @@ val appModule = module {
         )
     }
 
-    // LOM base scoring
+    // LOM scoring
     single { GammaCalibrator() }
     single { RobustNormalizer() }
     single { BootstrapEstimator() }
+    single { DisseminationReachComponent() }
+    single { EventActivityScorer(normalizer = get(), logger = get()) }
     single {
         BaseInfluenceScorer(
             postDao = get(),
