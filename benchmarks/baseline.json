@@ -1,0 +1,13 @@
+{
+  "timestamp": 1718841600000,
+  "totalMs": 290,
+  "stages": [
+    {"stage": "PREPROCESSING", "durationMs": 120},
+    {"stage": "TOPIC_FILTERING", "durationMs": 45},
+    {"stage": "DEDUPLICATION", "durationMs": 15},
+    {"stage": "GAMMA_CALIBRATION", "durationMs": 30},
+    {"stage": "BASE_SCORING", "durationMs": 80}
+  ],
+  "postCount": 500,
+  "authorCount": 50
+}

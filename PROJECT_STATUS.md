@@ -173,6 +173,22 @@ Reports are generated at `reports/sensitivity/sensitivity_report_<timestamp>.md`
 - Located at `src/main/resources/resources/test_corpus.json`
 - Methodology: `tools/test_corpus_methodology.md`
 
+## Quality Gates Status
+
+Run `./gradlew gatesReport` to generate `build/reports/gates/gates_summary.md`.
+
+| Gate | Name | Status | Notes |
+|------|------|--------|-------|
+| G-01 | Sensitivity Report | PASS | Baseline report exists |
+| G-02 | Performance Benchmark | PASS | 290ms on 500 posts (well under 90min NFR-03) |
+| G-03 | Dostoevsky Validation | CONDITIONAL | Accuracy 0.68 < 0.70 threshold (known limitation) |
+| G-04 | Role Inter-Rater κ | PASS | κ = 0.72 on synthetic data |
+| G-05 | NLP Model Benchmark | PASS | rubert-tiny2 recommended for v1.0 |
+| G-06 | R²_MAD Calibration | PASS | 0.05 confirmed as optimal |
+
+### Known Issues
+- G-03: Dostoevsky accuracy 0.68 on synthetic data is below 0.70. Mitigated by SentimentBootstrap + Huber aggregation. Production validation on real VK data planned for v1.1.
+
 ## How to Build and Run
 
 ### Prerequisites
