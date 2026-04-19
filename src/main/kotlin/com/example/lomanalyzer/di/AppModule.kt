@@ -192,6 +192,7 @@ val appModule = module {
     single { RobustNormalizer() }
     single { BootstrapEstimator() }
     single { DisseminationReachComponent() }
+    single { OrthogonalizerT(logger = get()) }
     single { EventActivityScorer(normalizer = get(), logger = get()) }
     single { ReferenceCalibrator() }
     single { RoleCombinator }

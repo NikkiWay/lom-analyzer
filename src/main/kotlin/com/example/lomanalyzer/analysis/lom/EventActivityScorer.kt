@@ -46,13 +46,13 @@ data class EventScoreResult(
 
 class EventActivityScorer(
     private val normalizer: RobustNormalizer,
-    private val weights: EventWeights = EventWeights.SET_B,
     @Suppress("UnusedPrivateProperty") private val logger: Logger,
 ) {
     @Suppress("LongMethod")
     fun score(
         authors: List<AuthorEventData>,
         totalTopicAll: Int,
+        weights: EventWeights = EventWeights.SET_B,
         totalPostsAll: Int,
     ): List<EventScoreResult> {
         if (authors.isEmpty()) return emptyList()
