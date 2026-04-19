@@ -1,0 +1,36 @@
+# Gradle
+.gradle/
+build/
+gradle/wrapper/gradle-wrapper.jar
+
+# Kotlin
+*.class
+*.jar
+*.war
+*.ear
+
+# IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Python venv
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Application artifacts
+.app_lock
+logs/
+app_data/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment / secrets
+.env
+*.key
