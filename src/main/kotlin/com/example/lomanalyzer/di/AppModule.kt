@@ -5,6 +5,7 @@ import com.example.lomanalyzer.config.ConfigManager
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.observability.MetricsCollector
 import com.example.lomanalyzer.analysis.dedup.*
+import com.example.lomanalyzer.analysis.lom.*
 import com.example.lomanalyzer.analysis.topic.*
 import com.example.lomanalyzer.nlp.*
 import com.example.lomanalyzer.orchestration.*
@@ -172,6 +173,22 @@ val appModule = module {
             ngramMatcher = NgramMatcher(emptyList(), emptyList(), emptyList()),
             topicFilter = get(),
             progressReporter = get(),
+            logger = get(),
+        )
+    }
+
+    // LOM base scoring
+    single { GammaCalibrator() }
+    single { RobustNormalizer() }
+    single { BootstrapEstimator() }
+    single {
+        BaseInfluenceScorer(
+            postDao = get(),
+            authorDao = get(),
+            lomScoreDao = get(),
+            gammaCalibrator = get(),
+            normalizer = get(),
+            bootstrapEstimator = get(),
             logger = get(),
         )
     }
