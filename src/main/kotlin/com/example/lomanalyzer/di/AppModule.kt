@@ -4,6 +4,7 @@ import com.example.lomanalyzer.config.AppConfig
 import com.example.lomanalyzer.config.ConfigManager
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.observability.MetricsCollector
+import com.example.lomanalyzer.analysis.dedup.*
 import com.example.lomanalyzer.analysis.topic.*
 import com.example.lomanalyzer.nlp.*
 import com.example.lomanalyzer.orchestration.*
@@ -171,6 +172,26 @@ val appModule = module {
             ngramMatcher = NgramMatcher(emptyList(), emptyList(), emptyList()),
             topicFilter = get(),
             progressReporter = get(),
+            logger = get(),
+        )
+    }
+
+    // Deduplication
+    single { BoundedJaccard() }
+    single {
+        DedupPipeline(
+            postDao = get(),
+            processedTextDao = get(),
+            dedupGroupDao = get(),
+            boundedJaccard = get(),
+            progressReporter = get(),
+            logger = get(),
+        )
+    }
+    single {
+        OriginalityExecutor(
+            postDao = get(),
+            dedupGroupDao = get(),
             logger = get(),
         )
     }
