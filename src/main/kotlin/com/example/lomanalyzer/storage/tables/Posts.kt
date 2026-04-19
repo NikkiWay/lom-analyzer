@@ -1,0 +1,38 @@
+package com.example.lomanalyzer.storage.tables
+
+import org.jetbrains.exposed.dao.id.IntIdTable
+
+object Posts : IntIdTable("post") {
+    val sessionId = reference("session_id", AnalysisSessions)
+    val vkId = integer("vk_id")
+    val ownerId = integer("owner_id")
+    val fromId = integer("from_id")
+    val publishedAt = long("published_at")
+    val text = text("text").nullable()
+    val textClean = text("text_clean").nullable()
+    val ownTextLength = integer("own_text_length").default(0)
+    val likes = integer("likes").default(0)
+    val reposts = integer("reposts").default(0)
+    val comments = integer("comments").default(0)
+    val views = integer("views").nullable()
+    val window = text("window")
+    val isTopicRelevant = bool("is_topic_relevant").nullable()
+    val topicScoreL1 = float("topic_score_l1").nullable()
+    val topicScoreL2 = float("topic_score_l2").nullable()
+    val topicScoreCombined = float("topic_score_combined").nullable()
+    val isHoliday = bool("is_holiday").default(false)
+    val holidayName = text("holiday_name").nullable()
+    val detectedLanguage = text("detected_language").nullable()
+    val languageConfidence = float("language_confidence").nullable()
+    val languageFlag = text("language_flag").nullable()
+    val containsMedia = bool("contains_media").default(false)
+    val mediaTypes = text("media_types").nullable()
+    val truncated = bool("truncated").default(false)
+    val truncationReason = text("truncation_reason").nullable()
+    val hasCopyHistory = bool("has_copy_history").default(false)
+    val hashtagsCount = integer("hashtags_count").default(0)
+    val mentionsCount = integer("mentions_count").default(0)
+    val urlsCount = integer("urls_count").default(0)
+    val createdAt = long("created_at")
+    val deletedAt = long("deleted_at").nullable()
+}

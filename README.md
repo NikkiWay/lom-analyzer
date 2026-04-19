@@ -47,6 +47,23 @@ Desktop application for automated identification and analysis of opinion leaders
 ./gradlew detekt
 ```
 
+## Database
+
+SQLite database at `<appDataDir>/lom_analyzer.db` with WAL mode. Schema is managed by Flyway (forward-only, no downgrades).
+
+**V1 schema** includes 23 tables:
+- `analysis_session` — full session config, gamma/threshold/quality fields, status enum (8 values)
+- `community`, `author`, `post` — core VK entities with all v6 fields
+- `processed_text`, `sentiment_result` — NLP pipeline outputs
+- `lom_score` — influence scores with confidence intervals and role classification
+- `repost_relation`, `dedup_group` — content linkage
+- `anomaly_event`, `risk_signal` — detection outputs with CI and holiday/routine flags
+- `collection_checkpoint`, `audit_log`, `recovery_choice`, `session_metrics` — operational tables
+- `persona_aggregate` — aggregated actor profiles per session
+- `holiday_day_stats` — materialized daily stats with `(session_id, date)` index
+- `post_metrics_snapshot` — reserved for SessionFamily (v2.0)
+- Link tables: `session_community`, `session_author`, `anomaly_author_link`, `anomaly_post_link`, `risk_anomaly_link`
+
 ## First Launch
 
 On first launch the application will prompt you to **create a master password**. This password is used to derive an AES-256-GCM encryption key (via PBKDF2, 100 000 iterations) that protects your VK API token at rest.

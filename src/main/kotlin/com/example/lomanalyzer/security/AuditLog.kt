@@ -10,8 +10,7 @@ data class AuditEntry(
 )
 
 /**
- * Writes audit events. Currently logs to the structured logger;
- * will be wired to the database DAO once the Storage layer is implemented.
+ * Writes audit events to both the structured logger and the database.
  */
 class AuditLog(
     private val logger: Logger,
@@ -23,14 +22,12 @@ class AuditLog(
             action = action,
             details = details,
         )
-        // Persist to DB when DAO is available
         dao?.insert(entry)
-        // Always log structurally
         logger.info("AUDIT: $action", details.mapValues { it.value as Any? })
     }
 }
 
-/** Stub DAO interface — will be implemented in the Storage layer. */
+/** DAO interface for persisting audit entries to the database. */
 interface AuditDao {
     fun insert(entry: AuditEntry)
 }

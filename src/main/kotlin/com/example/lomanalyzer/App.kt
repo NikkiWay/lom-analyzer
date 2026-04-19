@@ -5,11 +5,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.example.lomanalyzer.config.AppConfig
 import com.example.lomanalyzer.di.appModule
 import com.example.lomanalyzer.observability.AppEvent
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.security.MasterPasswordDialog
 import com.example.lomanalyzer.security.TokenVault
+import com.example.lomanalyzer.storage.Migrations
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.context.GlobalContext.stopKoin
 import org.koin.java.KoinJavaComponent.get
@@ -20,7 +22,12 @@ fun main() {
     }
 
     val logger = get<Logger>(Logger::class.java)
+    val config = get<AppConfig>(AppConfig::class.java)
     val tokenVault = get<TokenVault>(TokenVault::class.java)
+
+    // Run Flyway migrations
+    Migrations.migrate(config.appDataDir.resolve("lom_analyzer.db"))
+    logger.event(AppEvent.DB_MIGRATED)
 
     application {
         var vaultUnlocked by remember { mutableStateOf(false) }
