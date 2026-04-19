@@ -14,8 +14,12 @@ class DatabaseFactory(private val dbPath: Path) {
             driver = "org.sqlite.JDBC",
         )
         transaction(database) {
-            connection.prepareStatement("PRAGMA journal_mode=WAL", false).executeUpdate()
-            connection.prepareStatement("PRAGMA foreign_keys=ON", false).executeUpdate()
+            // Use raw JDBC connection for PRAGMAs since they may return result sets
+            val conn = (connection.connection as java.sql.Connection)
+            conn.createStatement().use { stmt ->
+                stmt.execute("PRAGMA journal_mode=WAL")
+                stmt.execute("PRAGMA foreign_keys=ON")
+            }
         }
         return database
     }

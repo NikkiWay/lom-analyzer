@@ -27,7 +27,7 @@ class StorageTest {
         // Connect Exposed
         db = Database.connect("jdbc:sqlite:${tempDb.toAbsolutePath()}", driver = "org.sqlite.JDBC")
         transaction(db) {
-            connection.prepareStatement("PRAGMA foreign_keys=ON", false).executeUpdate()
+            (connection.connection as java.sql.Connection).createStatement().execute("PRAGMA foreign_keys=ON")
         }
     }
 
