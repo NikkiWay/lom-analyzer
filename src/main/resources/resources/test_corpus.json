@@ -1,0 +1,389 @@
+{
+  "version": "test-corpus-2026-v1-minimal",
+  "description": "Минимальный синтетический корпус для раннего тестирования (50 постов, 5 авторов)",
+  "sha256": "placeholder-to-be-computed-after-freeze",
+  "metadata": {
+    "posts_count": 50,
+    "authors_count": 5,
+    "communities_count": 0,
+    "period_from": "2025-06-01",
+    "period_to": "2025-07-31",
+    "region": "synthetic",
+    "topic_config": {
+      "primary_ngrams": ["экология", "загрязнение"],
+      "secondary_ngrams": ["воздух", "вода"],
+      "excluded_ngrams": ["экологичный продукт"],
+      "reference_texts": [
+        "Экологическая обстановка в городах ухудшается из-за промышленных выбросов.",
+        "Загрязнение воздуха и воды представляет серьёзную угрозу здоровью населения."
+      ]
+    }
+  },
+  "authors": [
+    {"id": 1, "vk_id_hashed": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4", "followers_count": 1500, "is_closed": false, "discovery_source": "SEED"},
+    {"id": 2, "vk_id_hashed": "b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5", "followers_count": 320, "is_closed": false, "discovery_source": "SEED"},
+    {"id": 3, "vk_id_hashed": "c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6", "followers_count": 8700, "is_closed": false, "discovery_source": "REPOSTER"},
+    {"id": 4, "vk_id_hashed": "d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1", "followers_count": 150, "is_closed": true, "discovery_source": "SEED"},
+    {"id": 5, "vk_id_hashed": "e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2", "followers_count": 45000, "is_closed": false, "discovery_source": "SEED"}
+  ],
+  "posts": [
+    {
+      "id": 101, "from_id": 1, "published_at": 1717196400,
+      "text_clean": "Загрязнение воздуха в нашем районе достигло критических показателей. Дышать невозможно.",
+      "likes": 45, "reposts": 12, "comments": 8,
+      "own_text_length": 87, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 102, "from_id": 1, "published_at": 1717282800,
+      "text_clean": "Сегодня отличная погода, гуляли в парке с семьёй. Дети счастливы!",
+      "likes": 23, "reposts": 1, "comments": 5,
+      "own_text_length": 64, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 103, "from_id": 1, "published_at": 1717369200,
+      "text_clean": "Экология города — это ответственность каждого. Начните с раздельного сбора мусора.",
+      "likes": 67, "reposts": 25, "comments": 14,
+      "own_text_length": 82, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 104, "from_id": 1, "published_at": 1717455600,
+      "text_clean": "Посмотрел новый фильм. Средне, ничего особенного.",
+      "likes": 8, "reposts": 0, "comments": 2,
+      "own_text_length": 49, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 105, "from_id": 1, "published_at": 1717542000,
+      "text_clean": "Проблема загрязнения водоёмов в Подмосковье не решается годами. Чиновники бездействуют.",
+      "likes": 89, "reposts": 34, "comments": 21,
+      "own_text_length": 91, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 106, "from_id": 1, "published_at": 1717628400,
+      "text_clean": "Купил новый телефон, доволен покупкой. Камера просто огонь!",
+      "likes": 15, "reposts": 0, "comments": 3,
+      "own_text_length": 58, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 107, "from_id": 1, "published_at": 1717714800,
+      "text_clean": "Обнаружен несанкционированный сброс отходов в реку Клязьма. Экологическая катастрофа.",
+      "likes": 112, "reposts": 56, "comments": 30,
+      "own_text_length": 85, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 108, "from_id": 1, "published_at": 1717801200,
+      "text_clean": "Рецепт дня: борщ по-украински. Свекла, капуста, картошка.",
+      "likes": 34, "reposts": 5, "comments": 12,
+      "own_text_length": 56, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 109, "from_id": 1, "published_at": 1717887600,
+      "text_clean": "Городские власти высадили 500 деревьев в центральном парке. Хорошая инициатива для экологии!",
+      "likes": 78, "reposts": 18, "comments": 9,
+      "own_text_length": 90, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 110, "from_id": 1, "published_at": 1717974000,
+      "text_clean": "Пробки на МКАДе сегодня 9 баллов. Стою уже час.",
+      "likes": 5, "reposts": 0, "comments": 7,
+      "own_text_length": 49, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 201, "from_id": 2, "published_at": 1717196400,
+      "text_clean": "Качество воды из-под крана оставляет желать лучшего. Фильтры не справляются.",
+      "likes": 12, "reposts": 3, "comments": 4,
+      "own_text_length": 76, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 202, "from_id": 2, "published_at": 1717282800,
+      "text_clean": "Сходили с друзьями в кино. Фильм так себе, но компания отличная.",
+      "likes": 18, "reposts": 0, "comments": 6,
+      "own_text_length": 61, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 203, "from_id": 2, "published_at": 1717369200,
+      "text_clean": "Результаты мониторинга воздуха за май: превышение ПДК по NO2 в 2.5 раза.",
+      "likes": 34, "reposts": 15, "comments": 8,
+      "own_text_length": 78, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 204, "from_id": 2, "published_at": 1717455600,
+      "text_clean": "Утренняя пробежка по набережной. 5 км за 25 минут, новый рекорд!",
+      "likes": 22, "reposts": 0, "comments": 3,
+      "own_text_length": 63, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 205, "from_id": 2, "published_at": 1717542000,
+      "text_clean": "Волонтёры убрали 3 тонны мусора с берега Волги. Молодцы!",
+      "likes": 56, "reposts": 20, "comments": 11,
+      "own_text_length": 57, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 206, "from_id": 2, "published_at": 1717628400,
+      "text_clean": "Готовлюсь к экзамену по математике. Интегралы — это боль.",
+      "likes": 9, "reposts": 1, "comments": 4,
+      "own_text_length": 57, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 207, "from_id": 2, "published_at": 1717714800,
+      "text_clean": "Новый завод обещает нулевые выбросы. Посмотрим, как на практике.",
+      "likes": 28, "reposts": 7, "comments": 5,
+      "own_text_length": 63, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 208, "from_id": 2, "published_at": 1717801200,
+      "text_clean": "День рождения! 25 лет. Спасибо всем за поздравления!",
+      "likes": 145, "reposts": 0, "comments": 42,
+      "own_text_length": 52, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 209, "from_id": 2, "published_at": 1717887600,
+      "text_clean": "Петиция против строительства мусоросжигательного завода набрала 10000 подписей.",
+      "likes": 89, "reposts": 45, "comments": 23,
+      "own_text_length": 80, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 210, "from_id": 2, "published_at": 1717974000,
+      "text_clean": "Вчера был на концерте. Звук ужасный, организация никакая.",
+      "likes": 7, "reposts": 0, "comments": 5,
+      "own_text_length": 56, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 301, "from_id": 3, "published_at": 1717196400,
+      "text_clean": "Репост: загрязнение воздуха в Челябинске превышает норму в 5 раз.",
+      "likes": 156, "reposts": 87, "comments": 34,
+      "own_text_length": 65, "has_copy_history": true, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEGATIVE", "originality_type": "REPOST"}
+    },
+    {
+      "id": 302, "from_id": 3, "published_at": 1717282800,
+      "text_clean": "Лучшие мемы недели. Подборка для хорошего настроения.",
+      "likes": 234, "reposts": 45, "comments": 15,
+      "own_text_length": 51, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 303, "from_id": 3, "published_at": 1717369200,
+      "text_clean": "Исследование: микропластик обнаружен в 90% проб питьевой воды в России.",
+      "likes": 198, "reposts": 102, "comments": 45,
+      "own_text_length": 73, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 304, "from_id": 3, "published_at": 1717455600,
+      "text_clean": "Новый трек от Скриптонита. Мощно, как всегда.",
+      "likes": 312, "reposts": 23, "comments": 18,
+      "own_text_length": 46, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 305, "from_id": 3, "published_at": 1717542000,
+      "text_clean": "Акция «Чистый берег» стартует в эту субботу. Присоединяйтесь!",
+      "likes": 89, "reposts": 56, "comments": 12,
+      "own_text_length": 60, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 306, "from_id": 3, "published_at": 1717628400,
+      "text_clean": "Обзор нового iPhone. Стоит ли переплачивать?",
+      "likes": 178, "reposts": 12, "comments": 67,
+      "own_text_length": 44, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 307, "from_id": 3, "published_at": 1717714800,
+      "text_clean": "Экологический рейтинг регионов России 2025: лидеры и аутсайдеры.",
+      "likes": 145, "reposts": 67, "comments": 28,
+      "own_text_length": 65, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 308, "from_id": 3, "published_at": 1717801200,
+      "text_clean": "Рейтинг лучших сериалов 2025 года. Топ-10.",
+      "likes": 267, "reposts": 34, "comments": 89,
+      "own_text_length": 42, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 309, "from_id": 3, "published_at": 1717887600,
+      "text_clean": "В Байкал снова сливают отходы. Когда это закончится?",
+      "likes": 234, "reposts": 123, "comments": 56,
+      "own_text_length": 51, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 310, "from_id": 3, "published_at": 1717974000,
+      "text_clean": "Футбол: Спартак — ЦСКА 2:1. Горячее дерби!",
+      "likes": 456, "reposts": 34, "comments": 123,
+      "own_text_length": 43, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 401, "from_id": 4, "published_at": 1717196400,
+      "text_clean": "Наконец-то установили очистные сооружения на нашем предприятии.",
+      "likes": 5, "reposts": 1, "comments": 2,
+      "own_text_length": 62, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 402, "from_id": 4, "published_at": 1717282800,
+      "text_clean": "Приготовила пирог с яблоками. Рецепт бабушкин, проверенный.",
+      "likes": 12, "reposts": 2, "comments": 3,
+      "own_text_length": 58, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 403, "from_id": 4, "published_at": 1717369200,
+      "text_clean": "Опять дым с завода. Третий день подряд. Жаловались — бесполезно.",
+      "likes": 8, "reposts": 3, "comments": 6,
+      "own_text_length": 65, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 404, "from_id": 4, "published_at": 1717455600,
+      "text_clean": "Читаю «Мастера и Маргариту» в пятый раз. Каждый раз нахожу что-то новое.",
+      "likes": 14, "reposts": 0, "comments": 4,
+      "own_text_length": 73, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 405, "from_id": 4, "published_at": 1717542000,
+      "text_clean": "Анализ воды из скважины показал превышение нитратов. Пить нельзя.",
+      "likes": 6, "reposts": 2, "comments": 5,
+      "own_text_length": 64, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 406, "from_id": 4, "published_at": 1717628400,
+      "text_clean": "Сегодня просто обычный день. Ничего интересного не произошло.",
+      "likes": 3, "reposts": 0, "comments": 1,
+      "own_text_length": 58, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 407, "from_id": 4, "published_at": 1717714800,
+      "text_clean": "Посадили деревья во дворе. Клёны и берёзы. Через пару лет будет красота.",
+      "likes": 11, "reposts": 1, "comments": 3,
+      "own_text_length": 70, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 408, "from_id": 4, "published_at": 1717801200,
+      "text_clean": "Дождь весь день. Настроение на нуле.",
+      "likes": 4, "reposts": 0, "comments": 2,
+      "own_text_length": 36, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 409, "from_id": 4, "published_at": 1717887600,
+      "text_clean": "Соседний завод прошёл экологическую сертификацию ISO 14001. Неожиданно.",
+      "likes": 7, "reposts": 2, "comments": 1,
+      "own_text_length": 70, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 410, "from_id": 4, "published_at": 1717974000,
+      "text_clean": "Отпуск через неделю. Считаю дни. Еду на море!",
+      "likes": 16, "reposts": 0, "comments": 8,
+      "own_text_length": 46, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 501, "from_id": 5, "published_at": 1717196400,
+      "text_clean": "Выбросы парниковых газов в России выросли на 3% в 2024 году. Тревожная тенденция.",
+      "likes": 890, "reposts": 234, "comments": 67,
+      "own_text_length": 82, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 502, "from_id": 5, "published_at": 1717282800,
+      "text_clean": "Открыли новый ресторан в центре. Кухня средняя, цены завышены.",
+      "likes": 123, "reposts": 5, "comments": 34,
+      "own_text_length": 60, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEGATIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 503, "from_id": 5, "published_at": 1717369200,
+      "text_clean": "Россия присоединилась к международной программе мониторинга качества воздуха.",
+      "likes": 567, "reposts": 123, "comments": 28,
+      "own_text_length": 76, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 504, "from_id": 5, "published_at": 1717455600,
+      "text_clean": "Как правильно инвестировать в 2025 году. Мой опыт и советы.",
+      "likes": 345, "reposts": 78, "comments": 56,
+      "own_text_length": 58, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 505, "from_id": 5, "published_at": 1717542000,
+      "text_clean": "Раздельный сбор мусора: почему это важно и как начать. Подробный гайд.",
+      "likes": 678, "reposts": 345, "comments": 45,
+      "own_text_length": 70, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 506, "from_id": 5, "published_at": 1717628400,
+      "text_clean": "Утренняя рутина: кофе, зарядка, планирование дня. Просто и эффективно.",
+      "likes": 234, "reposts": 12, "comments": 18,
+      "own_text_length": 68, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 507, "from_id": 5, "published_at": 1717714800,
+      "text_clean": "Электромобили в России: инфраструктура растёт, но до Европы далеко.",
+      "likes": 456, "reposts": 89, "comments": 34,
+      "own_text_length": 66, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 508, "from_id": 5, "published_at": 1717801200,
+      "text_clean": "Подборка лучших книг по саморазвитию. Читайте и развивайтесь!",
+      "likes": 289, "reposts": 67, "comments": 23,
+      "own_text_length": 60, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 509, "from_id": 5, "published_at": 1717887600,
+      "text_clean": "Пластиковые пакеты запрещены ещё в 40 странах. Когда Россия?",
+      "likes": 789, "reposts": 234, "comments": 89,
+      "own_text_length": 60, "has_copy_history": false, "contains_media": false,
+      "ground_truth": {"is_topic_relevant": true, "sentiment": "NEUTRAL", "originality_type": "ORIGINAL"}
+    },
+    {
+      "id": 510, "from_id": 5, "published_at": 1717974000,
+      "text_clean": "Выходные в Питере. Белые ночи, разводные мосты. Красота!",
+      "likes": 567, "reposts": 23, "comments": 45,
+      "own_text_length": 56, "has_copy_history": false, "contains_media": true,
+      "ground_truth": {"is_topic_relevant": false, "sentiment": "POSITIVE", "originality_type": "ORIGINAL"}
+    }
+  ],
+  "ground_truth_roles": [
+    {"author_id": 1, "expected_role": "TOPIC_DRIVER"},
+    {"author_id": 3, "expected_role": "AMPLIFIER"},
+    {"author_id": 5, "expected_role": "TOPIC_DRIVER"}
+  ],
+  "ground_truth_anomalies": [
+    {"date": "2025-07-15", "expected_types": ["VOLUME_SPIKE"]}
+  ]
+}
