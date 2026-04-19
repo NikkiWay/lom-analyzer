@@ -98,3 +98,24 @@ detekt {
     config.setFrom(files("detekt.yml"))
     buildUponDefaultConfig = true
 }
+
+tasks.register("verifyNoDebugIncludesPiiInProd") {
+    group = "verification"
+    description = "Ensures DEBUG_INCLUDES_PII is false in production logback config"
+    doLast {
+        val prodConfig = file("src/main/resources/logback-prod.xml")
+        if (prodConfig.exists()) {
+            val content = prodConfig.readText()
+            if (content.contains("\"true\"") && content.contains("DEBUG_INCLUDES_PII")) {
+                throw GradleException(
+                    "SECURITY: DEBUG_INCLUDES_PII is true in logback-prod.xml. " +
+                    "Production builds must not include PII in debug logs."
+                )
+            }
+        }
+    }
+}
+
+tasks.named("assemble") {
+    dependsOn("verifyNoDebugIncludesPiiInProd")
+}

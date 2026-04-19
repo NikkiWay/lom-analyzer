@@ -52,4 +52,22 @@ class SessionDao(private val db: Database) {
             it[updatedAt] = Instant.now().toEpochMilli()
         }
     }
+
+    fun findSoftDeleted(): List<ResultRow> = transaction(db) {
+        AnalysisSessions.selectAll()
+            .where { AnalysisSessions.deletedAt.isNotNull() }
+            .orderBy(AnalysisSessions.deletedAt, SortOrder.DESC)
+            .toList()
+    }
+
+    fun restore(id: Int) = transaction(db) {
+        AnalysisSessions.update({ AnalysisSessions.id eq id }) {
+            it[deletedAt] = null
+            it[updatedAt] = Instant.now().toEpochMilli()
+        }
+    }
+
+    fun hardDelete(id: Int) = transaction(db) {
+        AnalysisSessions.deleteWhere { AnalysisSessions.id eq id }
+    }
 }
