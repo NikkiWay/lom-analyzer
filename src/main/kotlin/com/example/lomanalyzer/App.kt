@@ -13,7 +13,8 @@ import com.example.lomanalyzer.orchestration.SingleInstanceLock
 import com.example.lomanalyzer.security.MasterPasswordDialog
 import com.example.lomanalyzer.security.TokenVault
 import com.example.lomanalyzer.storage.Migrations
-import com.example.lomanalyzer.ui.screens.SetupScreen
+import com.example.lomanalyzer.ui.navigation.MainContent
+import com.example.lomanalyzer.ui.theme.AppTheme
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.context.GlobalContext.stopKoin
 import org.koin.java.KoinJavaComponent.get
@@ -85,8 +86,8 @@ private fun launchUi(logger: Logger, lock: SingleInstanceLock) {
                 },
                 title = "LOM Analyzer",
             ) {
-                MaterialTheme {
-                    SetupScreen()
+                AppTheme {
+                    MainContent()
                 }
             }
         }

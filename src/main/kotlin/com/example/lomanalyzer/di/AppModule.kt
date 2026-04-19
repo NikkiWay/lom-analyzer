@@ -5,6 +5,7 @@ import com.example.lomanalyzer.config.ConfigManager
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.observability.MetricsCollector
 import com.example.lomanalyzer.analysis.anomaly.*
+import com.example.lomanalyzer.analysis.quality.*
 import com.example.lomanalyzer.analysis.content.*
 import com.example.lomanalyzer.analysis.dedup.*
 import com.example.lomanalyzer.analysis.risk.*
@@ -13,7 +14,9 @@ import com.example.lomanalyzer.analysis.topic.*
 import com.example.lomanalyzer.nlp.*
 import com.example.lomanalyzer.orchestration.*
 import com.example.lomanalyzer.persona.*
+import com.example.lomanalyzer.export.*
 import com.example.lomanalyzer.preprocessing.*
+import com.example.lomanalyzer.ui.navigation.AppNavigator
 import com.example.lomanalyzer.security.AuditDao
 import com.example.lomanalyzer.security.AuditLog
 import com.example.lomanalyzer.security.TokenVault
@@ -257,4 +260,14 @@ val appModule = module {
             logger = get(),
         )
     }
+
+    // Quality
+    single { SessionQualityEvaluator() }
+
+    // Export
+    single { CsvExporter(logger = get()) }
+    single { SafeExporter(csvExporter = get()) }
+
+    // Navigation
+    single { AppNavigator(logger = get()) }
 }
