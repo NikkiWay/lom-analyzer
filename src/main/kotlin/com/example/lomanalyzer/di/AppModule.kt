@@ -4,11 +4,13 @@ import com.example.lomanalyzer.config.AppConfig
 import com.example.lomanalyzer.config.ConfigManager
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.observability.MetricsCollector
+import com.example.lomanalyzer.analysis.content.*
 import com.example.lomanalyzer.analysis.dedup.*
 import com.example.lomanalyzer.analysis.lom.*
 import com.example.lomanalyzer.analysis.topic.*
 import com.example.lomanalyzer.nlp.*
 import com.example.lomanalyzer.orchestration.*
+import com.example.lomanalyzer.persona.*
 import com.example.lomanalyzer.preprocessing.*
 import com.example.lomanalyzer.security.AuditDao
 import com.example.lomanalyzer.security.AuditLog
@@ -196,6 +198,17 @@ val appModule = module {
             gammaCalibrator = get(),
             normalizer = get(),
             bootstrapEstimator = get(),
+            logger = get(),
+        )
+    }
+
+    // Content analysis
+    single { DictionarySentiment() }
+    single { TermExtractor() }
+    single {
+        PersonaAggregator(
+            lomScoreDao = get(),
+            personaAggregateDao = get(),
             logger = get(),
         )
     }
