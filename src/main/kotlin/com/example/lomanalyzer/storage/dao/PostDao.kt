@@ -55,4 +55,34 @@ class PostDao(private val db: Database) {
             it[topicScoreCombined] = combined
         }
     }
+
+    @Suppress("LongParameterList")
+    fun updatePostPreprocessing(
+        id: Int,
+        textClean: String,
+        ownTextLength: Int,
+        truncated: Boolean,
+        truncationReason: String?,
+        detectedLanguage: String,
+        languageConfidence: Float,
+        languageFlag: String,
+        hashtagsCount: Int,
+        mentionsCount: Int,
+        urlsCount: Int,
+        containsMedia: Boolean,
+    ) = transaction(db) {
+        Posts.update({ Posts.id eq id }) {
+            it[Posts.textClean] = textClean
+            it[Posts.ownTextLength] = ownTextLength
+            it[Posts.truncated] = truncated
+            it[Posts.truncationReason] = truncationReason
+            it[Posts.detectedLanguage] = detectedLanguage
+            it[Posts.languageConfidence] = languageConfidence
+            it[Posts.languageFlag] = languageFlag
+            it[Posts.hashtagsCount] = hashtagsCount
+            it[Posts.mentionsCount] = mentionsCount
+            it[Posts.urlsCount] = urlsCount
+            it[Posts.containsMedia] = containsMedia
+        }
+    }
 }

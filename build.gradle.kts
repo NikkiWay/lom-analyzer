@@ -58,6 +58,9 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
 
+    // Snowball stemmer (FALLBACK lemmatizer) — bundled in Lucene
+    implementation("org.apache.lucene:lucene-analysis-common:9.12.1")
+
     // Lets-Plot
     implementation("org.jetbrains.lets-plot:lets-plot-kotlin-jvm:4.9.3")
     implementation("org.jetbrains.lets-plot:lets-plot-batik:4.5.2")

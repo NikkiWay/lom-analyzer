@@ -5,6 +5,7 @@ import com.example.lomanalyzer.config.ConfigManager
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.observability.MetricsCollector
 import com.example.lomanalyzer.orchestration.*
+import com.example.lomanalyzer.preprocessing.*
 import com.example.lomanalyzer.security.AuditDao
 import com.example.lomanalyzer.security.AuditLog
 import com.example.lomanalyzer.security.TokenVault
@@ -139,4 +140,18 @@ val appModule = module {
         )
     }
     single { OAuthFlow(tokenVault = get(), logger = get()) }
+
+    // Preprocessing
+    single { LanguageDetectorProxy() }
+    single { LemmatizerProxy() }
+    single {
+        PreprocessingExecutor(
+            postDao = get(),
+            processedTextDao = get(),
+            languageDetector = get(),
+            lemmatizer = get(),
+            progressReporter = get(),
+            logger = get(),
+        )
+    }
 }
