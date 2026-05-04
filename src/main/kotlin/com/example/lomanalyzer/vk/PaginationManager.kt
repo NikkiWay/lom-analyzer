@@ -17,11 +17,14 @@ class PaginationManager(
         var offset = 0
 
         while (allPosts.size < maxPosts) {
+            // VK API errors (rate limits, flood control) are handled
+            // inside VkApiClient.request() with automatic backoff retry
             val response = apiClient.wallGet(ownerId, offset, pageSize, accessToken)
             val wall = response.response ?: break
             if (wall.items.isEmpty()) break
 
             for (post in wall.items) {
+                if (post.id == 0 && post.ownerId == 0) continue
                 if (sinceTimestamp != null && post.date < sinceTimestamp) {
                     return allPosts
                 }

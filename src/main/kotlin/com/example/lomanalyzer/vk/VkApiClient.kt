@@ -37,12 +37,92 @@ class VkApiClient(
         parameter("access_token", accessToken)
     }
 
+    suspend fun groupsSearch(
+        query: String,
+        count: Int = 20,
+        offset: Int = 0,
+        type: String? = null,
+        cityId: Int? = null,
+        countryId: Int? = null,
+        sort: Int = 6,
+        accessToken: String,
+    ): VkResponse<VkGroupSearchResponse> = request("groups.search") {
+        parameter("q", query)
+        parameter("count", count)
+        if (offset > 0) parameter("offset", offset)
+        if (type != null) parameter("type", type)
+        if (cityId != null) parameter("city_id", cityId)
+        if (countryId != null) parameter("country_id", countryId)
+        parameter("sort", sort)
+        parameter("fields", "members_count,screen_name,is_closed,description,activity")
+        parameter("access_token", accessToken)
+    }
+
+    suspend fun usersSearch(
+        query: String,
+        count: Int = 20,
+        cityId: Int? = null,
+        countryId: Int? = null,
+        sort: Int = 0,
+        accessToken: String,
+    ): VkResponse<VkUserSearchResponse> = request("users.search") {
+        parameter("q", query)
+        parameter("count", count)
+        if (cityId != null) parameter("city", cityId)
+        if (countryId != null) parameter("country", countryId)
+        parameter("sort", sort)
+        parameter("fields", "followers_count,screen_name,is_closed,city")
+        parameter("access_token", accessToken)
+    }
+
+    suspend fun newsfeedSearch(
+        query: String,
+        count: Int = 200,
+        startFrom: String? = null,
+        accessToken: String,
+    ): VkResponse<VkNewsfeedSearchResponse> = request("newsfeed.search") {
+        parameter("q", query)
+        parameter("count", count)
+        if (startFrom != null) parameter("start_from", startFrom)
+        parameter("access_token", accessToken)
+    }
+
     suspend fun groupsGetById(
         groupIds: List<Int>,
         accessToken: String,
-    ): VkResponse<List<VkGroup>> = request("groups.getById") {
-        parameter("group_ids", groupIds.joinToString(","))
-        parameter("fields", "members_count,screen_name,is_closed")
+    ): VkResponse<List<VkGroup>> = groupsGetByStringIds(
+        groupIds.joinToString(","), accessToken,
+    )
+
+    suspend fun groupsGetByStringIds(
+        groupIds: String,
+        accessToken: String,
+    ): VkResponse<List<VkGroup>> {
+        val raw: VkResponse<VkGroupsGetByIdResponse> = request("groups.getById") {
+            parameter("group_ids", groupIds)
+            parameter("fields", "members_count,screen_name,is_closed,description,activity")
+            parameter("access_token", accessToken)
+        }
+        return VkResponse(
+            response = raw.response?.groups,
+            error = raw.error,
+        )
+    }
+
+    suspend fun resolveScreenName(
+        screenName: String,
+        accessToken: String,
+    ): VkResponse<VkResolvedScreenName> = request("utils.resolveScreenName") {
+        parameter("screen_name", screenName)
+        parameter("access_token", accessToken)
+    }
+
+    suspend fun usersGetByScreenNames(
+        userIds: String,
+        accessToken: String,
+    ): VkResponse<List<VkUser>> = request("users.get") {
+        parameter("user_ids", userIds)
+        parameter("fields", "followers_count,screen_name,is_closed")
         parameter("access_token", accessToken)
     }
 

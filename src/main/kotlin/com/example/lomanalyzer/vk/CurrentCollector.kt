@@ -7,6 +7,7 @@ import com.example.lomanalyzer.orchestration.ProgressEvent
 import com.example.lomanalyzer.storage.dao.CheckpointDao
 import com.example.lomanalyzer.storage.dao.PostDao
 import com.example.lomanalyzer.vk.models.VkPost
+import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -39,6 +40,7 @@ class CurrentCollector(
             val posts = paginationManager.fetchAllPosts(
                 ownerId = -communityId,
                 accessToken = accessToken,
+                maxPosts = 500,
                 sinceTimestamp = sinceTimestamp,
             )
 
@@ -49,10 +51,12 @@ class CurrentCollector(
 
             checkpointDao.updateProgress(cpId, null, posts.size, "COMPLETED")
             progressReporter.update(ProgressEvent(
-                stage = "COLLECT_CURRENT",
+                stage = "Сбор current: ${index + 1}/${communityIds.size} сообществ, $totalPosts постов",
                 completedItems = index + 1,
                 totalItems = communityIds.size,
             ))
+
+            if (index < communityIds.size - 1) delay(3000)
         }
 
         logger.event(AppEvent.COLLECTION_COMPLETED, mapOf(
@@ -69,10 +73,16 @@ class CurrentCollector(
             vkId = post.id,
             ownerId = post.ownerId,
             fromId = post.fromId,
-            publishedAt = post.date * 1000,
+            publishedAt = post.date,
             text = post.text,
             window = "CURRENT",
             ownTextLength = post.text.length,
+            likes = post.likes?.count ?: 0,
+            reposts = post.reposts?.count ?: 0,
+            comments = post.comments?.count ?: 0,
+            views = post.views?.count,
+            containsMedia = !post.attachments.isNullOrEmpty(),
+            hasCopyHistory = !post.copyHistory.isNullOrEmpty(),
         )
     }
 }
