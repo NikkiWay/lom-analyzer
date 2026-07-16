@@ -56,6 +56,15 @@ class QualityCheckExecutor(
     private val logger: Logger,
 ) : StageExecutor {
 
+    companion object {
+        /**
+         * Сколько комментариев должно быть у тематического поста, чтобы считать
+         * его покрытым откликом аудитории. Ниже этого порога отклик (ось 4) по
+         * посту статистически не интерпретируем.
+         */
+        private const val MIN_COMMENTS_FOR_COVERAGE = 5L
+    }
+
     /**
      * Выполняет проверку качества для сессии sessionId.
      * @param stage текущая стадия пайплайна (для оркестрации).
@@ -138,9 +147,13 @@ class QualityCheckExecutor(
         val topicFilteringQuality = if (totalScoredPosts > 0)
             confidentPosts.toFloat() / totalScoredPosts else 0f
 
-        // Покрытие комментариями: доля тематических постов, имеющих >= 5 комментариев
+        // Покрытие комментариями: доля тематических постов, имеющих >= 5 комментариев.
+        // Счётчики берём одним группированным запросом: раньше здесь был вызов
+        // countByPost на каждый пост, и каждый — полное сканирование comment.
+        val commentCountsByPost = commentDao.countBySessionGroupedByPost(sessionId)
         val postsWithComments = topicPosts.count { post ->
-            commentDao.countByPost(post[Posts.id].value) >= 5
+            // Поста нет в карте — комментариев нет вовсе
+            (commentCountsByPost[post[Posts.id].value] ?: 0L) >= MIN_COMMENTS_FOR_COVERAGE
         }
         val commentCoverage = if (topicPosts.isNotEmpty())
             postsWithComments.toFloat() / topicPosts.size else 0f

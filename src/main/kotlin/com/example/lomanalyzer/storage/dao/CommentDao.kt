@@ -79,16 +79,6 @@ class CommentDao(private val db: Database) {
     }
 
     /**
-     * SELECT всех комментариев к конкретному посту, по времени публикации (ASC).
-     * @return список ResultRow.
-     */
-    fun findByPost(postId: Int): List<ResultRow> = transaction(db) {
-        Comments.selectAll().where { Comments.postId eq postId }
-            .orderBy(Comments.publishedAt)
-            .toList()
-    }
-
-    /**
      * SELECT комментариев к посту в рамках конкретной сессии, по времени (ASC).
      * @return список ResultRow.
      */
@@ -112,5 +102,27 @@ class CommentDao(private val db: Database) {
      */
     fun countByPost(postId: Int): Long = transaction(db) {
         Comments.selectAll().where { Comments.postId eq postId }.count()
+    }
+
+    /**
+     * COUNT комментариев по каждому посту сессии — одним запросом.
+     *
+     * Замена вызову countByPost в цикле по постам. Отдельный countByPost
+     * фильтрует только по post_id и потому не может опереться на индекс
+     * (session_id, post_id): ведущая колонка индекса в условии отсутствует, и
+     * каждый вызов вырождается в полное сканирование таблицы comment. Здесь
+     * условие начинается с session_id, поэтому индекс работает, а группировка
+     * даёт все счётчики за один проход вместо N.
+     *
+     * @return карта id поста -> число его комментариев. Посты без комментариев
+     *   в карте отсутствуют — вызывающий трактует их как 0.
+     */
+    fun countBySessionGroupedByPost(sessionId: Int): Map<Int, Long> = transaction(db) {
+        val commentCount = Comments.id.count()
+        Comments
+            .select(Comments.postId, commentCount)
+            .where { Comments.sessionId eq sessionId }
+            .groupBy(Comments.postId)
+            .associate { it[Comments.postId].value to it[commentCount] }
     }
 }
