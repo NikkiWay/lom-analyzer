@@ -30,24 +30,40 @@ import org.jetbrains.exposed.sql.transactions.transaction
  */
 class LinkDao(private val db: Database) {
     /**
-     * INSERT связи «сессия — сообщество» в таблицу-связку SessionCommunities.
+     * Идемпотентный INSERT связи «сессия — сообщество».
+     *
+     * Существующая связь — не ошибка: стадия сбора может выполниться повторно
+     * (возобновление с контрольной точки, повторный импорт того же файла), а сами
+     * сообщества дедуплицируются по vkId и получают тот же id. Без проверки такой
+     * повтор падал с нарушением первичного ключа (session_id, community_id).
      */
     fun linkSessionCommunity(sessionId: Int, communityId: Int) = transaction(db) {
-        SessionCommunities.insert {
-            it[SessionCommunities.sessionId] = sessionId
-            it[SessionCommunities.communityId] = communityId
+        val existing = SessionCommunities.selectAll().where {
+            (SessionCommunities.sessionId eq sessionId) and
+                (SessionCommunities.communityId eq communityId)
+        }.any()
+        if (!existing) {
+            SessionCommunities.insert {
+                it[SessionCommunities.sessionId] = sessionId
+                it[SessionCommunities.communityId] = communityId
+            }
         }
     }
 
     /**
-     * INSERT связи «сессия — автор» в таблицу-связку SessionAuthors.
+     * Идемпотентный INSERT связи «сессия — автор» (см. linkSessionCommunity).
      * @param role необязательная роль автора в рамках связи (или NULL).
      */
     fun linkSessionAuthor(sessionId: Int, authorId: Int, role: String? = null) = transaction(db) {
-        SessionAuthors.insert {
-            it[SessionAuthors.sessionId] = sessionId
-            it[SessionAuthors.authorId] = authorId
-            it[SessionAuthors.role] = role
+        val existing = SessionAuthors.selectAll().where {
+            (SessionAuthors.sessionId eq sessionId) and (SessionAuthors.authorId eq authorId)
+        }.any()
+        if (!existing) {
+            SessionAuthors.insert {
+                it[SessionAuthors.sessionId] = sessionId
+                it[SessionAuthors.authorId] = authorId
+                it[SessionAuthors.role] = role
+            }
         }
     }
 

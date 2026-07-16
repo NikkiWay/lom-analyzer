@@ -52,6 +52,7 @@ class PythonServiceManager(
     private val pythonEnvPath: Path,
     private val httpClient: HttpClient,
     private val logger: Logger,
+    private val sidecarLogFile: Path,
     private val maxRetries: Int = 3,
 ) {
     /** Порт, на котором слушает запущенный sidecar (0, пока не запущен). */
@@ -94,7 +95,19 @@ class PythonServiceManager(
                     remove("HTTP_PROXY"); remove("HTTPS_PROXY"); remove("ALL_PROXY")
                     put("NO_PROXY", "*")
                 }
+                // Весь вывод sidecar (stdout + stderr) уходит в файл, а не в конвейер.
+                //
+                // Это не удобство, а условие работоспособности: вывод дочернего процесса
+                // в неоткачиваемый конвейер накапливается в буфере ОС (в Windows — 4 КБ),
+                // и по его заполнении процесс встаёт на очередной записи в stdout
+                // навсегда. uvicorn печатает строку на КАЖДЫЙ запрос, а transformers —
+                // прогресс загрузки моделей, так что предел выбирается за один прогон:
+                // sidecar переставал отвечать в середине сессии, включая /health.
+                //
+                // Файл заодно даёт диагностику: traceback'и Python иначе не видны нигде.
                 pb.redirectErrorStream(true)
+                sidecarLogFile.parent?.let { java.nio.file.Files.createDirectories(it) }
+                pb.redirectOutput(ProcessBuilder.Redirect.to(sidecarLogFile.toFile()))
                 process = pb.start()
 
                 // Ждём, пока sidecar ответит health OK

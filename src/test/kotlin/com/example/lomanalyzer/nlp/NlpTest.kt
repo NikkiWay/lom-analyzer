@@ -41,6 +41,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -74,6 +75,7 @@ class NlpTest {
             pythonEnvPath = Paths.get("/nonexistent/python/path"),
             httpClient = mockClient,
             logger = logger,
+            sidecarLogFile = Files.createTempDirectory("sidecar_log_").resolve("python_sidecar.log"),
             maxRetries = 1,
         )
 

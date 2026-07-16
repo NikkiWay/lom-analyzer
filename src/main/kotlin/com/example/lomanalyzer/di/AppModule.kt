@@ -318,6 +318,9 @@ val appModule = module {
             pythonEnvPath = config.pythonEnvPath,
             httpClient = get(),
             logger = get(),
+            // Вывод sidecar пишется в файл: иначе он копится в конвейере и по
+            // заполнении буфера ОС намертво блокирует процесс (см. start()).
+            sidecarLogFile = config.logsDir.resolve("python_sidecar.log"),
         )
     }
     single { LocalKotlinNlpService(lemmatizer = get(), languageDetector = get()) }

@@ -82,28 +82,13 @@ class JsonDataImporter(
         // Разбираем весь файл в типизированную модель датасета
         val dataset = json.decodeFromString<ImportDataset>(file.readText())
 
-        // Шаг 1: импорт сообществ (с публикацией прогресса)
-        progressReporter.update(ProgressEvent(
-            stage = "Импорт: загрузка сообществ (${dataset.communities.size})",
-        ))
+        // Шаги 1-4. Прогресс со счётчиками публикует каждый шаг по ходу работы
+        // (см. reportProgress) — событие только с текстом этапа оставляло бы
+        // индикатор на нуле, так как долю экран считает по completedItems/totalItems.
         val communityMap = importCommunities(sessionId, dataset.communities)
-
-        // Шаг 2: импорт авторов
-        progressReporter.update(ProgressEvent(
-            stage = "Импорт: загрузка авторов (${dataset.authors.size})",
-        ))
         val authorMap = importAuthors(sessionId, dataset.authors)
-
-        // Шаг 3: импорт постов
-        progressReporter.update(ProgressEvent(
-            stage = "Импорт: загрузка постов (${dataset.posts.size})",
-        ))
         val postCount = importPosts(sessionId, dataset.posts)
-
-        // Шаг 4: импорт комментариев (привязываются к ранее загруженным постам)
-        progressReporter.update(ProgressEvent(
-            stage = "Импорт: загрузка комментариев (${dataset.comments.size})",
-        ))
+        // Комментарии привязываются к уже загруженным постам
         val commentCount = importComments(sessionId, dataset.comments)
 
         val result = ImportResult(
@@ -154,6 +139,7 @@ class JsonDataImporter(
             vkIdToDbId[community.vkId] = dbId
             // Привязываем сообщество к текущей сессии анализа
             linkDao.linkSessionCommunity(sessionId, dbId)
+            reportProgress("Импорт сообществ", vkIdToDbId.size, communities.size)
         }
         return vkIdToDbId
     }
@@ -187,6 +173,7 @@ class JsonDataImporter(
             vkIdToDbId[author.vkId] = dbId
             // Привязываем автора к текущей сессии анализа
             linkDao.linkSessionAuthor(sessionId, dbId)
+            reportProgress("Импорт авторов", vkIdToDbId.size, authors.size)
         }
         return vkIdToDbId
     }
@@ -216,6 +203,7 @@ class JsonDataImporter(
                 hasCopyHistory = post.hasCopyHistory,
             )
             count++
+            reportProgress("Импорт постов", count, posts.size)
         }
         return count
     }
@@ -226,15 +214,21 @@ class JsonDataImporter(
      * @return число вставленных комментариев.
      */
     private fun importComments(sessionId: Int, comments: List<ImportComment>): Int {
+        // Посты читаем один раз и индексируем по паре (vkId, ownerId) — именно по
+        // ней комментарий ссылается на пост. Раньше findBySession стоял внутри
+        // цикла, то есть таблица постов сессии перечитывалась целиком на каждый
+        // комментарий: на 2660 комментариев и 1026 постов это 2660 выборок и
+        // порядка 2.7 млн сравнений, что и составляло почти всё время импорта.
+        val postIdByVkKey = postDao.findBySession(sessionId)
+            .associate { (it[Posts.vkId] to it[Posts.ownerId]) to it[Posts.id].value }
+
         var count = 0
-        for (comment in comments) {
-            // Находим id поста в БД, сопоставляя vkId поста и владельца стены в текущей сессии
-            val post = postDao.findBySession(sessionId).firstOrNull {
-                it[Posts.vkId] == comment.postVkId && it[Posts.ownerId] == comment.postOwnerId
-            } ?: continue // нет соответствующего поста — пропускаем комментарий
+        for ((index, comment) in comments.withIndex()) {
+            // Нет соответствующего поста — комментарий пропускаем
+            val postId = postIdByVkKey[comment.postVkId to comment.postOwnerId] ?: continue
             commentDao.insert(
                 sessionId = sessionId,
-                postId = post[Posts.id].value,
+                postId = postId,
                 vkId = comment.vkId,
                 fromId = comment.fromId,
                 text = comment.text.ifBlank { null }, // пустой текст храним как null
@@ -242,8 +236,36 @@ class JsonDataImporter(
                 likes = comment.likes,
             )
             count++
+            // Прогресс считаем по просмотренным, а не по вставленным: пропуски
+            // иначе оставили бы индикатор недокрученным до конца.
+            reportProgress("Импорт комментариев", index + 1, comments.size)
         }
         return count
+    }
+
+    /**
+     * Публикует прогресс импорта со счётчиками.
+     *
+     * Счётчики обязательны: экран сбора считает долю как completedItems/totalItems
+     * и при totalItems = 0 показывает 0 %. Раньше импорт сообщал только текст этапа,
+     * поэтому индикатор всю загрузку простаивал на нуле.
+     *
+     * Чтобы не публиковать событие на каждую строку, отчёт идёт раз в
+     * PROGRESS_EVERY элементов и обязательно на последнем.
+     */
+    private fun reportProgress(stage: String, done: Int, total: Int) {
+        if (done % PROGRESS_EVERY == 0 || done == total) {
+            progressReporter.update(ProgressEvent(
+                stage = stage,
+                completedItems = done,
+                totalItems = total,
+            ))
+        }
+    }
+
+    companion object {
+        /** Частота публикации прогресса — раз в N обработанных элементов. */
+        private const val PROGRESS_EVERY = 50
     }
 
     /** Сводка результатов импорта: число загруженных сообществ, авторов, постов и комментариев. */
