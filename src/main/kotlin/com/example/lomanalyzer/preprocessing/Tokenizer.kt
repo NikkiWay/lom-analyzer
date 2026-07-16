@@ -1,9 +1,30 @@
+/*
+ * НАЗНАЧЕНИЕ
+ * Токенизация (tokenizer) очищенного текста на этапе препроцессинга (этап 5,
+ * docs/algorithm.md): разбивает строку на отдельные токены (слова, числа, знаки)
+ * перед лемматизацией и анализом.
+ *
+ * ЧТО ВНУТРИ
+ *  object Tokenizer — singleton с регулярным выражением и методом tokenize().
+ *
+ * МЕТОД
+ *  Regex выделяет: плейсхолдеры [URL]/[USER] (вставлены TextCleaner вместо ссылок и
+ *  упоминаний), последовательности кириллических/латинских букв и цифр, либо одиночные
+ *  непробельные символы (пунктуация). Сами плейсхолдеры из результата исключаются.
+ *
+ * СВЯЗИ
+ *  Принимает на вход cleanText из TextCleaner; результат идёт в лемматизатор.
+ */
 package com.example.lomanalyzer.preprocessing
 
+/** Singleton-токенизатор очищенного текста. */
 object Tokenizer {
-    // Matches: Cyrillic/Latin word sequences, or individual punctuation
-    private val TOKEN_REGEX = Regex("[а-яёА-ЯЁa-zA-Z0-9]+|[^\\s]")
+    // Совпадает: плейсхолдеры [URL]/[USER], последовательности кириллицы/латиницы/цифр, либо одиночная пунктуация
+    private val TOKEN_REGEX = Regex("\\[URL]|\\[USER]|[а-яёА-ЯЁa-zA-Z0-9]+|[^\\s]")
 
+    /** Разбивает текст на токены, отбрасывая служебные плейсхолдеры [URL] и [USER]. */
     fun tokenize(text: String): List<String> =
-        TOKEN_REGEX.findAll(text).map { it.value }.toList()
+        TOKEN_REGEX.findAll(text).map { it.value }
+            .filter { it != "[URL]" && it != "[USER]" }
+            .toList()
 }

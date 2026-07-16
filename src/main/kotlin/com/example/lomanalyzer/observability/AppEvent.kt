@@ -1,90 +1,104 @@
+/*
+ * НАЗНАЧЕНИЕ
+ * Перечень типов доменных событий приложения (observability). Используется при
+ * структурированном логировании через Logger.event(): по полю event_type
+ * события удобно фильтровать и анализировать в логах.
+ *
+ * ЧТО ВНУТРИ
+ * enum class AppEvent — события, сгруппированные по фазам/подсистемам: жизненный
+ * цикл приложения, сессии, пайплайн анализа, сбор данных, VK/авторизация,
+ * NLP/Python, препроцессинг, тематическая фильтрация, дедупликация, оценки,
+ * сентимент, качество, UI/экспорт, безопасность, тестирование.
+ *
+ * СВЯЗИ
+ * Передаётся в Logger.event() (этот же пакет, observability/Logger.kt). Имена
+ * событий совпадают с этапами алгоритма (docs/algorithm.md) и индикаторами
+ * качества (диплом 2.2.8).
+ */
 package com.example.lomanalyzer.observability
 
+/**
+ * Типы доменных событий приложения для структурированного логирования.
+ * Значения сгруппированы по подсистемам (см. комментарии-разделители).
+ */
 enum class AppEvent {
+    // App lifecycle — жизненный цикл приложения
     APP_STARTED,
     APP_STOPPING,
-    SESSION_CREATED,
     DB_MIGRATED,
+
+    // Sessions — сессии анализа
+    SESSION_CREATED,
+    SESSION_STATUS_CHANGED,
+    SESSION_FORKED,
+
+    // Analysis pipeline — пайплайн анализа
     ANALYSIS_STARTED,
     ANALYSIS_COMPLETED,
     ANALYSIS_CANCELLED,
     CHECKPOINT_SAVED,
-    RETENTION_HARD_DELETE,
-    VK_OAUTH_COMPLETED,
+
+    // Data collection — сбор данных (этапы 2–4)
     COLLECTION_STARTED,
     COLLECTION_CHECKPOINT,
     COLLECTION_COMPLETED,
+    COLLECTION_RESUMED,
+
+    // VK / Auth — VK API и авторизация (OAuth, rate limit, backoff, токены)
+    VK_OAUTH_COMPLETED,
+    VK_LOGIN,
+    VK_LOGOUT,
     RATE_LIMIT_HIT,
     BACKOFF_APPLIED,
-    DISCOVERY_AUTHOR_ADDED,
-    PREPROCESSING_STARTED,
-    PREPROCESSING_COMPLETED,
-    FILTERED_OUT_LANGUAGE,
+    TOKEN_REFRESH_ATTEMPTED,
+    TOKEN_REFRESH_SUCCESS,
+
+    // NLP / Python — NLP-модуль и Python sidecar (выбор/деградация режима)
     PYTHON_STARTED,
     PYTHON_RESTARTED,
     PYTHON_FAILED_PERMANENT,
     NLP_MODE_DOWNGRADED,
-    SEMAPHORE_ACQUIRE_WAIT,
+    NLP_MODE_SELECTED,
+
+    // Preprocessing — препроцессинг (этап 5: очистка, лемматизация, язык)
+    PREPROCESSING_STARTED,
+    PREPROCESSING_COMPLETED,
+    FILTERED_OUT_LANGUAGE,
+
+    // Topic filtering — тематическая фильтрация (этап 6, двухпроходная L1/L2)
     TOPIC_FILTER_APPLIED,
     TOPIC_THRESHOLD_CHANGED,
     STOPWORD_ADDED,
     VALIDATION_VOTE,
+
+    // Deduplication — дедупликация (этап 5, near-дубликаты и оригинальность)
     DEDUP_STAGE1_COMPLETED,
     DEDUP_STAGE2_COMPLETED,
     DEDUP_GROUP_FORMED,
     ORIGINALITY_CLASSIFIED,
-    GAMMA_CALIBRATED,
-    NORMALIZATION_FALLBACK,
+
+    // Scoring (new 4-axis model) — оценки (4 оси влияния), бутстрап, композиты, роли
+    SCORING_COMPLETED,
     BOOTSTRAP_COMPLETED,
-    M_REACH_RECOMPUTED,
-    EVENT_SCORING_COMPLETED,
-    REFERENCE_BASE_LOADED,
-    REFERENCE_BASE_MISMATCH,
-    GAMMA_DIVERGENCE_FLAG_SET,
+    COMPOSITE_SCORES_COMPUTED,
     ROLE_ASSIGNED,
+
+    // Sentiment — анализ тональности
     SENTIMENT_COMPUTED,
-    SENTIMENT_BOOTSTRAP_APPLIED,
-    PERSONA_BUILT,
-    HOLIDAY_CALENDAR_LOADED,
-    ANOMALY_DETECTED,
-    ANOMALY_SUPPRESSED,
-    RISK_COMPUTED,
+
+    // Quality — индикаторы качества и гейты (этап 10)
+    QUALITY_EVALUATED,
+    GATES_EVALUATED,
+
+    // UI / Export — навигация по UI и экспорт результатов
     UI_SCREEN_NAVIGATED,
     EXPORT_CSV,
     RAW_EXPORT_CONFIRMED,
-    SESSION_PAUSED_PENDING_RECOVERY,
-    SESSION_STATUS_CHANGED,
-    COLLECTION_RESUMED,
-    PYTHON_RECOVERY_CHOICE_SHOWN,
-    PYTHON_RECOVERY_CHOICE_MADE,
-    NLP_MODE_SELECTED,
+
+    // Security — безопасность (аудит действий)
     AUDIT_ACTION,
+
+    // Testing — тестирование (загрузка корпуса, бенчмарки)
     TEST_CORPUS_LOADED,
-    THEIL_SEN_CALIBRATED,
-    T_ORTHOGONALIZATION_DECISION,
-    DISCOVERY_RULE_1_MATCHED,
-    DISCOVERY_RULE_2_MATCHED,
-    DISCOVERY_RULE_3_MATCHED,
-    HUBER_CONVERGED,
-    ROLE_MODE_SWITCHED,
-    GMM_FIT_COMPLETED,
-    MILD_RECOMPUTED_APPLIED,
-    RETENTION_SOFT_DELETE,
-    RETENTION_RESTORE,
-    TOKEN_REFRESH_ATTEMPTED,
-    TOKEN_REFRESH_SUCCESS,
-    PII_MASK_APPLIED,
-    SESSION_FORKED,
-    PYTHON_RECOVERY_CHOICE,
-    RECOVERY_TIMEOUT,
-    PERSONA_LINKED,
-    HOLIDAYS_PARTIAL_COVERAGE,
-    ROUTINE_TOPIC_PROTECTION_APPLIED,
-    FRAME_VALIDATION_COMPLETED,
-    FRAME_VALIDATION_BELOW_THRESHOLD,
-    HOLIDAY_ANOMALY_DISABLED,
-    VALIDATION_DOSTOEVSKY_COMPLETED,
-    VALIDATION_ROLES_COMPLETED,
     BENCHMARK_COMPLETED,
-    GATES_EVALUATED,
 }

@@ -1,8 +1,34 @@
+/*
+ * НАЗНАЧЕНИЕ
+ * Каталог параметров для анализа чувствительности (sensitivity analysis):
+ * перечень настраиваемых констант алгоритма с их значениями по умолчанию и
+ * границами «низкое/высокое» для перебора. Инструмент валидации устойчивости
+ * результатов к выбору параметров (см. диплом 2.2.8, docs/algorithm.md).
+ *
+ * ЧТО ВНУТРИ
+ * data class SensitivityParameter — описание одного параметра (имя, default, low,
+ * high, категория). object SensitivityParameters.ALL — полный список параметров,
+ * сгруппированных по категориям: робастная статистика, bootstrap, дедуп,
+ * достаточность данных, сбор, тематическая фильтрация, тональность, оригинальность.
+ *
+ * МЕТОД
+ * При sensitivity analysis каждый параметр поочерёдно ставится в low/high, а
+ * влияние на итог (роли, риск, аномалии) оценивается в SensitivityHarness.
+ * Ссылки на формулы: Huber (E.2), bootstrap (E.3.1–E.3.3) — см. docs/formulas.md.
+ *
+ * СВЯЗИ
+ * Используется SensitivityHarness для прогона и отчёта.
+ */
 package com.example.lomanalyzer.tools.sensitivity
 
 /**
- * Sensitivity analysis parameters per v6 §28.
- * Each parameter has a default, low, and high value for the sensitivity range.
+ * Описание одного параметра анализа чувствительности.
+ *
+ * @property name машинное имя параметра.
+ * @property defaultValue значение по умолчанию (базовый прогон).
+ * @property lowValue нижняя граница диапазона перебора.
+ * @property highValue верхняя граница диапазона перебора.
+ * @property category категория параметра (для группировки в отчёте).
  */
 data class SensitivityParameter(
     val name: String,
@@ -12,65 +38,43 @@ data class SensitivityParameter(
     val category: String,
 )
 
+/** Полный каталог параметров, участвующих в анализе чувствительности. */
 object SensitivityParameters {
+    /** Список всех параметров с их диапазонами low/high, сгруппированных по категориям. */
     val ALL: List<SensitivityParameter> = listOf(
-        // Topic filtering
-        SensitivityParameter("topic_threshold_full", 0.30, 0.20, 0.40, "TOPIC"),
-        SensitivityParameter("topic_threshold_fallback", 0.33, 0.25, 0.45, "TOPIC"),
-        SensitivityParameter("l1_weight", 0.40, 0.30, 0.50, "TOPIC"),
-        SensitivityParameter("l2_weight", 0.60, 0.50, 0.70, "TOPIC"),
-        // Gamma
-        SensitivityParameter("gamma_clip_lo", 0.25, 0.20, 0.30, "GAMMA"),
-        SensitivityParameter("gamma_clip_hi", 0.65, 0.55, 0.75, "GAMMA"),
-        SensitivityParameter("gamma_fallback", 0.45, 0.40, 0.50, "GAMMA"),
-        SensitivityParameter("gamma_min_active", 20.0, 15.0, 30.0, "GAMMA"),
-        SensitivityParameter("gamma_min_r2", 0.05, 0.03, 0.10, "GAMMA"),
-        // Normalization
-        SensitivityParameter("iqr_min", 0.001, 0.0005, 0.01, "NORM"),
-        SensitivityParameter("cv_iqr_unstable", 0.25, 0.20, 0.30, "NORM"),
-        SensitivityParameter("cv_iqr_severe", 0.35, 0.30, 0.40, "NORM"),
-        // Bootstrap
-        SensitivityParameter("bootstrap_outer", 300.0, 100.0, 500.0, "BOOTSTRAP"),
-        SensitivityParameter("bootstrap_inner", 100.0, 30.0, 200.0, "BOOTSTRAP"),
-        // Scoring weights
-        SensitivityParameter("a_weight", 0.55, 0.45, 0.65, "SCORING"),
-        SensitivityParameter("e_weight", 0.45, 0.35, 0.55, "SCORING"),
-        SensitivityParameter("wT_setB", 0.15, 0.10, 0.20, "SCORING"),
-        SensitivityParameter("wV_setB", 0.30, 0.25, 0.35, "SCORING"),
-        SensitivityParameter("wS_setB", 0.35, 0.30, 0.40, "SCORING"),
-        SensitivityParameter("wO_setB", 0.20, 0.15, 0.25, "SCORING"),
-        // Anomaly detection
-        SensitivityParameter("volume_z_threshold", 2.5, 2.0, 3.0, "ANOMALY"),
-        SensitivityParameter("tone_z_threshold", 2.0, 1.5, 2.5, "ANOMALY"),
-        SensitivityParameter("tone_min_posts", 3.0, 2.0, 5.0, "ANOMALY"),
-        SensitivityParameter("rolling_window", 7.0, 5.0, 14.0, "ANOMALY"),
-        SensitivityParameter("sigma_min_volume", 1.0, 0.5, 2.0, "ANOMALY"),
-        SensitivityParameter("sigma_min_tone", 0.05, 0.02, 0.10, "ANOMALY"),
-        // Risk
-        SensitivityParameter("risk_multi_coeff", 1.2, 1.0, 1.5, "RISK"),
-        SensitivityParameter("risk_boundary_lo", 0.15, 0.10, 0.20, "RISK"),
-        SensitivityParameter("risk_boundary_mid", 0.35, 0.30, 0.40, "RISK"),
-        SensitivityParameter("risk_boundary_hi", 0.55, 0.50, 0.60, "RISK"),
-        // Dedup
-        SensitivityParameter("jaccard_threshold", 0.75, 0.65, 0.85, "DEDUP"),
+        // Huber M-estimator (E.2)
+        SensitivityParameter("huber_k", 1.345, 1.0, 1.7, "ROBUST_STATS"),
+
+        // One-level bootstrap (E.3.1)
+        SensitivityParameter("bootstrap_B", 1000.0, 500.0, 2000.0, "BOOTSTRAP"),
+
+        // Two-level bootstrap (E.3.2)
+        SensitivityParameter("bootstrap_B_outer", 300.0, 100.0, 1000.0, "BOOTSTRAP"),
+        SensitivityParameter("bootstrap_B_inner", 100.0, 100.0, 1000.0, "BOOTSTRAP"),
+
+        // Confidence level (E.3.3)
+        SensitivityParameter("confidence_level", 0.95, 0.90, 0.99, "BOOTSTRAP"),
+
+        // Dedup threshold
+        SensitivityParameter("levenshtein_threshold", 0.90, 0.80, 0.95, "DEDUP"),
         SensitivityParameter("dedup_window_hours", 72.0, 24.0, 168.0, "DEDUP"),
-        SensitivityParameter("exact_min_length", 30.0, 20.0, 50.0, "DEDUP"),
-        // Reference
-        SensitivityParameter("gamma_div_ok", 0.10, 0.05, 0.15, "REFERENCE"),
-        SensitivityParameter("gamma_div_mild", 0.20, 0.15, 0.25, "REFERENCE"),
-        SensitivityParameter("tau_ref_base", 0.78, 0.70, 0.85, "REFERENCE"),
-        // Role
-        SensitivityParameter("confidence_penalty_k", 10.0, 5.0, 20.0, "ROLE"),
-        SensitivityParameter("confidence_block_threshold", 0.25, 0.15, 0.35, "ROLE"),
-        // Originality
-        SensitivityParameter("orig_repost_comment_w", 0.5, 0.3, 0.7, "ORIGINALITY"),
-        SensitivityParameter("orig_media_only_w", 0.25, 0.15, 0.35, "ORIGINALITY"),
+
+        // Sufficiency thresholds
+        SensitivityParameter("sufficiency_min_topic_posts_reliable", 10.0, 5.0, 20.0, "SUFFICIENCY"),
+        SensitivityParameter("sufficiency_min_comments_reliable", 50.0, 20.0, 100.0, "SUFFICIENCY"),
+        SensitivityParameter("sufficiency_max_ci_width_reliable", 0.20, 0.10, 0.30, "SUFFICIENCY"),
+
+        // Background window
+        SensitivityParameter("baseline_window_days", 60.0, 30.0, 120.0, "COLLECTION"),
+
+        // Topic filtering
+        SensitivityParameter("semantic_threshold", 0.55, 0.40, 0.70, "TOPIC"),
+        SensitivityParameter("confident_l1_threshold", 0.50, 0.30, 0.70, "TOPIC"),
+
         // Sentiment
         SensitivityParameter("low_confidence_threshold", 0.15, 0.10, 0.20, "SENTIMENT"),
-        SensitivityParameter("huber_k", 1.345, 1.0, 1.5, "SENTIMENT"),
-        SensitivityParameter("tone_mixed_sd", 0.50, 0.40, 0.60, "SENTIMENT"),
-        // Discovery
-        SensitivityParameter("discovery_repost_threshold", 50.0, 30.0, 100.0, "DISCOVERY"),
-        SensitivityParameter("discovery_max_authors", 30.0, 20.0, 50.0, "DISCOVERY"),
+
+        // Originality weights
+        SensitivityParameter("orig_repost_comment_w", 0.5, 0.3, 0.7, "ORIGINALITY"),
     )
 }

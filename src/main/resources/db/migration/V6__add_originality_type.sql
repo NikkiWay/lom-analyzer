@@ -1,0 +1,1 @@
+ALTER TABLE post ADD COLUMN originality_type TEXT DEFAULT NULL;

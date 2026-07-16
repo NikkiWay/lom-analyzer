@@ -1,86 +1,262 @@
+/*
+ * НАЗНАЧЕНИЕ
+ * Исполнитель этапа 5 пайплайна (см. docs/algorithm.md): препроцессинг собранного
+ * текста — очистка, токенизация, определение языка, лемматизация и анализ тональности
+ * (sentiment) постов и комментариев. Результаты сохраняются в БД для последующих
+ * этапов (тематическая фильтрация, оценки).
+ *
+ * ЧТО ВНУТРИ
+ *  PreprocessingExecutor — реализация StageExecutor; локальный CleanedPost; метод execute()
+ *  из 4 шагов: (1) очистка+язык, (2) пакетная лемматизация, (3) sentiment постов CURRENT,
+ *  (4) sentiment комментариев.
+ *
+ * МЕТОД / ДВУХРЕЖИМНОСТЬ (architecture.md, 2.2.7)
+ *  Через NlpServiceSelector выбирается режим: Python FastAPI sidecar (батч-обработка
+ *  через PythonSidecarNlpService — pymorphy3, dostoevsky/RuBERT) либо Kotlin-fallback
+ *  (Snowball stemmer + словарный sentiment). Батчи по BATCH_SIZE амортизируют IPC-накладные
+ *  расходы; при ошибке батча — мягкая деградация на Kotlin/нейтральную метку.
+ *  Sentiment считается только для постов окна CURRENT (BASELINE пропускается ради экономии).
+ *
+ * БИБЛИОТЕКИ / СВЯЗИ
+ *  Exposed DAO (Posts/Comments/ProcessedTexts/SentimentResults), kotlinx.serialization
+ *  (леммы -> JSON), корутины (suspend), Logger/ProgressReporter (события и прогресс UI).
+ *  Использует TextCleaner, Tokenizer, StopWords, LanguageDetectorProxy, LemmatizerProxy.
+ */
 package com.example.lomanalyzer.preprocessing
 
+import com.example.lomanalyzer.nlp.NlpServiceSelector
+import com.example.lomanalyzer.nlp.PythonSidecarNlpService
 import com.example.lomanalyzer.observability.AppEvent
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.orchestration.PipelineStage
 import com.example.lomanalyzer.orchestration.ProgressEvent
 import com.example.lomanalyzer.orchestration.ProgressReporter
 import com.example.lomanalyzer.orchestration.StageExecutor
+import com.example.lomanalyzer.storage.dao.CommentDao
 import com.example.lomanalyzer.storage.dao.PostDao
 import com.example.lomanalyzer.storage.dao.ProcessedTextDao
+import com.example.lomanalyzer.storage.dao.SentimentResultDao
+import com.example.lomanalyzer.storage.tables.Comments
 import com.example.lomanalyzer.storage.tables.Posts
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+/** Исполнитель этапа 5: очистка, лемматизация, язык и тональность текстов сессии. */
 class PreprocessingExecutor(
     private val postDao: PostDao,
     private val processedTextDao: ProcessedTextDao,
+    private val commentDao: CommentDao,
+    private val sentimentResultDao: SentimentResultDao,
+    private val nlpServiceSelector: NlpServiceSelector,
     private val languageDetector: LanguageDetectorProxy,
     private val lemmatizer: LemmatizerProxy,
     private val progressReporter: ProgressReporter,
     private val logger: Logger,
 ) : StageExecutor {
 
+    companion object {
+        /** Размер батча для пакетных вызовов NLP (амортизация IPC к Python sidecar). */
+        private const val BATCH_SIZE = 50
+    }
+
+    /**
+     * Выполняет препроцессинг всех постов и комментариев сессии.
+     * @param stage текущая стадия пайплайна.
+     */
+    @Suppress("LongMethod", "TooGenericExceptionCaught", "CyclomaticComplexMethod")
     override suspend fun execute(sessionId: Int, stage: PipelineStage) {
         logger.event(AppEvent.PREPROCESSING_STARTED, mapOf("session_id" to sessionId))
+        // Выбираем NLP-сервис; если это Python sidecar — включаем пакетный режим
+        val nlpService = nlpServiceSelector.getService()
+        val pythonService = nlpService as? PythonSidecarNlpService
+        val usePython = pythonService != null
 
         val posts = postDao.findBySession(sessionId)
         val total = posts.size
 
-        for ((index, post) in posts.withIndex()) {
+        // ── Шаг 1: очистка + определение языка (быстрая Kotlin-эвристика) ──
+        data class CleanedPost(
+            val postId: Int, val rawText: String, val cleanText: String,
+            val tokens: List<String>, val window: String, val containsMedia: Boolean,
+            val langResult: LanguageResult,
+        )
+
+        val cleaned = posts.mapIndexed { index, post ->
             val postId = post[Posts.id].value
             val rawText = post[Posts.text] ?: ""
+            // Очищаем текст, токенизируем, определяем язык быстрой эвристикой
+            val cl = TextCleaner.clean(rawText)
+            val tokens = Tokenizer.tokenize(cl.cleanText)
+            val lang = languageDetector.detectFallback(tokens)
 
-            val cleaned = TextCleaner.clean(rawText)
-            val tokens = Tokenizer.tokenize(cleaned.cleanText)
-            val langResult = languageDetector.detectFallback(tokens)
-
-            if (langResult.flag == "FILTERED_OUT_LANGUAGE") {
-                logger.event(AppEvent.FILTERED_OUT_LANGUAGE, mapOf(
-                    "post_id" to postId,
-                    "confidence" to langResult.confidence,
-                ))
-            }
-
-            val filtered = StopWords.filter(tokens)
-            val lemmas = lemmatizer.stemFallback(filtered)
-            val lemmaStrings = lemmas.map { it.lemma }
-
-            processedTextDao.insert(
-                postId = postId,
-                lemmasJson = Json.encodeToString(lemmaStrings),
-                language = langResult.language,
-                cleanText = cleaned.cleanText,
-            )
-
-            // Update post fields
+            // Сохраняем результаты препроцессинга поста в БД
             postDao.updatePostPreprocessing(
-                id = postId,
-                textClean = cleaned.cleanText,
-                ownTextLength = cleaned.cleanText.length,
-                truncated = cleaned.truncated,
-                truncationReason = cleaned.truncationReason,
-                detectedLanguage = langResult.language,
-                languageConfidence = langResult.confidence,
-                languageFlag = langResult.flag,
-                hashtagsCount = cleaned.hashtagsCount,
-                mentionsCount = cleaned.mentionsCount,
-                urlsCount = cleaned.urlsCount,
+                id = postId, textClean = cl.cleanText, ownTextLength = cl.cleanText.length,
+                truncated = cl.truncated, truncationReason = cl.truncationReason,
+                detectedLanguage = lang.language, languageConfidence = lang.confidence,
+                languageFlag = lang.flag, hashtagsCount = cl.hashtagsCount,
+                mentionsCount = cl.mentionsCount, urlsCount = cl.urlsCount,
                 containsMedia = post[Posts.containsMedia],
             )
 
-            if ((index + 1) % 50 == 0 || index == total - 1) {
+            // Обновляем прогресс UI каждые 100 постов и на последнем
+            if ((index + 1) % 100 == 0 || index == total - 1) {
                 progressReporter.update(ProgressEvent(
-                    stage = "PREPROCESSING",
-                    completedItems = index + 1,
-                    totalItems = total,
+                    "Очистка текстов: ${index + 1}/$total", index + 1, total,
                 ))
+            }
+
+            CleanedPost(postId, rawText, cl.cleanText, tokens,
+                post[Posts.window] ?: "CURRENT", post[Posts.containsMedia], lang)
+        }
+
+        // ── Шаг 2: пакетная лемматизация ──
+        // Перед лемматизацией убираем стоп-слова и собираем токены обратно в строку
+        val textsForLemma = cleaned.map { StopWords.filter(it.tokens).joinToString(" ") }
+
+        val allLemmas: List<List<String>> = if (usePython) {
+            // Основной режим: батчевая lemmatization через Python sidecar
+            logger.info("Batch lemmatization via Python ($total texts, batch=$BATCH_SIZE)")
+            val result = mutableListOf<List<String>>()
+            for (chunk in textsForLemma.chunked(BATCH_SIZE)) {
+                try {
+                    // Запрос к sidecar; приводим леммы к нижнему регистру
+                    val batch = pythonService!!.batchLemmatize(chunk)
+                    result.addAll(batch.map { it.map { l -> l.lowercase() } })
+                } catch (e: Exception) {
+                    // Мягкая деградация: при сбое батча стеммим этот чанк локально в Kotlin
+                    logger.warn("Batch lemmatize failed, falling back: ${e.message}")
+                    result.addAll(chunk.map { text ->
+                        lemmatizer.stemFallback(text.split(" ").filter { it.isNotBlank() }).map { it.lemma }
+                    })
+                }
+                progressReporter.update(ProgressEvent(
+                    "Лемматизация: ${result.size}/$total", result.size, total,
+                ))
+            }
+            result
+        } else {
+            // Fallback-режим: лемматизация (стемминг) целиком в Kotlin
+            textsForLemma.map { text ->
+                lemmatizer.stemFallback(text.split(" ").filter { it.isNotBlank() }).map { it.lemma }
+            }
+        }
+
+        // Сохраняем леммы (как JSON) в processed_texts
+        for ((i, cp) in cleaned.withIndex()) {
+            processedTextDao.insert(
+                postId = cp.postId,
+                lemmasJson = Json.encodeToString(allLemmas[i]),
+                language = cp.langResult.language,
+                cleanText = cp.cleanText,
+            )
+        }
+
+        // ── Шаг 3: тональность только для постов окна CURRENT ──
+        // BASELINE-посты пропускаем (sentiment для фонового окна не нужен — экономим ресурсы)
+        val currentPosts = cleaned.filter { it.window == "CURRENT" && it.cleanText.isNotBlank() }
+        logger.info("Sentiment analysis for ${currentPosts.size} CURRENT posts (skipping ${total - currentPosts.size} BASELINE)")
+
+        if (usePython) {
+            // Основной режим: батчевый sentiment через Python sidecar (RuBERT)
+            val texts = currentPosts.map { it.cleanText }
+            for ((chunkIdx, chunk) in texts.chunked(BATCH_SIZE).withIndex()) {
+                try {
+                    val scores = pythonService!!.batchSentiment(chunk)
+                    // offset — смещение чанка в исходном списке для сопоставления результатов
+                    val offset = chunkIdx * BATCH_SIZE
+                    for ((j, score) in scores.withIndex()) {
+                        sentimentResultDao.insert(
+                            postId = currentPosts[offset + j].postId,
+                            sentiment = score.label.uppercase(),
+                            score = score.score,
+                            method = "python_rubert",
+                        )
+                    }
+                } catch (e: Exception) {
+                    // Сбой батча: записываем нейтральную метку как индикатор ошибки
+                    logger.warn("Batch sentiment failed: ${e.message}")
+                    val offset = chunkIdx * BATCH_SIZE
+                    for (j in chunk.indices) {
+                        sentimentResultDao.insert(
+                            postId = currentPosts[offset + j].postId,
+                            sentiment = "NEUTRAL", score = 0.5f, method = "fallback_error",
+                        )
+                    }
+                }
+                val done = ((chunkIdx + 1) * BATCH_SIZE).coerceAtMost(currentPosts.size)
+                progressReporter.update(ProgressEvent(
+                    "Сентимент постов: $done/${currentPosts.size}", done, currentPosts.size,
+                ))
+            }
+        } else {
+            // Fallback-режим: поштучный словарный sentiment в Kotlin
+            for (cp in currentPosts) {
+                try {
+                    val s = nlpService.scoreSentiment(cp.cleanText)
+                    sentimentResultDao.insert(cp.postId, s.label.uppercase(), s.score, "kotlin_rusentilex")
+                } catch (_: Exception) {
+                    sentimentResultDao.insert(cp.postId, "NEUTRAL", 0.5f, "fallback_error")
+                }
+            }
+        }
+
+        // ── Шаг 4: тональность комментариев ──
+        val comments = commentDao.findBySession(sessionId)
+        // Берём только комментарии с непустым текстом
+        val commentsWithText = comments.filter { (it[Comments.text] ?: "").isNotBlank() }
+        logger.info("Sentiment analysis for ${commentsWithText.size} comments")
+
+        if (usePython && commentsWithText.isNotEmpty()) {
+            // Основной режим: батчевый sentiment комментариев через Python sidecar
+            val texts = commentsWithText.map { it[Comments.text] ?: "" }
+            for ((chunkIdx, chunk) in texts.chunked(BATCH_SIZE).withIndex()) {
+                try {
+                    val scores = pythonService!!.batchSentiment(chunk)
+                    val offset = chunkIdx * BATCH_SIZE
+                    for ((j, score) in scores.withIndex()) {
+                        sentimentResultDao.insert(
+                            postId = commentsWithText[offset + j][Comments.id].value,
+                            sentiment = score.label.uppercase(),
+                            score = score.score,
+                            method = "python_rubert",
+                        )
+                    }
+                } catch (e: Exception) {
+                    // Сбой батча — нейтральная метка-индикатор ошибки
+                    logger.warn("Batch comment sentiment failed: ${e.message}")
+                    val offset = chunkIdx * BATCH_SIZE
+                    for (j in chunk.indices) {
+                        sentimentResultDao.insert(
+                            postId = commentsWithText[offset + j][Comments.id].value,
+                            sentiment = "NEUTRAL", score = 0.5f, method = "fallback_error",
+                        )
+                    }
+                }
+                val done = ((chunkIdx + 1) * BATCH_SIZE).coerceAtMost(commentsWithText.size)
+                progressReporter.update(ProgressEvent(
+                    "Сентимент комментариев: $done/${commentsWithText.size}", done, commentsWithText.size,
+                ))
+            }
+        } else {
+            // Fallback-режим: поштучный словарный sentiment комментариев
+            for (comment in commentsWithText) {
+                val cid = comment[Comments.id].value
+                val text = comment[Comments.text] ?: ""
+                try {
+                    val s = nlpService.scoreSentiment(text)
+                    sentimentResultDao.insert(cid, s.label.uppercase(), s.score, "kotlin_rusentilex")
+                } catch (_: Exception) {
+                    sentimentResultDao.insert(cid, "NEUTRAL", 0.5f, "fallback_error")
+                }
             }
         }
 
         logger.event(AppEvent.PREPROCESSING_COMPLETED, mapOf(
             "session_id" to sessionId,
             "posts_processed" to total,
+            "current_sentiment" to currentPosts.size,
+            "comments_sentiment" to commentsWithText.size,
         ))
     }
 }

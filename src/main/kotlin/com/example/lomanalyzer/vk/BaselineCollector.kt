@@ -1,3 +1,21 @@
+/*
+ * НАЗНАЧЕНИЕ
+ * Сбор фоновых публикаций сообществ за период до тематического — окно BASELINE
+ * (этап 2 алгоритма). Фон нужен как база сравнения для оценки активности и аномалий.
+ *
+ * ЧТО ВНУТРИ
+ * Класс BaselineCollector: collect (обход сообществ с чекпойнтами и прогрессом) и
+ * persistPost (сохранение поста в окно BASELINE).
+ *
+ * МЕТОД
+ * Для каждого сообщества через PaginationManager.fetchAllPosts выгружаются посты до
+ * границы по времени (now - baselineWindowDays). owner_id сообщества — отрицательный.
+ * Между сообществами выдерживается пауза для защиты от flood control.
+ *
+ * СВЯЗИ
+ * PaginationManager/VkApiClient — выгрузка; PostDao — запись; CheckpointDao — чекпойнты;
+ * ProgressReporter — UI; Logger — события COLLECTION_STARTED/COMPLETED. Симметричен CurrentCollector.
+ */
 package com.example.lomanalyzer.vk
 
 import com.example.lomanalyzer.observability.AppEvent
@@ -11,6 +29,9 @@ import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
+/**
+ * Коллектор фоновых постов сообществ (окно BASELINE).
+ */
 class BaselineCollector(
     private val paginationManager: PaginationManager,
     private val postDao: PostDao,
@@ -18,6 +39,11 @@ class BaselineCollector(
     private val progressReporter: ProgressReporter,
     private val logger: Logger,
 ) {
+    /**
+     * Собирает фоновые посты заданных сообществ за последние baselineWindowDays суток.
+     * @param communityIds id сообществ (положительные; внутри owner_id берётся отрицательным).
+     * @return общее число сохранённых постов.
+     */
     @Suppress("LongParameterList")
     suspend fun collect(
         sessionId: Int,
@@ -30,18 +56,21 @@ class BaselineCollector(
             "phase" to "BASELINE",
         ))
 
+        // Нижняя граница по времени: фоновые посты не старше baselineWindowDays суток назад
         val sinceTimestamp = Instant.now()
             .minus(baselineWindowDays.toLong(), ChronoUnit.DAYS)
             .epochSecond
         var totalPosts = 0
 
         for ((index, communityId) in communityIds.withIndex()) {
+            // Регистрируем чекпойнт обработки этого сообщества
             val cpId = checkpointDao.insert(sessionId, "BASELINE", communityId)
 
+            // Выгружаем все посты сообщества до границы по времени (owner_id отрицательный)
             val posts = paginationManager.fetchAllPosts(
                 ownerId = -communityId,
                 accessToken = accessToken,
-                maxPosts = 300,
+                maxPosts = 10000,
                 sinceTimestamp = sinceTimestamp,
             )
 
@@ -50,6 +79,7 @@ class BaselineCollector(
                 totalPosts++
             }
 
+            // Помечаем чекпойнт сообщества как завершённый
             checkpointDao.updateProgress(cpId, null, posts.size, "COMPLETED")
             progressReporter.update(ProgressEvent(
                 stage = "Сбор baseline: ${index + 1}/${communityIds.size} сообществ, $totalPosts постов",
@@ -69,6 +99,7 @@ class BaselineCollector(
         return totalPosts
     }
 
+    /** Сохраняет фоновый пост сообщества в указанное окно (метаданные, счётчики, признаки медиа/репоста). */
     private fun persistPost(sessionId: Int, post: VkPost, window: String) {
         postDao.insert(
             sessionId = sessionId,

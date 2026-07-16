@@ -1,0 +1,6502 @@
+{
+  "dataset": "dataset_ai_v2.json",
+  "total_authors": 91,
+  "scored_authors": 86,
+  "total_posts": 1026,
+  "current_posts": 499,
+  "baseline_posts": 527,
+  "total_comments": 2660,
+  "sentiment_method": "rule_based_fallback",
+  "thresholds": {
+    "theta_struct": 0.0345,
+    "theta_topic": 0.1471
+  },
+  "z_normalization": {
+    "aud": {
+      "median": 5.9131,
+      "iqr": 1.6473
+    },
+    "age": {
+      "median": 0.8592,
+      "iqr": 0.1721
+    },
+    "er_bg": {
+      "median": 0.079053,
+      "iqr": 0.039004
+    },
+    "top_vol": {
+      "median": 4.0,
+      "iqr": 6.0
+    },
+    "top_focus": {
+      "median": 0.5,
+      "iqr": 0.2549
+    },
+    "reach": {
+      "median": 1171.0,
+      "iqr": 3689.25
+    }
+  },
+  "role_distribution": {
+    "TOPIC_ACTIVIST": 16,
+    "AUTHORITATIVE_LEADER": 27,
+    "SLEEPING_GIANT": 16,
+    "BACKGROUND_AUTHOR": 27
+  },
+  "sufficiency_distribution": {
+    "UNRELIABLE": 86
+  },
+  "authors": [
+    {
+      "author": "Артемий Лебедев",
+      "screenName": "temalebedev",
+      "followers": 1632672,
+      "topicPostCount": 2,
+      "baselinePostCount": 25,
+      "commentCount": 23,
+      "aud": 14.3057,
+      "age": 0.9743,
+      "er_bg": 0.001679,
+      "top_vol": 2,
+      "top_focus": 0.0741,
+      "reach": 74968,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.001551,
+      "resp": {
+        "positive": 0.4783,
+        "neutral": 0.4783,
+        "negative": 0.0435
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.001267,
+        "ci_hi": 0.002062,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.001136,
+        "ci_hi": 0.001967,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 42514.0,
+        "ci_hi": 107422.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 1.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.26087,
+          "ci_hi": 0.695652
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.133333
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 5.0947,
+      "z_age": 0.6686,
+      "z_er_bg": -1.9837,
+      "z_top_vol": -0.3333,
+      "z_top_focus": -1.6709,
+      "z_reach": 20.0033,
+      "structural_composite": 1.2599,
+      "topic_composite": 5.9997,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Руслан Усачев",
+      "screenName": "usachev_r",
+      "followers": 227000,
+      "topicPostCount": 1,
+      "baselinePostCount": 17,
+      "commentCount": 14,
+      "aud": 12.3327,
+      "age": 0.8613,
+      "er_bg": 0.007408,
+      "top_vol": 1,
+      "top_focus": 0.0556,
+      "reach": 49288,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.012974,
+      "resp": {
+        "positive": 0.2143,
+        "neutral": 0.5714,
+        "negative": 0.2143
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.005149,
+        "ci_hi": 0.009573,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": 3.897,
+      "z_age": 0.0122,
+      "z_er_bg": -1.8369,
+      "z_top_vol": -0.5,
+      "z_top_focus": -1.7434,
+      "z_reach": 13.0425,
+      "structural_composite": 0.6908,
+      "topic_composite": 3.5997,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Юрий Дудь",
+      "screenName": "yuriy_dud",
+      "followers": 27000,
+      "topicPostCount": 1,
+      "baselinePostCount": 22,
+      "commentCount": 14,
+      "aud": 10.2036,
+      "age": 0.8405,
+      "er_bg": 0.041411,
+      "top_vol": 1,
+      "top_focus": 0.0435,
+      "reach": 36408,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.057519,
+      "resp": {
+        "positive": 0.5,
+        "neutral": 0.2857,
+        "negative": 0.2143
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.033443,
+        "ci_hi": 0.049601,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": 2.6046,
+      "z_age": -0.1086,
+      "z_er_bg": -0.9651,
+      "z_top_vol": -0.5,
+      "z_top_focus": -1.7909,
+      "z_reach": 9.5513,
+      "structural_composite": 0.5103,
+      "topic_composite": 2.4201,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Наталья Касперская",
+      "screenName": "n_kasperskaya",
+      "followers": 8200,
+      "topicPostCount": 9,
+      "baselinePostCount": 11,
+      "commentCount": 95,
+      "aud": 9.012,
+      "age": 0.9077,
+      "er_bg": 0.038437,
+      "top_vol": 9,
+      "top_focus": 0.45,
+      "reach": 26551,
+      "pos": {
+        "positive": 0.7778,
+        "neutral": 0.1111,
+        "negative": 0.1111
+      },
+      "er_top": 0.035515,
+      "resp": {
+        "positive": 0.3158,
+        "neutral": 0.6105,
+        "negative": 0.0737
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.026307,
+        "ci_hi": 0.049849,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.025676,
+        "ci_hi": 0.044393,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 17452.7,
+        "ci_hi": 35742.05,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.555556,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.333333
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.185185,
+          "ci_hi": 0.434783
+        },
+        "negative_ci": {
+          "ci_lo": 0.010204,
+          "ci_hi": 0.157303
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 1.8812,
+      "z_age": 0.2817,
+      "z_er_bg": -1.0413,
+      "z_top_vol": 0.8333,
+      "z_top_focus": -0.1962,
+      "z_reach": 6.8794,
+      "structural_composite": 0.3739,
+      "topic_composite": 2.5055,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Андрей Себрант",
+      "screenName": "sebrant",
+      "followers": 4800,
+      "topicPostCount": 11,
+      "baselinePostCount": 9,
+      "commentCount": 101,
+      "aud": 8.4766,
+      "age": 0.963,
+      "er_bg": 0.024769,
+      "top_vol": 11,
+      "top_focus": 0.55,
+      "reach": 14187,
+      "pos": {
+        "positive": 0.8182,
+        "neutral": -0.0,
+        "negative": 0.1818
+      },
+      "er_top": 0.030379,
+      "resp": {
+        "positive": 0.2475,
+        "neutral": 0.6238,
+        "negative": 0.1287
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.016898,
+        "ci_hi": 0.032692,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.022803,
+        "ci_hi": 0.038089,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 10047.725,
+        "ci_hi": 18331.075,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.634091,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.365909
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.142857,
+          "ci_hi": 0.355382
+        },
+        "negative_ci": {
+          "ci_lo": 0.055556,
+          "ci_hi": 0.211538
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 1.5562,
+      "z_age": 0.603,
+      "z_er_bg": -1.3917,
+      "z_top_vol": 1.1667,
+      "z_top_focus": 0.1962,
+      "z_reach": 3.5281,
+      "structural_composite": 0.2558,
+      "topic_composite": 1.6303,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Елена Максимова",
+      "screenName": "maksimova_el",
+      "followers": 2383,
+      "topicPostCount": 11,
+      "baselinePostCount": 4,
+      "commentCount": 73,
+      "aud": 7.7765,
+      "age": 0.8985,
+      "er_bg": 0.055183,
+      "top_vol": 11,
+      "top_focus": 0.7333,
+      "reach": 11005,
+      "pos": {
+        "positive": 0.6364,
+        "neutral": 0.1818,
+        "negative": 0.1818
+      },
+      "er_top": 0.048602,
+      "resp": {
+        "positive": 0.3425,
+        "neutral": 0.5479,
+        "negative": 0.1096
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.035564,
+        "ci_hi": 0.071129,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.040284,
+        "ci_hi": 0.057377,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 7739.675,
+        "ci_hi": 14553.425,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.363636,
+          "ci_hi": 0.909091
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.454545
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.19403,
+          "ci_hi": 0.493151
+        },
+        "negative_ci": {
+          "ci_lo": 0.027778,
+          "ci_hi": 0.208333
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 1.1312,
+      "z_age": 0.2283,
+      "z_er_bg": -0.612,
+      "z_top_vol": 1.1667,
+      "z_top_focus": 0.9153,
+      "z_reach": 2.6656,
+      "structural_composite": 0.2492,
+      "topic_composite": 1.5825,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Анна Воробьёва",
+      "screenName": "vorobyova_ann",
+      "followers": 1878,
+      "topicPostCount": 11,
+      "baselinePostCount": 5,
+      "commentCount": 70,
+      "aud": 7.5385,
+      "age": 0.9982,
+      "er_bg": 0.054846,
+      "top_vol": 11,
+      "top_focus": 0.6875,
+      "reach": 10065,
+      "pos": {
+        "positive": 0.6364,
+        "neutral": 0.3636,
+        "negative": 0.0
+      },
+      "er_top": 0.063559,
+      "resp": {
+        "positive": 0.2429,
+        "neutral": 0.6571,
+        "negative": 0.1
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.047923,
+        "ci_hi": 0.061874,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.053442,
+        "ci_hi": 0.072322,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 7949.925,
+        "ci_hi": 12296.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.363636,
+          "ci_hi": 0.909091
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.12987,
+          "ci_hi": 0.367089
+        },
+        "negative_ci": {
+          "ci_lo": 0.014493,
+          "ci_hi": 0.211268
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.9867,
+      "z_age": 0.8074,
+      "z_er_bg": -0.6206,
+      "z_top_vol": 1.1667,
+      "z_top_focus": 0.7356,
+      "z_reach": 2.4108,
+      "structural_composite": 0.3912,
+      "topic_composite": 1.4377,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Игорь Ашманов",
+      "screenName": "ashmanov_igor",
+      "followers": 2377,
+      "topicPostCount": 10,
+      "baselinePostCount": 15,
+      "commentCount": 119,
+      "aud": 7.774,
+      "age": 0.9688,
+      "er_bg": 0.050792,
+      "top_vol": 10,
+      "top_focus": 0.4,
+      "reach": 14271,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.2,
+        "negative": 0.3
+      },
+      "er_top": 0.063105,
+      "resp": {
+        "positive": 0.3361,
+        "neutral": 0.4706,
+        "negative": 0.1933
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.039682,
+        "ci_hi": 0.061871,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.051698,
+        "ci_hi": 0.074003,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 10300.425,
+        "ci_hi": 18310.725,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.2,
+          "ci_hi": 0.8
+        },
+        "negative_ci": {
+          "ci_lo": 0.1,
+          "ci_hi": 0.6
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.2,
+          "ci_hi": 0.46281
+        },
+        "negative_ci": {
+          "ci_lo": 0.103448,
+          "ci_hi": 0.304348
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 1.1297,
+      "z_age": 0.6367,
+      "z_er_bg": -0.7246,
+      "z_top_vol": 1.0,
+      "z_top_focus": -0.3923,
+      "z_reach": 3.5509,
+      "structural_composite": 0.3473,
+      "topic_composite": 1.3862,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Илья Варламов",
+      "screenName": "varlamov",
+      "followers": 26000,
+      "topicPostCount": 2,
+      "baselinePostCount": 20,
+      "commentCount": 21,
+      "aud": 10.1659,
+      "age": 0.9436,
+      "er_bg": 0.034546,
+      "top_vol": 2,
+      "top_focus": 0.0909,
+      "reach": 17375,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.0,
+        "negative": 0.5
+      },
+      "er_top": 0.023212,
+      "resp": {
+        "positive": 0.1905,
+        "neutral": 0.7143,
+        "negative": 0.0952
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.028231,
+        "ci_hi": 0.040939,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.015346,
+        "ci_hi": 0.031077,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 13936.0,
+        "ci_hi": 20814.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.038462,
+          "ci_hi": 0.428571
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.269231
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 2.5817,
+      "z_age": 0.4903,
+      "z_er_bg": -1.1411,
+      "z_top_vol": -0.3333,
+      "z_top_focus": -1.6049,
+      "z_reach": 4.3922,
+      "structural_composite": 0.6436,
+      "topic_composite": 0.818,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Лилия Мухина",
+      "screenName": "mukhina_l",
+      "followers": 786,
+      "topicPostCount": 11,
+      "baselinePostCount": 8,
+      "commentCount": 88,
+      "aud": 6.6682,
+      "age": 0.9956,
+      "er_bg": 0.09208,
+      "top_vol": 11,
+      "top_focus": 0.5789,
+      "reach": 5180,
+      "pos": {
+        "positive": 0.4545,
+        "neutral": 0.2727,
+        "negative": 0.2727
+      },
+      "er_top": 0.082119,
+      "resp": {
+        "positive": 0.2841,
+        "neutral": 0.625,
+        "negative": 0.0909
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.072837,
+        "ci_hi": 0.114985,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.068121,
+        "ci_hi": 0.097505,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 4255.875,
+        "ci_hi": 6169.3,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.181818,
+          "ci_hi": 0.727273
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.545455
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.164948,
+          "ci_hi": 0.402174
+        },
+        "negative_ci": {
+          "ci_lo": 0.011628,
+          "ci_hi": 0.190012
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.4584,
+      "z_age": 0.7923,
+      "z_er_bg": 0.334,
+      "z_top_vol": 1.1667,
+      "z_top_focus": 0.3095,
+      "z_reach": 1.0867,
+      "structural_composite": 0.5282,
+      "topic_composite": 0.8543,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Анастасия Горшкова",
+      "screenName": "gorshkova_an",
+      "followers": 1881,
+      "topicPostCount": 11,
+      "baselinePostCount": 6,
+      "commentCount": 65,
+      "aud": 7.5401,
+      "age": 0.8569,
+      "er_bg": 0.05972,
+      "top_vol": 11,
+      "top_focus": 0.6471,
+      "reach": 7791,
+      "pos": {
+        "positive": 0.7273,
+        "neutral": 0.0,
+        "negative": 0.2727
+      },
+      "er_top": 0.051858,
+      "resp": {
+        "positive": 0.3077,
+        "neutral": 0.6462,
+        "negative": 0.0462
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.04448,
+        "ci_hi": 0.07496,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.040983,
+        "ci_hi": 0.063071,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 6040.9,
+        "ci_hi": 9477.15,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.454545,
+          "ci_hi": 0.909091
+        },
+        "negative_ci": {
+          "ci_lo": 0.090909,
+          "ci_hi": 0.545455
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.151515,
+          "ci_hi": 0.484848
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.131148
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.9877,
+      "z_age": -0.0134,
+      "z_er_bg": -0.4957,
+      "z_top_vol": 1.1667,
+      "z_top_focus": 0.5771,
+      "z_reach": 1.7944,
+      "structural_composite": 0.1596,
+      "topic_composite": 1.1794,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Алина Новикова",
+      "screenName": "novikova_al",
+      "followers": 2219,
+      "topicPostCount": 9,
+      "baselinePostCount": 8,
+      "commentCount": 49,
+      "aud": 7.7053,
+      "age": 0.9579,
+      "er_bg": 0.054585,
+      "top_vol": 9,
+      "top_focus": 0.5294,
+      "reach": 8295,
+      "pos": {
+        "positive": 0.6667,
+        "neutral": 0.2222,
+        "negative": 0.1111
+      },
+      "er_top": 0.050724,
+      "resp": {
+        "positive": 0.2449,
+        "neutral": 0.6122,
+        "negative": 0.1429
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.042249,
+        "ci_hi": 0.067205,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.044264,
+        "ci_hi": 0.057637,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 6153.95,
+        "ci_hi": 11122.775,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.333333,
+          "ci_hi": 0.888889
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.333333
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.081633,
+          "ci_hi": 0.44
+        },
+        "negative_ci": {
+          "ci_lo": 0.04,
+          "ci_hi": 0.265306
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 1.088,
+      "z_age": 0.5733,
+      "z_er_bg": -0.6273,
+      "z_top_vol": 0.8333,
+      "z_top_focus": 0.1153,
+      "z_reach": 1.931,
+      "structural_composite": 0.3447,
+      "topic_composite": 0.9599,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Екатерина Лебедева",
+      "screenName": "lebedeva_kate",
+      "followers": 1276,
+      "topicPostCount": 9,
+      "baselinePostCount": 4,
+      "commentCount": 77,
+      "aud": 7.1523,
+      "age": 0.9798,
+      "er_bg": 0.066614,
+      "top_vol": 9,
+      "top_focus": 0.6923,
+      "reach": 4156,
+      "pos": {
+        "positive": 0.5556,
+        "neutral": 0.1111,
+        "negative": 0.3333
+      },
+      "er_top": 0.051637,
+      "resp": {
+        "positive": 0.3247,
+        "neutral": 0.5844,
+        "negative": 0.0909
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.054467,
+        "ci_hi": 0.084248,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.043624,
+        "ci_hi": 0.059909,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 3272.85,
+        "ci_hi": 4936.1,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.222222,
+          "ci_hi": 0.888889
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.666667
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.154762,
+          "ci_hi": 0.514706
+        },
+        "negative_ci": {
+          "ci_lo": 0.012987,
+          "ci_hi": 0.192308
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.7523,
+      "z_age": 0.7006,
+      "z_er_bg": -0.3189,
+      "z_top_vol": 0.8333,
+      "z_top_focus": 0.7544,
+      "z_reach": 0.8091,
+      "structural_composite": 0.378,
+      "topic_composite": 0.799,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Виктор Степанов",
+      "screenName": "stepanov_vik",
+      "followers": 666,
+      "topicPostCount": 10,
+      "baselinePostCount": 7,
+      "commentCount": 26,
+      "aud": 6.5028,
+      "age": 0.9939,
+      "er_bg": 0.091592,
+      "top_vol": 10,
+      "top_focus": 0.5882,
+      "reach": 3702,
+      "pos": {
+        "positive": 0.7,
+        "neutral": 0.2,
+        "negative": 0.1
+      },
+      "er_top": 0.086036,
+      "resp": {
+        "positive": 0.2692,
+        "neutral": 0.6538,
+        "negative": 0.0769
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.075933,
+        "ci_hi": 0.103389,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.070867,
+        "ci_hi": 0.103307,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 2966.725,
+        "ci_hi": 4437.1,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.4,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.3
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.045455,
+          "ci_hi": 0.485714
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.3
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.358,
+      "z_age": 0.7825,
+      "z_er_bg": 0.3215,
+      "z_top_vol": 1.0,
+      "z_top_focus": 0.346,
+      "z_reach": 0.686,
+      "structural_composite": 0.4873,
+      "topic_composite": 0.6774,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Максим Фёдоров",
+      "screenName": "fedorov_max",
+      "followers": 2448,
+      "topicPostCount": 10,
+      "baselinePostCount": 3,
+      "commentCount": 75,
+      "aud": 7.8034,
+      "age": 0.624,
+      "er_bg": 0.059777,
+      "top_vol": 10,
+      "top_focus": 0.7692,
+      "reach": 8698,
+      "pos": {
+        "positive": 0.7,
+        "neutral": 0.1,
+        "negative": 0.2
+      },
+      "er_top": 0.049837,
+      "resp": {
+        "positive": 0.28,
+        "neutral": 0.56,
+        "negative": 0.16
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.055964,
+        "ci_hi": 0.062908,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.042891,
+        "ci_hi": 0.056537,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 6656.6,
+        "ci_hi": 10950.85,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.4,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.5
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.134146,
+          "ci_hi": 0.434783
+        },
+        "negative_ci": {
+          "ci_lo": 0.066667,
+          "ci_hi": 0.2625
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 1.1475,
+      "z_age": -1.3663,
+      "z_er_bg": -0.4942,
+      "z_top_vol": 1.0,
+      "z_top_focus": 1.0561,
+      "z_reach": 2.0403,
+      "structural_composite": -0.2376,
+      "topic_composite": 1.3655,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Артём Волков",
+      "screenName": "volkov_art",
+      "followers": 1430,
+      "topicPostCount": 12,
+      "baselinePostCount": 8,
+      "commentCount": 51,
+      "aud": 7.2661,
+      "age": 0.7393,
+      "er_bg": 0.052797,
+      "top_vol": 12,
+      "top_focus": 0.6,
+      "reach": 8790,
+      "pos": {
+        "positive": 0.75,
+        "neutral": 0.1667,
+        "negative": 0.0833
+      },
+      "er_top": 0.061422,
+      "resp": {
+        "positive": 0.2941,
+        "neutral": 0.6078,
+        "negative": 0.098
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.041429,
+        "ci_hi": 0.065822,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.051917,
+        "ci_hi": 0.069585,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 6566.275,
+        "ci_hi": 10873.6,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.5,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.25
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.104167,
+          "ci_hi": 0.488372
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.230769
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.8214,
+      "z_age": -0.6965,
+      "z_er_bg": -0.6732,
+      "z_top_vol": 1.3333,
+      "z_top_focus": 0.3923,
+      "z_reach": 2.0652,
+      "structural_composite": -0.1828,
+      "topic_composite": 1.2636,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Глеб Рыжов",
+      "screenName": "ryzhov_g",
+      "followers": 669,
+      "topicPostCount": 10,
+      "baselinePostCount": 4,
+      "commentCount": 57,
+      "aud": 6.5073,
+      "age": 0.8516,
+      "er_bg": 0.078102,
+      "top_vol": 10,
+      "top_focus": 0.7143,
+      "reach": 4441,
+      "pos": {
+        "positive": 0.7,
+        "neutral": 0.1,
+        "negative": 0.2
+      },
+      "er_top": 0.089686,
+      "resp": {
+        "positive": 0.3333,
+        "neutral": 0.5614,
+        "negative": 0.1053
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.059791,
+        "ci_hi": 0.097534,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.07713,
+        "ci_hi": 0.101801,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 3494.875,
+        "ci_hi": 5333.325,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.4,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.5
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.190476,
+          "ci_hi": 0.490909
+        },
+        "negative_ci": {
+          "ci_lo": 0.018182,
+          "ci_hi": 0.213144
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.3607,
+      "z_age": -0.0441,
+      "z_er_bg": -0.0244,
+      "z_top_vol": 1.0,
+      "z_top_focus": 0.8407,
+      "z_reach": 0.8864,
+      "structural_composite": 0.0974,
+      "topic_composite": 0.909,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Тимур Басыров",
+      "screenName": "basyrov_t",
+      "followers": 1289,
+      "topicPostCount": 11,
+      "baselinePostCount": 5,
+      "commentCount": 76,
+      "aud": 7.1624,
+      "age": 0.8571,
+      "er_bg": 0.045772,
+      "top_vol": 11,
+      "top_focus": 0.6875,
+      "reach": 4974,
+      "pos": {
+        "positive": 0.8182,
+        "neutral": 0.0909,
+        "negative": 0.0909
+      },
+      "er_top": 0.047676,
+      "resp": {
+        "positive": 0.3421,
+        "neutral": 0.5132,
+        "negative": 0.1447
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.036901,
+        "ci_hi": 0.054616,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.039068,
+        "ci_hi": 0.056919,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 3736.8,
+        "ci_hi": 6197.075,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.545455,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.272727
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.15493,
+          "ci_hi": 0.511628
+        },
+        "negative_ci": {
+          "ci_lo": 0.063291,
+          "ci_hi": 0.230769
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.7584,
+      "z_age": -0.0122,
+      "z_er_bg": -0.8533,
+      "z_top_vol": 1.1667,
+      "z_top_focus": 0.7356,
+      "z_reach": 1.0308,
+      "structural_composite": -0.0357,
+      "topic_composite": 0.9777,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Владимир Чернов",
+      "screenName": "chernov_vl",
+      "followers": 1543,
+      "topicPostCount": 6,
+      "baselinePostCount": 4,
+      "commentCount": 34,
+      "aud": 7.3421,
+      "age": 0.9511,
+      "er_bg": 0.069345,
+      "top_vol": 6,
+      "top_focus": 0.6,
+      "reach": 4491,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.0,
+        "negative": 0.5
+      },
+      "er_top": 0.057896,
+      "resp": {
+        "positive": 0.2353,
+        "neutral": 0.6471,
+        "negative": 0.1176
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.053143,
+        "ci_hi": 0.087168,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.045671,
+        "ci_hi": 0.067941,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 2829.0,
+        "ci_hi": 6080.35,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.166667,
+          "ci_hi": 0.833333
+        },
+        "negative_ci": {
+          "ci_lo": 0.166667,
+          "ci_hi": 0.833333
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.060606,
+          "ci_hi": 0.428571
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.34375
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.8675,
+      "z_age": 0.5338,
+      "z_er_bg": -0.2489,
+      "z_top_vol": 0.3333,
+      "z_top_focus": 0.3923,
+      "z_reach": 0.8999,
+      "structural_composite": 0.3841,
+      "topic_composite": 0.5419,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Регина Уварова",
+      "screenName": "uvarova_r",
+      "followers": 789,
+      "topicPostCount": 8,
+      "baselinePostCount": 8,
+      "commentCount": 40,
+      "aud": 6.672,
+      "age": 0.9049,
+      "er_bg": 0.085868,
+      "top_vol": 8,
+      "top_focus": 0.5,
+      "reach": 4064,
+      "pos": {
+        "positive": 0.875,
+        "neutral": 0.125,
+        "negative": 0.0
+      },
+      "er_top": 0.077947,
+      "resp": {
+        "positive": 0.225,
+        "neutral": 0.675,
+        "negative": 0.1
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.061946,
+        "ci_hi": 0.111221,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.06147,
+        "ci_hi": 0.096166,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 3212.0,
+        "ci_hi": 4892.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.625,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.069767,
+          "ci_hi": 0.414634
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.225
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.4607,
+      "z_age": 0.2655,
+      "z_er_bg": 0.1747,
+      "z_top_vol": 0.6667,
+      "z_top_focus": 0.0,
+      "z_reach": 0.7842,
+      "structural_composite": 0.3003,
+      "topic_composite": 0.4836,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Денис Захаров",
+      "screenName": "zakharov_den",
+      "followers": 1019,
+      "topicPostCount": 8,
+      "baselinePostCount": 4,
+      "commentCount": 47,
+      "aud": 6.9276,
+      "age": 0.9539,
+      "er_bg": 0.046124,
+      "top_vol": 8,
+      "top_focus": 0.6667,
+      "reach": 2769,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.375,
+        "negative": 0.125
+      },
+      "er_top": 0.060476,
+      "resp": {
+        "positive": 0.2128,
+        "neutral": 0.6809,
+        "negative": 0.1064
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.03631,
+        "ci_hi": 0.054956,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.046124,
+        "ci_hi": 0.075215,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 2046.925,
+        "ci_hi": 3519.15,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.125,
+          "ci_hi": 0.875
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.375
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.068182,
+          "ci_hi": 0.369565
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.22
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.6159,
+      "z_age": 0.5501,
+      "z_er_bg": -0.8442,
+      "z_top_vol": 0.6667,
+      "z_top_focus": 0.654,
+      "z_reach": 0.4332,
+      "structural_composite": 0.1072,
+      "topic_composite": 0.5846,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Тимофей Литвинов",
+      "screenName": "litvinov_t",
+      "followers": 568,
+      "topicPostCount": 10,
+      "baselinePostCount": 8,
+      "commentCount": 58,
+      "aud": 6.3439,
+      "age": 0.8664,
+      "er_bg": 0.074384,
+      "top_vol": 10,
+      "top_focus": 0.5556,
+      "reach": 3594,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.3,
+        "negative": 0.2
+      },
+      "er_top": 0.089613,
+      "resp": {
+        "positive": 0.2069,
+        "neutral": 0.6897,
+        "negative": 0.1034
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.062054,
+        "ci_hi": 0.089134,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.077289,
+        "ci_hi": 0.102645,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 2741.9,
+        "ci_hi": 4359.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.2,
+          "ci_hi": 0.8
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.5
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.068966,
+          "ci_hi": 0.366197
+        },
+        "negative_ci": {
+          "ci_lo": 0.016949,
+          "ci_hi": 0.230769
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.2615,
+      "z_age": 0.0418,
+      "z_er_bg": -0.1197,
+      "z_top_vol": 1.0,
+      "z_top_focus": 0.2181,
+      "z_reach": 0.6568,
+      "structural_composite": 0.0612,
+      "topic_composite": 0.625,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Роман Козлов",
+      "screenName": "kozlov_rom",
+      "followers": 576,
+      "topicPostCount": 7,
+      "baselinePostCount": 6,
+      "commentCount": 42,
+      "aud": 6.3578,
+      "age": 0.9112,
+      "er_bg": 0.093461,
+      "top_vol": 7,
+      "top_focus": 0.5385,
+      "reach": 2525,
+      "pos": {
+        "positive": 0.5714,
+        "neutral": 0.2857,
+        "negative": 0.1429
+      },
+      "er_top": 0.089782,
+      "resp": {
+        "positive": 0.2381,
+        "neutral": 0.7381,
+        "negative": 0.0238
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.071759,
+        "ci_hi": 0.118056,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.074405,
+        "ci_hi": 0.103671,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 2107.9,
+        "ci_hi": 2978.025,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.142857,
+          "ci_hi": 0.857143
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.428571
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.090909,
+          "ci_hi": 0.428571
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.104167
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.27,
+      "z_age": 0.3021,
+      "z_er_bg": 0.3694,
+      "z_top_vol": 0.5,
+      "z_top_focus": 0.151,
+      "z_reach": 0.367,
+      "structural_composite": 0.3138,
+      "topic_composite": 0.3394,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Наталья Егорова",
+      "screenName": "egorova_nat",
+      "followers": 2382,
+      "topicPostCount": 7,
+      "baselinePostCount": 5,
+      "commentCount": 36,
+      "aud": 7.7761,
+      "age": 0.7349,
+      "er_bg": 0.058774,
+      "top_vol": 7,
+      "top_focus": 0.5833,
+      "reach": 5663,
+      "pos": {
+        "positive": 0.4286,
+        "neutral": 0.1429,
+        "negative": 0.4286
+      },
+      "er_top": 0.04438,
+      "resp": {
+        "positive": 0.3333,
+        "neutral": 0.5833,
+        "negative": 0.0833
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.04534,
+        "ci_hi": 0.069186,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.033401,
+        "ci_hi": 0.056975,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 4558.725,
+        "ci_hi": 6778.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.142857,
+          "ci_hi": 0.714286
+        },
+        "negative_ci": {
+          "ci_lo": 0.142857,
+          "ci_hi": 0.857143
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.151515,
+          "ci_hi": 0.551724
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.208333
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 1.131,
+      "z_age": -0.722,
+      "z_er_bg": -0.5199,
+      "z_top_vol": 0.5,
+      "z_top_focus": 0.3268,
+      "z_reach": 1.2176,
+      "structural_composite": -0.037,
+      "topic_composite": 0.6815,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Николай Тарасов",
+      "screenName": "tarasov_nik",
+      "followers": 278,
+      "topicPostCount": 9,
+      "baselinePostCount": 3,
+      "commentCount": 50,
+      "aud": 5.6312,
+      "age": 0.9191,
+      "er_bg": 0.070743,
+      "top_vol": 9,
+      "top_focus": 0.75,
+      "reach": 1426,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.092726,
+      "resp": {
+        "positive": 0.28,
+        "neutral": 0.68,
+        "negative": 0.04
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.035971,
+        "ci_hi": 0.107914,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.076729,
+        "ci_hi": 0.11192,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 911.95,
+        "ci_hi": 2001.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 1.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.119048,
+          "ci_hi": 0.466667
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.117647
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.1711,
+      "z_age": 0.348,
+      "z_er_bg": -0.2131,
+      "z_top_vol": 0.8333,
+      "z_top_focus": 0.9808,
+      "z_reach": 0.0691,
+      "structural_composite": -0.0121,
+      "topic_composite": 0.6277,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Иван Ямщиков",
+      "screenName": "yamshchikov_iv",
+      "followers": 1450,
+      "topicPostCount": 10,
+      "baselinePostCount": 8,
+      "commentCount": 100,
+      "aud": 7.28,
+      "age": 0.949,
+      "er_bg": 0.033879,
+      "top_vol": 10,
+      "top_focus": 0.5556,
+      "reach": 2762,
+      "pos": {
+        "positive": 0.8,
+        "neutral": -0.0,
+        "negative": 0.2
+      },
+      "er_top": 0.038897,
+      "resp": {
+        "positive": 0.41,
+        "neutral": 0.46,
+        "negative": 0.13
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.023015,
+        "ci_hi": 0.044918,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.030688,
+        "ci_hi": 0.047034,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 1867.775,
+        "ci_hi": 3792.175,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.5,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.5
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.28125,
+          "ci_hi": 0.524752
+        },
+        "negative_ci": {
+          "ci_lo": 0.04902,
+          "ci_hi": 0.240506
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.8298,
+      "z_age": 0.5216,
+      "z_er_bg": -1.1582,
+      "z_top_vol": 1.0,
+      "z_top_focus": 0.2181,
+      "z_reach": 0.4313,
+      "structural_composite": 0.0644,
+      "topic_composite": 0.5498,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Юлия Соколова",
+      "screenName": "sokolova_yu",
+      "followers": 258,
+      "topicPostCount": 6,
+      "baselinePostCount": 3,
+      "commentCount": 43,
+      "aud": 5.5568,
+      "age": 0.9786,
+      "er_bg": 0.087855,
+      "top_vol": 6,
+      "top_focus": 0.6667,
+      "reach": 972,
+      "pos": {
+        "positive": 0.8333,
+        "neutral": -0.0,
+        "negative": 0.1667
+      },
+      "er_top": 0.104651,
+      "resp": {
+        "positive": 0.2791,
+        "neutral": 0.6279,
+        "negative": 0.093
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.062016,
+        "ci_hi": 0.116279,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.080749,
+        "ci_hi": 0.135659,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 803.0,
+        "ci_hi": 1153.075,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.5,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.5
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.09297,
+          "ci_hi": 0.478261
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.236842
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.2163,
+      "z_age": 0.6936,
+      "z_er_bg": 0.2257,
+      "z_top_vol": 0.3333,
+      "z_top_focus": 0.654,
+      "z_reach": -0.0539,
+      "structural_composite": 0.2343,
+      "topic_composite": 0.3111,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Артур Хачуян",
+      "screenName": "khachuyan_art",
+      "followers": 600,
+      "topicPostCount": 10,
+      "baselinePostCount": 7,
+      "commentCount": 99,
+      "aud": 6.3986,
+      "age": 0.9525,
+      "er_bg": 0.050952,
+      "top_vol": 10,
+      "top_focus": 0.5882,
+      "reach": 1675,
+      "pos": {
+        "positive": 0.8,
+        "neutral": -0.0,
+        "negative": 0.2
+      },
+      "er_top": 0.063167,
+      "resp": {
+        "positive": 0.4646,
+        "neutral": 0.4343,
+        "negative": 0.101
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.030714,
+        "ci_hi": 0.069768,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.051333,
+        "ci_hi": 0.075333,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 1177.0,
+        "ci_hi": 2231.05,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.5,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.5
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.333333,
+          "ci_hi": 0.585366
+        },
+        "negative_ci": {
+          "ci_lo": 0.031915,
+          "ci_hi": 0.188889
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.2948,
+      "z_age": 0.542,
+      "z_er_bg": -0.7205,
+      "z_top_vol": 1.0,
+      "z_top_focus": 0.346,
+      "z_reach": 0.1366,
+      "structural_composite": 0.0388,
+      "topic_composite": 0.4942,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Александр Крайнов",
+      "screenName": "a_krainov",
+      "followers": 2100,
+      "topicPostCount": 12,
+      "baselinePostCount": 8,
+      "commentCount": 117,
+      "aud": 7.6502,
+      "age": 0.6459,
+      "er_bg": 0.037202,
+      "top_vol": 12,
+      "top_focus": 0.6,
+      "reach": 5084,
+      "pos": {
+        "positive": 0.6667,
+        "neutral": 0.25,
+        "negative": 0.0833
+      },
+      "er_top": 0.037143,
+      "resp": {
+        "positive": 0.2821,
+        "neutral": 0.6325,
+        "negative": 0.0855
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.028868,
+        "ci_hi": 0.046667,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.02861,
+        "ci_hi": 0.04627,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 3664.875,
+        "ci_hi": 6602.025,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.416667,
+          "ci_hi": 0.916667
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.25
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.183486,
+          "ci_hi": 0.396825
+        },
+        "negative_ci": {
+          "ci_lo": 0.024194,
+          "ci_hi": 0.166698
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 1.0545,
+      "z_age": -1.239,
+      "z_er_bg": -1.073,
+      "z_top_vol": 1.3333,
+      "z_top_focus": 0.3923,
+      "z_reach": 1.0606,
+      "structural_composite": -0.4192,
+      "topic_composite": 0.9288,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Алёна Владимирская",
+      "screenName": "vladimirskaya_a",
+      "followers": 11500,
+      "topicPostCount": 2,
+      "baselinePostCount": 13,
+      "commentCount": 23,
+      "aud": 9.3502,
+      "age": 0.8387,
+      "er_bg": 0.03196,
+      "top_vol": 2,
+      "top_focus": 0.1333,
+      "reach": 10159,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.0,
+        "negative": 0.5
+      },
+      "er_top": 0.04113,
+      "resp": {
+        "positive": 0.4783,
+        "neutral": 0.3478,
+        "negative": 0.1739
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.02511,
+        "ci_hi": 0.038717,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.040522,
+        "ci_hi": 0.041739,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 8796.0,
+        "ci_hi": 11522.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.26087,
+          "ci_hi": 0.75
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.347826
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 2.0865,
+      "z_age": -0.1191,
+      "z_er_bg": -1.2074,
+      "z_top_vol": -0.3333,
+      "z_top_focus": -1.4386,
+      "z_reach": 2.4363,
+      "structural_composite": 0.2533,
+      "topic_composite": 0.2214,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Мария Зотова",
+      "screenName": "zotova_m",
+      "followers": 1064,
+      "topicPostCount": 6,
+      "baselinePostCount": 7,
+      "commentCount": 38,
+      "aud": 6.9707,
+      "age": 1.0,
+      "er_bg": 0.046858,
+      "top_vol": 6,
+      "top_focus": 0.4615,
+      "reach": 3161,
+      "pos": {
+        "positive": 0.3333,
+        "neutral": 0.5,
+        "negative": 0.1667
+      },
+      "er_top": 0.056704,
+      "resp": {
+        "positive": 0.2895,
+        "neutral": 0.5263,
+        "negative": 0.1842
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.032358,
+        "ci_hi": 0.063238,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.049185,
+        "ci_hi": 0.065163,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 2145.0,
+        "ci_hi": 4274.15,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.666667
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.5
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.083333,
+          "ci_hi": 0.5
+        },
+        "negative_ci": {
+          "ci_lo": 0.058824,
+          "ci_hi": 0.333333
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.642,
+      "z_age": 0.8179,
+      "z_er_bg": -0.8254,
+      "z_top_vol": 0.3333,
+      "z_top_focus": -0.151,
+      "z_reach": 0.5394,
+      "structural_composite": 0.2115,
+      "topic_composite": 0.2406,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "NEUTRAL",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Татьяна Миронова",
+      "screenName": "mironova_tat",
+      "followers": 1045,
+      "topicPostCount": 9,
+      "baselinePostCount": 3,
+      "commentCount": 56,
+      "aud": 6.9527,
+      "age": 0.7039,
+      "er_bg": 0.040191,
+      "top_vol": 9,
+      "top_focus": 0.75,
+      "reach": 3503,
+      "pos": {
+        "positive": 0.4444,
+        "neutral": 0.2222,
+        "negative": 0.3333
+      },
+      "er_top": 0.049229,
+      "resp": {
+        "positive": 0.375,
+        "neutral": 0.5357,
+        "negative": 0.0893
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.026794,
+        "ci_hi": 0.054545,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.040617,
+        "ci_hi": 0.056462,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 2490.975,
+        "ci_hi": 4635.1,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.111111,
+          "ci_hi": 0.777778
+        },
+        "negative_ci": {
+          "ci_lo": 0.111111,
+          "ci_hi": 0.666667
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.186431,
+          "ci_hi": 0.568966
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.206363
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.6311,
+      "z_age": -0.9021,
+      "z_er_bg": -0.9964,
+      "z_top_vol": 0.8333,
+      "z_top_focus": 0.9808,
+      "z_reach": 0.6321,
+      "structural_composite": -0.4225,
+      "topic_composite": 0.8154,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Светлана Пархоменко",
+      "screenName": "parkhomenko_sv",
+      "followers": 113,
+      "topicPostCount": 8,
+      "baselinePostCount": 8,
+      "commentCount": 39,
+      "aud": 4.7362,
+      "age": 0.9301,
+      "er_bg": 0.111726,
+      "top_vol": 8,
+      "top_focus": 0.5,
+      "reach": 909,
+      "pos": {
+        "positive": 0.75,
+        "neutral": 0.25,
+        "negative": 0.0
+      },
+      "er_top": 0.160398,
+      "resp": {
+        "positive": 0.359,
+        "neutral": 0.4872,
+        "negative": 0.1538
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.089602,
+        "ci_hi": 0.132743,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.139381,
+        "ci_hi": 0.178097,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 668.875,
+        "ci_hi": 1155.175,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.375,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.176471,
+          "ci_hi": 0.527778
+        },
+        "negative_ci": {
+          "ci_lo": 0.041667,
+          "ci_hi": 0.3
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.7144,
+      "z_age": 0.4119,
+      "z_er_bg": 0.8377,
+      "z_top_vol": 0.6667,
+      "z_top_focus": 0.0,
+      "z_reach": -0.071,
+      "structural_composite": 0.1784,
+      "topic_composite": 0.1985,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Сергей Корнилов",
+      "screenName": "kornilov_ml",
+      "followers": 601,
+      "topicPostCount": 6,
+      "baselinePostCount": 8,
+      "commentCount": 31,
+      "aud": 6.4003,
+      "age": 0.8678,
+      "er_bg": 0.093594,
+      "top_vol": 6,
+      "top_focus": 0.4286,
+      "reach": 1916,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.3333,
+        "negative": 0.1667
+      },
+      "er_top": 0.074321,
+      "resp": {
+        "positive": 0.3226,
+        "neutral": 0.5484,
+        "negative": 0.129
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.071755,
+        "ci_hi": 0.113769,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.064337,
+        "ci_hi": 0.0868,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 1641.0,
+        "ci_hi": 2239.125,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.166667,
+          "ci_hi": 0.833333
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.5
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.09375,
+          "ci_hi": 0.5625
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.323529
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.2958,
+      "z_age": 0.05,
+      "z_er_bg": 0.3728,
+      "z_top_vol": 0.3333,
+      "z_top_focus": -0.2801,
+      "z_reach": 0.2019,
+      "structural_composite": 0.2395,
+      "topic_composite": 0.0851,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Вероника Смирнова",
+      "screenName": "smirnova_ver",
+      "followers": 1052,
+      "topicPostCount": 7,
+      "baselinePostCount": 7,
+      "commentCount": 50,
+      "aud": 6.9594,
+      "age": 0.8756,
+      "er_bg": 0.047529,
+      "top_vol": 7,
+      "top_focus": 0.5,
+      "reach": 2797,
+      "pos": {
+        "positive": 0.8571,
+        "neutral": 0.1429,
+        "negative": 0.0
+      },
+      "er_top": 0.062194,
+      "resp": {
+        "positive": 0.34,
+        "neutral": 0.56,
+        "negative": 0.1
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.036926,
+        "ci_hi": 0.060161,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.050923,
+        "ci_hi": 0.072787,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 2499.925,
+        "ci_hi": 3114.025,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.571429,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.181818,
+          "ci_hi": 0.5
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.23913
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.6352,
+      "z_age": 0.0953,
+      "z_er_bg": -0.8082,
+      "z_top_vol": 0.5,
+      "z_top_focus": 0.0,
+      "z_reach": 0.4407,
+      "structural_composite": -0.0259,
+      "topic_composite": 0.3136,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Андрей Кузьмин",
+      "screenName": "kuzmin_a",
+      "followers": 742,
+      "topicPostCount": 5,
+      "baselinePostCount": 7,
+      "commentCount": 22,
+      "aud": 6.6107,
+      "age": 0.9086,
+      "er_bg": 0.06238,
+      "top_vol": 5,
+      "top_focus": 0.4167,
+      "reach": 3863,
+      "pos": {
+        "positive": 0.8,
+        "neutral": -0.0,
+        "negative": 0.2
+      },
+      "er_top": 0.096765,
+      "resp": {
+        "positive": 0.4091,
+        "neutral": 0.5,
+        "negative": 0.0909
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.04794,
+        "ci_hi": 0.076434,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.074663,
+        "ci_hi": 0.116253,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 2989.0,
+        "ci_hi": 4750.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.4,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.6
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.142857,
+          "ci_hi": 0.64
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.294118
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.4235,
+      "z_age": 0.287,
+      "z_er_bg": -0.4275,
+      "z_top_vol": 0.1667,
+      "z_top_focus": -0.3268,
+      "z_reach": 0.7297,
+      "structural_composite": 0.0943,
+      "topic_composite": 0.1899,
+      "role": "AUTHORITATIVE_LEADER",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Кирилл Морозов",
+      "screenName": "morozov_kir",
+      "followers": 479,
+      "topicPostCount": 8,
+      "baselinePostCount": 8,
+      "commentCount": 39,
+      "aud": 6.1738,
+      "age": 0.7599,
+      "er_bg": 0.087422,
+      "top_vol": 8,
+      "top_focus": 0.5,
+      "reach": 2603,
+      "pos": {
+        "positive": 0.625,
+        "neutral": 0.125,
+        "negative": 0.25
+      },
+      "er_top": 0.084551,
+      "resp": {
+        "positive": 0.4103,
+        "neutral": 0.5385,
+        "negative": 0.0513
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.072025,
+        "ci_hi": 0.101514,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.070975,
+        "ci_hi": 0.096816,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 1894.9,
+        "ci_hi": 3311.475,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.25,
+          "ci_hi": 0.875
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.625
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.16129,
+          "ci_hi": 0.657895
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.172414
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.1583,
+      "z_age": -0.5768,
+      "z_er_bg": 0.2146,
+      "z_top_vol": 0.6667,
+      "z_top_focus": 0.0,
+      "z_reach": 0.3882,
+      "structural_composite": -0.068,
+      "topic_composite": 0.3516,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Павел Громов",
+      "screenName": "gromov_pav",
+      "followers": 165,
+      "topicPostCount": 7,
+      "baselinePostCount": 4,
+      "commentCount": 43,
+      "aud": 5.112,
+      "age": 0.8417,
+      "er_bg": 0.095455,
+      "top_vol": 7,
+      "top_focus": 0.6364,
+      "reach": 1078,
+      "pos": {
+        "positive": 0.7143,
+        "neutral": 0.0,
+        "negative": 0.2857
+      },
+      "er_top": 0.161039,
+      "resp": {
+        "positive": 0.3023,
+        "neutral": 0.5814,
+        "negative": 0.1163
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.060606,
+        "ci_hi": 0.130303,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.125519,
+        "ci_hi": 0.196537,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 748.825,
+        "ci_hi": 1427.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.428571,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.571429
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.130435,
+          "ci_hi": 0.510638
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.255814
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.4863,
+      "z_age": -0.1017,
+      "z_er_bg": 0.4205,
+      "z_top_vol": 0.5,
+      "z_top_focus": 0.5351,
+      "z_reach": -0.0252,
+      "structural_composite": -0.0558,
+      "topic_composite": 0.3366,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Ольга Петрова",
+      "screenName": "petrova_olga",
+      "followers": 569,
+      "topicPostCount": 8,
+      "baselinePostCount": 4,
+      "commentCount": 58,
+      "aud": 6.3456,
+      "age": 0.5963,
+      "er_bg": 0.087434,
+      "top_vol": 8,
+      "top_focus": 0.6667,
+      "reach": 2994,
+      "pos": {
+        "positive": 0.75,
+        "neutral": 0.0,
+        "negative": 0.25
+      },
+      "er_top": 0.099956,
+      "resp": {
+        "positive": 0.3621,
+        "neutral": 0.5,
+        "negative": 0.1379
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.057118,
+        "ci_hi": 0.118629,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.078866,
+        "ci_hi": 0.120172,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 2324.9,
+        "ci_hi": 3614.025,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.375,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.625
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.155172,
+          "ci_hi": 0.553571
+        },
+        "negative_ci": {
+          "ci_lo": 0.03125,
+          "ci_hi": 0.280702
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.2626,
+      "z_age": -1.5272,
+      "z_er_bg": 0.2149,
+      "z_top_vol": 0.6667,
+      "z_top_focus": 0.654,
+      "z_reach": 0.4941,
+      "structural_composite": -0.3499,
+      "topic_composite": 0.6049,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Дмитрий Савченко",
+      "screenName": "savchenko_ds",
+      "followers": 385,
+      "topicPostCount": 5,
+      "baselinePostCount": 3,
+      "commentCount": 26,
+      "aud": 5.9558,
+      "age": 0.9062,
+      "er_bg": 0.070996,
+      "top_vol": 5,
+      "top_focus": 0.625,
+      "reach": 1158,
+      "pos": {
+        "positive": 0.6,
+        "neutral": 0.4,
+        "negative": 0.0
+      },
+      "er_top": 0.071688,
+      "resp": {
+        "positive": 0.2308,
+        "neutral": 0.6923,
+        "negative": 0.0769
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.051948,
+        "ci_hi": 0.098701,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.056623,
+        "ci_hi": 0.091429,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 683.0,
+        "ci_hi": 1647.1,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.2,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.5
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.214286
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.026,
+      "z_age": 0.273,
+      "z_er_bg": -0.2066,
+      "z_top_vol": 0.1667,
+      "z_top_focus": 0.4904,
+      "z_reach": -0.0035,
+      "structural_composite": 0.0308,
+      "topic_composite": 0.2178,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Ксения Орлова",
+      "screenName": "orlova_ks",
+      "followers": 272,
+      "topicPostCount": 6,
+      "baselinePostCount": 3,
+      "commentCount": 46,
+      "aud": 5.6095,
+      "age": 0.8847,
+      "er_bg": 0.063725,
+      "top_vol": 6,
+      "top_focus": 0.6667,
+      "reach": 1184,
+      "pos": {
+        "positive": 0.6667,
+        "neutral": 0.0,
+        "negative": 0.3333
+      },
+      "er_top": 0.106618,
+      "resp": {
+        "positive": 0.2174,
+        "neutral": 0.7174,
+        "negative": 0.0652
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.047794,
+        "ci_hi": 0.077206,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.099862,
+        "ci_hi": 0.113971,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 781.0,
+        "ci_hi": 1550.1,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.333333,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.666667
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.095238,
+          "ci_hi": 0.363636
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.152174
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.1843,
+      "z_age": 0.1481,
+      "z_er_bg": -0.393,
+      "z_top_vol": 0.3333,
+      "z_top_focus": 0.654,
+      "z_reach": 0.0035,
+      "structural_composite": -0.143,
+      "topic_composite": 0.3303,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Игорь Белов",
+      "screenName": "belov_ig",
+      "followers": 291,
+      "topicPostCount": 6,
+      "baselinePostCount": 5,
+      "commentCount": 33,
+      "aud": 5.6768,
+      "age": 0.9192,
+      "er_bg": 0.069416,
+      "top_vol": 6,
+      "top_focus": 0.5455,
+      "reach": 1080,
+      "pos": {
+        "positive": 0.3333,
+        "neutral": 0.1667,
+        "negative": 0.5
+      },
+      "er_top": 0.119702,
+      "resp": {
+        "positive": 0.2121,
+        "neutral": 0.6667,
+        "negative": 0.1212
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.059107,
+        "ci_hi": 0.079725,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.106529,
+        "ci_hi": 0.132875,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 828.0,
+        "ci_hi": 1329.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.666667
+        },
+        "negative_ci": {
+          "ci_lo": 0.166667,
+          "ci_hi": 0.833333
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.030303,
+          "ci_hi": 0.424242
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.264706
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.1434,
+      "z_age": 0.3485,
+      "z_er_bg": -0.2471,
+      "z_top_vol": 0.3333,
+      "z_top_focus": 0.1785,
+      "z_reach": -0.0247,
+      "structural_composite": -0.014,
+      "topic_composite": 0.1624,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "CRITICAL",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Дарья Климова",
+      "screenName": "klimova_dar",
+      "followers": 507,
+      "topicPostCount": 6,
+      "baselinePostCount": 6,
+      "commentCount": 38,
+      "aud": 6.2305,
+      "age": 0.8142,
+      "er_bg": 0.075279,
+      "top_vol": 6,
+      "top_focus": 0.5,
+      "reach": 2019,
+      "pos": {
+        "positive": 0.8333,
+        "neutral": -0.0,
+        "negative": 0.1667
+      },
+      "er_top": 0.089086,
+      "resp": {
+        "positive": 0.1842,
+        "neutral": 0.6579,
+        "negative": 0.1579
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.062459,
+        "ci_hi": 0.091716,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.072304,
+        "ci_hi": 0.106188,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 1541.0,
+        "ci_hi": 2520.1,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.5,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.5
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.027027,
+          "ci_hi": 0.371429
+        },
+        "negative_ci": {
+          "ci_lo": 0.042553,
+          "ci_hi": 0.333333
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.1927,
+      "z_age": -0.2614,
+      "z_er_bg": -0.0968,
+      "z_top_vol": 0.3333,
+      "z_top_focus": 0.0,
+      "z_reach": 0.2299,
+      "structural_composite": -0.0552,
+      "topic_composite": 0.1877,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Станислав Носов",
+      "screenName": "nosov_st",
+      "followers": 1031,
+      "topicPostCount": 7,
+      "baselinePostCount": 5,
+      "commentCount": 32,
+      "aud": 6.9393,
+      "age": 0.7348,
+      "er_bg": 0.041707,
+      "top_vol": 7,
+      "top_focus": 0.5833,
+      "reach": 2853,
+      "pos": {
+        "positive": 0.4286,
+        "neutral": 0.2857,
+        "negative": 0.2857
+      },
+      "er_top": 0.048219,
+      "resp": {
+        "positive": 0.3125,
+        "neutral": 0.625,
+        "negative": 0.0625
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.032784,
+        "ci_hi": 0.050048,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.039071,
+        "ci_hi": 0.057226,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 2152.0,
+        "ci_hi": 3802.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.142857,
+          "ci_hi": 0.857143
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.571429
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.107143,
+          "ci_hi": 0.5
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.192308
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.623,
+      "z_age": -0.7226,
+      "z_er_bg": -0.9575,
+      "z_top_vol": 0.5,
+      "z_top_focus": 0.3268,
+      "z_reach": 0.4559,
+      "structural_composite": -0.3524,
+      "topic_composite": 0.4276,
+      "role": "TOPIC_ACTIVIST",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Зинаида Антонова",
+      "screenName": "антонова_з",
+      "followers": 302,
+      "topicPostCount": 4,
+      "baselinePostCount": 5,
+      "commentCount": 9,
+      "aud": 5.7137,
+      "age": 0.867,
+      "er_bg": 0.101987,
+      "top_vol": 4,
+      "top_focus": 0.4444,
+      "reach": 780,
+      "pos": {
+        "positive": 0.25,
+        "neutral": 0.25,
+        "negative": 0.5
+      },
+      "er_top": 0.068709,
+      "resp": {
+        "positive": 0.4444,
+        "neutral": 0.4444,
+        "negative": 0.1111
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.078808,
+        "ci_hi": 0.12649,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.047185,
+        "ci_hi": 0.100993,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 390.0,
+        "ci_hi": 1388.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.75
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.090909,
+          "ci_hi": 0.777778
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.4
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.121,
+      "z_age": 0.0453,
+      "z_er_bg": 0.588,
+      "z_top_vol": 0.0,
+      "z_top_focus": -0.2181,
+      "z_reach": -0.106,
+      "structural_composite": 0.1708,
+      "topic_composite": -0.108,
+      "role": "SLEEPING_GIANT",
+      "author_position": "CRITICAL",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Валерия Ефимова",
+      "screenName": "ефимова_в",
+      "followers": 69,
+      "topicPostCount": 1,
+      "baselinePostCount": 2,
+      "commentCount": 4,
+      "aud": 4.2485,
+      "age": 0.8882,
+      "er_bg": 0.173913,
+      "top_vol": 1,
+      "top_focus": 0.3333,
+      "reach": 52,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.231884,
+      "resp": {
+        "positive": 0.25,
+        "neutral": 0.5,
+        "negative": 0.25
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.15942,
+        "ci_hi": 0.188406,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": -1.0105,
+      "z_age": 0.1685,
+      "z_er_bg": 2.432,
+      "z_top_vol": -0.5,
+      "z_top_focus": -0.654,
+      "z_reach": -0.3033,
+      "structural_composite": 0.53,
+      "topic_composite": -0.4858,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Богдан Щербаков",
+      "screenName": "щербаков_б",
+      "followers": 206,
+      "topicPostCount": 3,
+      "baselinePostCount": 2,
+      "commentCount": 6,
+      "aud": 5.3327,
+      "age": 0.8278,
+      "er_bg": 0.104369,
+      "top_vol": 3,
+      "top_focus": 0.6,
+      "reach": 282,
+      "pos": {
+        "positive": 0.6667,
+        "neutral": 0.3333,
+        "negative": 0.0
+      },
+      "er_top": 0.080906,
+      "resp": {
+        "positive": 0.3333,
+        "neutral": 0.6667,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.072816,
+        "ci_hi": 0.135922,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.072816,
+        "ci_hi": 0.087379,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 243.0,
+        "ci_hi": 327.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.833333
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.3523,
+      "z_age": -0.1824,
+      "z_er_bg": 0.6491,
+      "z_top_vol": -0.1667,
+      "z_top_focus": 0.3923,
+      "z_reach": -0.241,
+      "structural_composite": 0.0381,
+      "topic_composite": -0.0051,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Маргарита Титова",
+      "screenName": "титова_м",
+      "followers": 336,
+      "topicPostCount": 3,
+      "baselinePostCount": 5,
+      "commentCount": 10,
+      "aud": 5.8201,
+      "age": 0.9414,
+      "er_bg": 0.094048,
+      "top_vol": 3,
+      "top_focus": 0.375,
+      "reach": 846,
+      "pos": {
+        "positive": 0.3333,
+        "neutral": 0.3333,
+        "negative": 0.3333
+      },
+      "er_top": 0.095238,
+      "resp": {
+        "positive": 0.7,
+        "neutral": 0.2,
+        "negative": 0.1
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.059524,
+        "ci_hi": 0.130357,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.089286,
+        "ci_hi": 0.104167,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 516.0,
+        "ci_hi": 1029.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.25,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.363636
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.0564,
+      "z_age": 0.4775,
+      "z_er_bg": 0.3844,
+      "z_top_vol": -0.1667,
+      "z_top_focus": -0.4904,
+      "z_reach": -0.0881,
+      "structural_composite": 0.2685,
+      "topic_composite": -0.2484,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Руслан Лазарев",
+      "screenName": "лазарев_р",
+      "followers": 60,
+      "topicPostCount": 4,
+      "baselinePostCount": 6,
+      "commentCount": 9,
+      "aud": 4.1109,
+      "age": 0.9269,
+      "er_bg": 0.125,
+      "top_vol": 4,
+      "top_focus": 0.4,
+      "reach": 224,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.5,
+        "negative": 0.0
+      },
+      "er_top": 0.154167,
+      "resp": {
+        "positive": 0.4444,
+        "neutral": 0.5556,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.091667,
+        "ci_hi": 0.161181,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.116667,
+        "ci_hi": 0.191667,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 190.0,
+        "ci_hi": 269.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.125,
+          "ci_hi": 0.833333
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -1.094,
+      "z_age": 0.3933,
+      "z_er_bg": 1.178,
+      "z_top_vol": 0.0,
+      "z_top_focus": -0.3923,
+      "z_reach": -0.2567,
+      "structural_composite": 0.1591,
+      "topic_composite": -0.2163,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Лариса Ильина",
+      "screenName": "ильина_л",
+      "followers": 294,
+      "topicPostCount": 3,
+      "baselinePostCount": 2,
+      "commentCount": 8,
+      "aud": 5.687,
+      "age": 0.6446,
+      "er_bg": 0.108844,
+      "top_vol": 3,
+      "top_focus": 0.6,
+      "reach": 816,
+      "pos": {
+        "positive": 0.6667,
+        "neutral": 0.3333,
+        "negative": 0.0
+      },
+      "er_top": 0.109977,
+      "resp": {
+        "positive": 0.625,
+        "neutral": 0.125,
+        "negative": 0.25
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.095238,
+        "ci_hi": 0.122449,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.081633,
+        "ci_hi": 0.142857,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 567.0,
+        "ci_hi": 1212.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.285714,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.666667
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.1372,
+      "z_age": -1.2466,
+      "z_er_bg": 0.7638,
+      "z_top_vol": -0.1667,
+      "z_top_focus": 0.3923,
+      "z_reach": -0.0962,
+      "structural_composite": -0.2067,
+      "topic_composite": 0.0431,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Вадим Беляев",
+      "screenName": "беляев_в",
+      "followers": 205,
+      "topicPostCount": 3,
+      "baselinePostCount": 3,
+      "commentCount": 5,
+      "aud": 5.3279,
+      "age": 0.8719,
+      "er_bg": 0.079675,
+      "top_vol": 3,
+      "top_focus": 0.5,
+      "reach": 375,
+      "pos": {
+        "positive": 0.0,
+        "neutral": 0.3333,
+        "negative": 0.6667
+      },
+      "er_top": 0.069919,
+      "resp": {
+        "positive": 0.4,
+        "neutral": 0.2,
+        "negative": 0.4
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.039024,
+        "ci_hi": 0.126829,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.053659,
+        "ci_hi": 0.092683,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 288.0,
+        "ci_hi": 534.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.3552,
+      "z_age": 0.0738,
+      "z_er_bg": 0.0159,
+      "z_top_vol": -0.1667,
+      "z_top_focus": 0.0,
+      "z_reach": -0.2158,
+      "structural_composite": -0.0885,
+      "topic_composite": -0.1275,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "CRITICAL",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Антон Мельников",
+      "screenName": "melnikov_dev",
+      "followers": 252,
+      "topicPostCount": 5,
+      "baselinePostCount": 8,
+      "commentCount": 39,
+      "aud": 5.5334,
+      "age": 0.844,
+      "er_bg": 0.074405,
+      "top_vol": 5,
+      "top_focus": 0.3846,
+      "reach": 1189,
+      "pos": {
+        "positive": 0.6,
+        "neutral": 0.0,
+        "negative": 0.4
+      },
+      "er_top": 0.123016,
+      "resp": {
+        "positive": 0.4103,
+        "neutral": 0.5385,
+        "negative": 0.0513
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.051587,
+        "ci_hi": 0.09871,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.106349,
+        "ci_hi": 0.137302,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 1006.0,
+        "ci_hi": 1372.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.2,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.8
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.171429,
+          "ci_hi": 0.642857
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.15
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.2305,
+      "z_age": -0.0883,
+      "z_er_bg": -0.1192,
+      "z_top_vol": 0.1667,
+      "z_top_focus": -0.4527,
+      "z_reach": 0.0049,
+      "structural_composite": -0.146,
+      "topic_composite": -0.0937,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Иван Барсуков",
+      "screenName": "барсуков_и",
+      "followers": 118,
+      "topicPostCount": 4,
+      "baselinePostCount": 5,
+      "commentCount": 6,
+      "aud": 4.7791,
+      "age": 0.8494,
+      "er_bg": 0.094915,
+      "top_vol": 4,
+      "top_focus": 0.4444,
+      "reach": 542,
+      "pos": {
+        "positive": 0.75,
+        "neutral": 0.25,
+        "negative": 0.0
+      },
+      "er_top": 0.127119,
+      "resp": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.074576,
+        "ci_hi": 0.115254,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.108051,
+        "ci_hi": 0.146186,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 328.0,
+        "ci_hi": 756.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.25,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 1.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.6884,
+      "z_age": -0.0569,
+      "z_er_bg": 0.4067,
+      "z_top_vol": 0.0,
+      "z_top_focus": -0.2181,
+      "z_reach": -0.1705,
+      "structural_composite": -0.1129,
+      "topic_composite": -0.1295,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Владислав Жуков",
+      "screenName": "жуков_в",
+      "followers": 83,
+      "topicPostCount": 3,
+      "baselinePostCount": 6,
+      "commentCount": 11,
+      "aud": 4.4308,
+      "age": 0.8411,
+      "er_bg": 0.130522,
+      "top_vol": 3,
+      "top_focus": 0.3333,
+      "reach": 301,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.164659,
+      "resp": {
+        "positive": 0.5455,
+        "neutral": 0.1818,
+        "negative": 0.2727
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.106426,
+        "ci_hi": 0.156627,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.120482,
+        "ci_hi": 0.216867,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 141.0,
+        "ci_hi": 573.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 1.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.166667,
+          "ci_hi": 0.909091
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.583333
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.8998,
+      "z_age": -0.1051,
+      "z_er_bg": 1.3196,
+      "z_top_vol": -0.1667,
+      "z_top_focus": -0.654,
+      "z_reach": -0.2358,
+      "structural_composite": 0.1049,
+      "topic_composite": -0.3522,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Валентина Вишнякова",
+      "screenName": "вишнякова_в",
+      "followers": 345,
+      "topicPostCount": 2,
+      "baselinePostCount": 5,
+      "commentCount": 4,
+      "aud": 5.8464,
+      "age": 0.9427,
+      "er_bg": 0.086957,
+      "top_vol": 2,
+      "top_focus": 0.2857,
+      "reach": 314,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.0,
+        "negative": 0.5
+      },
+      "er_top": 0.063768,
+      "resp": {
+        "positive": 0.75,
+        "neutral": 0.25,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.057391,
+        "ci_hi": 0.111884,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.055072,
+        "ci_hi": 0.072464,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 300.0,
+        "ci_hi": 328.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.0405,
+      "z_age": 0.485,
+      "z_er_bg": 0.2026,
+      "z_top_vol": -0.3333,
+      "z_top_focus": -0.8407,
+      "z_reach": -0.2323,
+      "structural_composite": 0.2157,
+      "topic_composite": -0.4688,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Степан Соловьёв",
+      "screenName": "соловьeв_с",
+      "followers": 203,
+      "topicPostCount": 3,
+      "baselinePostCount": 5,
+      "commentCount": 8,
+      "aud": 5.3181,
+      "age": 0.9125,
+      "er_bg": 0.081773,
+      "top_vol": 3,
+      "top_focus": 0.375,
+      "reach": 261,
+      "pos": {
+        "positive": 0.6667,
+        "neutral": 0.0,
+        "negative": 0.3333
+      },
+      "er_top": 0.070608,
+      "resp": {
+        "positive": 0.5,
+        "neutral": 0.25,
+        "negative": 0.25
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.052217,
+        "ci_hi": 0.116256,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.064039,
+        "ci_hi": 0.073892,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 210.0,
+        "ci_hi": 360.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.125,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.625
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.3612,
+      "z_age": 0.3096,
+      "z_er_bg": 0.0697,
+      "z_top_vol": -0.1667,
+      "z_top_focus": -0.4904,
+      "z_reach": -0.2467,
+      "structural_composite": 0.0061,
+      "topic_composite": -0.3012,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Оксана Котова",
+      "screenName": "котова_о",
+      "followers": 380,
+      "topicPostCount": 3,
+      "baselinePostCount": 3,
+      "commentCount": 9,
+      "aud": 5.9428,
+      "age": 0.8033,
+      "er_bg": 0.064035,
+      "top_vol": 3,
+      "top_focus": 0.5,
+      "reach": 1068,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.092105,
+      "resp": {
+        "positive": 0.4444,
+        "neutral": 0.3333,
+        "negative": 0.2222
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.05,
+        "ci_hi": 0.078947,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.065789,
+        "ci_hi": 0.115789,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 600.0,
+        "ci_hi": 1596.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 1.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.111111,
+          "ci_hi": 0.777778
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.666667
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.0181,
+      "z_age": -0.3247,
+      "z_er_bg": -0.385,
+      "z_top_vol": -0.1667,
+      "z_top_focus": 0.0,
+      "z_reach": -0.0279,
+      "structural_composite": -0.2306,
+      "topic_composite": -0.0649,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Евгений Черешнев",
+      "screenName": "chereshnev_e",
+      "followers": 2900,
+      "topicPostCount": 2,
+      "baselinePostCount": 14,
+      "commentCount": 24,
+      "aud": 7.9728,
+      "age": 0.9794,
+      "er_bg": 0.032906,
+      "top_vol": 2,
+      "top_focus": 0.125,
+      "reach": 1666,
+      "pos": {
+        "positive": 0.0,
+        "neutral": 1.0,
+        "negative": 0.0
+      },
+      "er_top": 0.040172,
+      "resp": {
+        "positive": 0.375,
+        "neutral": 0.375,
+        "negative": 0.25
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.024826,
+        "ci_hi": 0.040517,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.024138,
+        "ci_hi": 0.056207,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 748.0,
+        "ci_hi": 2584.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.125,
+          "ci_hi": 0.625
+        },
+        "negative_ci": {
+          "ci_lo": 0.083333,
+          "ci_hi": 0.416667
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 1.2504,
+      "z_age": 0.6982,
+      "z_er_bg": -1.1831,
+      "z_top_vol": -0.3333,
+      "z_top_focus": -1.4712,
+      "z_reach": 0.1342,
+      "structural_composite": 0.2552,
+      "topic_composite": -0.5568,
+      "role": "SLEEPING_GIANT",
+      "author_position": "NEUTRAL",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Александра Фролов",
+      "screenName": "фролов_а",
+      "followers": 170,
+      "topicPostCount": 2,
+      "baselinePostCount": 4,
+      "commentCount": 4,
+      "aud": 5.1417,
+      "age": 0.7225,
+      "er_bg": 0.139706,
+      "top_vol": 2,
+      "top_focus": 0.3333,
+      "reach": 263,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.5,
+        "negative": 0.0
+      },
+      "er_top": 0.120588,
+      "resp": {
+        "positive": 0.5,
+        "neutral": 0.5,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.108824,
+        "ci_hi": 0.166176,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.088235,
+        "ci_hi": 0.152941,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 212.0,
+        "ci_hi": 314.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.833333
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.4682,
+      "z_age": -0.7941,
+      "z_er_bg": 1.555,
+      "z_top_vol": -0.3333,
+      "z_top_focus": -0.654,
+      "z_reach": -0.2461,
+      "structural_composite": 0.0976,
+      "topic_composite": -0.4111,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Михаил Куликов",
+      "screenName": "куликов_м",
+      "followers": 329,
+      "topicPostCount": 3,
+      "baselinePostCount": 4,
+      "commentCount": 3,
+      "aud": 5.7991,
+      "age": 0.7727,
+      "er_bg": 0.083587,
+      "top_vol": 3,
+      "top_focus": 0.4286,
+      "reach": 783,
+      "pos": {
+        "positive": 0.6667,
+        "neutral": 0.0,
+        "negative": 0.3333
+      },
+      "er_top": 0.082067,
+      "resp": {
+        "positive": 0.0,
+        "neutral": 0.3333,
+        "negative": 0.6667
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.068389,
+        "ci_hi": 0.094225,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.06079,
+        "ci_hi": 0.112462,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 693.0,
+        "ci_hi": 954.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.25,
+          "ci_hi": 1.0
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.0692,
+      "z_age": -0.5025,
+      "z_er_bg": 0.1162,
+      "z_top_vol": -0.1667,
+      "z_top_focus": -0.2801,
+      "z_reach": -0.1052,
+      "structural_composite": -0.1518,
+      "topic_composite": -0.184,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "CRITICAL",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Светлана Романова",
+      "screenName": "romanova_sv",
+      "followers": 606,
+      "topicPostCount": 2,
+      "baselinePostCount": 12,
+      "commentCount": 20,
+      "aud": 6.4085,
+      "age": 0.8702,
+      "er_bg": 0.088009,
+      "top_vol": 2,
+      "top_focus": 0.1429,
+      "reach": 1513,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.0,
+        "negative": 0.5
+      },
+      "er_top": 0.141914,
+      "resp": {
+        "positive": 0.45,
+        "neutral": 0.35,
+        "negative": 0.2
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.070957,
+        "ci_hi": 0.104376,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.132013,
+        "ci_hi": 0.151815,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 1354.0,
+        "ci_hi": 1672.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.136364,
+          "ci_hi": 0.777778
+        },
+        "negative_ci": {
+          "ci_lo": 0.045455,
+          "ci_hi": 0.4
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.3008,
+      "z_age": 0.0639,
+      "z_er_bg": 0.2296,
+      "z_top_vol": -0.3333,
+      "z_top_focus": -1.4009,
+      "z_reach": 0.0927,
+      "structural_composite": 0.1981,
+      "topic_composite": -0.5472,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Евгения Крылова",
+      "screenName": "крылова_е",
+      "followers": 393,
+      "topicPostCount": 2,
+      "baselinePostCount": 3,
+      "commentCount": 5,
+      "aud": 5.9764,
+      "age": 0.8307,
+      "er_bg": 0.071247,
+      "top_vol": 2,
+      "top_focus": 0.4,
+      "reach": 804,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.0,
+        "negative": 0.5
+      },
+      "er_top": 0.108142,
+      "resp": {
+        "positive": 0.2,
+        "neutral": 0.2,
+        "negative": 0.6
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.050891,
+        "ci_hi": 0.091603,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.10687,
+        "ci_hi": 0.109415,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 642.0,
+        "ci_hi": 966.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.666667
+        },
+        "negative_ci": {
+          "ci_lo": 0.199167,
+          "ci_hi": 1.0
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.0385,
+      "z_age": -0.1656,
+      "z_er_bg": -0.2001,
+      "z_top_vol": -0.3333,
+      "z_top_focus": -0.3923,
+      "z_reach": -0.0995,
+      "structural_composite": -0.1091,
+      "topic_composite": -0.275,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "CRITICAL",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Даниил Медведев",
+      "screenName": "медведев_д",
+      "followers": 55,
+      "topicPostCount": 2,
+      "baselinePostCount": 4,
+      "commentCount": 6,
+      "aud": 4.0254,
+      "age": 0.986,
+      "er_bg": 0.1,
+      "top_vol": 2,
+      "top_focus": 0.3333,
+      "reach": 47,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.090909,
+      "resp": {
+        "positive": 0.5,
+        "neutral": 0.1667,
+        "negative": 0.3333
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.063636,
+        "ci_hi": 0.154545,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.072727,
+        "ci_hi": 0.109091,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 36.0,
+        "ci_hi": 58.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 1.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.125,
+          "ci_hi": 0.875
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.75
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -1.1459,
+      "z_age": 0.7366,
+      "z_er_bg": 0.537,
+      "z_top_vol": -0.3333,
+      "z_top_focus": -0.654,
+      "z_reach": -0.3047,
+      "structural_composite": 0.0426,
+      "topic_composite": -0.4307,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Диана Зайцева",
+      "screenName": "зайцева_д",
+      "followers": 162,
+      "topicPostCount": 2,
+      "baselinePostCount": 5,
+      "commentCount": 5,
+      "aud": 5.0938,
+      "age": 0.75,
+      "er_bg": 0.133333,
+      "top_vol": 2,
+      "top_focus": 0.2857,
+      "reach": 244,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.104938,
+      "resp": {
+        "positive": 0.6,
+        "neutral": 0.4,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.111111,
+        "ci_hi": 0.159259,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.074074,
+        "ci_hi": 0.135802,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 218.0,
+        "ci_hi": 270.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 1.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.166667,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.4973,
+      "z_age": -0.6343,
+      "z_er_bg": 1.3916,
+      "z_top_vol": -0.3333,
+      "z_top_focus": -0.8407,
+      "z_reach": -0.2513,
+      "structural_composite": 0.0867,
+      "topic_composite": -0.4751,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Олег Комаров",
+      "screenName": "комаров_о",
+      "followers": 67,
+      "topicPostCount": 3,
+      "baselinePostCount": 5,
+      "commentCount": 10,
+      "aud": 4.2195,
+      "age": 0.9621,
+      "er_bg": 0.086567,
+      "top_vol": 3,
+      "top_focus": 0.375,
+      "reach": 121,
+      "pos": {
+        "positive": 0.6667,
+        "neutral": 0.3333,
+        "negative": 0.0
+      },
+      "er_top": 0.169154,
+      "resp": {
+        "positive": 0.3,
+        "neutral": 0.6,
+        "negative": 0.1
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.059701,
+        "ci_hi": 0.110448,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.119403,
+        "ci_hi": 0.223881,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 75.0,
+        "ci_hi": 195.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.6
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.5
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -1.0281,
+      "z_age": 0.5977,
+      "z_er_bg": 0.1926,
+      "z_top_vol": -0.1667,
+      "z_top_focus": -0.4904,
+      "z_reach": -0.2846,
+      "structural_composite": -0.0792,
+      "topic_composite": -0.3139,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Илья Рябцев",
+      "screenName": "ryabtsev_il",
+      "followers": 426,
+      "topicPostCount": 5,
+      "baselinePostCount": 4,
+      "commentCount": 26,
+      "aud": 6.0568,
+      "age": 0.6612,
+      "er_bg": 0.058099,
+      "top_vol": 5,
+      "top_focus": 0.5556,
+      "reach": 1210,
+      "pos": {
+        "positive": 0.8,
+        "neutral": -0.0,
+        "negative": 0.2
+      },
+      "er_top": 0.087324,
+      "resp": {
+        "positive": 0.3462,
+        "neutral": 0.4231,
+        "negative": 0.2308
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.034038,
+        "ci_hi": 0.096831,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.076526,
+        "ci_hi": 0.097653,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 1012.0,
+        "ci_hi": 1466.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.4,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.6
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.111111,
+          "ci_hi": 0.653846
+        },
+        "negative_ci": {
+          "ci_lo": 0.035714,
+          "ci_hi": 0.48
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": 0.0873,
+      "z_age": -1.1502,
+      "z_er_bg": -0.5372,
+      "z_top_vol": 0.1667,
+      "z_top_focus": 0.2181,
+      "z_reach": 0.0106,
+      "structural_composite": -0.5334,
+      "topic_composite": 0.1318,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Виталий Никулин",
+      "screenName": "никулин_в",
+      "followers": 139,
+      "topicPostCount": 1,
+      "baselinePostCount": 6,
+      "commentCount": 2,
+      "aud": 4.9416,
+      "age": 0.9199,
+      "er_bg": 0.123501,
+      "top_vol": 1,
+      "top_focus": 0.1429,
+      "reach": 115,
+      "pos": {
+        "positive": 0.0,
+        "neutral": 0.0,
+        "negative": 1.0
+      },
+      "er_top": 0.158273,
+      "resp": {
+        "positive": 0.0,
+        "neutral": 0.5,
+        "negative": 0.5
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.093525,
+        "ci_hi": 0.154676,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": -0.5897,
+      "z_age": 0.3526,
+      "z_er_bg": 1.1396,
+      "z_top_vol": -0.5,
+      "z_top_focus": -1.4009,
+      "z_reach": -0.2862,
+      "structural_composite": 0.3008,
+      "topic_composite": -0.7291,
+      "role": "SLEEPING_GIANT",
+      "author_position": "CRITICAL",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Арина Борисова",
+      "screenName": "борисова_а",
+      "followers": 60,
+      "topicPostCount": 1,
+      "baselinePostCount": 2,
+      "commentCount": 3,
+      "aud": 4.1109,
+      "age": 0.7929,
+      "er_bg": 0.141667,
+      "top_vol": 1,
+      "top_focus": 0.3333,
+      "reach": 100,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.25,
+      "resp": {
+        "positive": 0.0,
+        "neutral": 0.3333,
+        "negative": 0.6667
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.116667,
+        "ci_hi": 0.166667,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": -1.094,
+      "z_age": -0.3851,
+      "z_er_bg": 1.6053,
+      "z_top_vol": -0.5,
+      "z_top_focus": -0.654,
+      "z_reach": -0.2903,
+      "structural_composite": 0.0421,
+      "topic_composite": -0.4814,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "CRITICAL",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Фёдор Макаров",
+      "screenName": "макаров_ф",
+      "followers": 255,
+      "topicPostCount": 3,
+      "baselinePostCount": 4,
+      "commentCount": 10,
+      "aud": 5.5452,
+      "age": 0.7507,
+      "er_bg": 0.078431,
+      "top_vol": 3,
+      "top_focus": 0.4286,
+      "reach": 643,
+      "pos": {
+        "positive": 0.3333,
+        "neutral": 0.0,
+        "negative": 0.6667
+      },
+      "er_top": 0.098039,
+      "resp": {
+        "positive": 0.5,
+        "neutral": 0.4,
+        "negative": 0.1
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.05,
+        "ci_hi": 0.105882,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.090196,
+        "ci_hi": 0.109804,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 288.0,
+        "ci_hi": 840.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.2,
+          "ci_hi": 0.8
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.4
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.2233,
+      "z_age": -0.6303,
+      "z_er_bg": -0.0159,
+      "z_top_vol": -0.1667,
+      "z_top_focus": -0.2801,
+      "z_reach": -0.1431,
+      "structural_composite": -0.2898,
+      "topic_composite": -0.1966,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "CRITICAL",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Ирина Сергеева",
+      "screenName": "сергеева_и",
+      "followers": 43,
+      "topicPostCount": 2,
+      "baselinePostCount": 2,
+      "commentCount": 3,
+      "aud": 3.7842,
+      "age": 0.8145,
+      "er_bg": 0.104651,
+      "top_vol": 2,
+      "top_focus": 0.5,
+      "reach": 65,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.104651,
+      "resp": {
+        "positive": 0.0,
+        "neutral": 0.6667,
+        "negative": 0.3333
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.093023,
+        "ci_hi": 0.116279,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.093023,
+        "ci_hi": 0.116279,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 38.0,
+        "ci_hi": 92.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 1.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -1.2923,
+      "z_age": -0.2597,
+      "z_er_bg": 0.6563,
+      "z_top_vol": -0.3333,
+      "z_top_focus": 0.0,
+      "z_reach": -0.2998,
+      "structural_composite": -0.2986,
+      "topic_composite": -0.211,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Полина Попова",
+      "screenName": "попова_п",
+      "followers": 155,
+      "topicPostCount": 3,
+      "baselinePostCount": 2,
+      "commentCount": 9,
+      "aud": 5.0499,
+      "age": 0.7604,
+      "er_bg": 0.054839,
+      "top_vol": 3,
+      "top_focus": 0.6,
+      "reach": 372,
+      "pos": {
+        "positive": 0.0,
+        "neutral": 0.6667,
+        "negative": 0.3333
+      },
+      "er_top": 0.137634,
+      "resp": {
+        "positive": 0.3333,
+        "neutral": 0.5556,
+        "negative": 0.1111
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.045161,
+        "ci_hi": 0.064516,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.077419,
+        "ci_hi": 0.180645,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 249.0,
+        "ci_hi": 513.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.666667
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.416667
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.524,
+      "z_age": -0.5739,
+      "z_er_bg": -0.6208,
+      "z_top_vol": -0.1667,
+      "z_top_focus": 0.3923,
+      "z_reach": -0.2166,
+      "structural_composite": -0.5729,
+      "topic_composite": 0.003,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "NEUTRAL",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Леонид Голубев",
+      "screenName": "голубев_л",
+      "followers": 168,
+      "topicPostCount": 2,
+      "baselinePostCount": 2,
+      "commentCount": 4,
+      "aud": 5.1299,
+      "age": 0.6022,
+      "er_bg": 0.098214,
+      "top_vol": 2,
+      "top_focus": 0.5,
+      "reach": 503,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.0,
+        "negative": 0.5
+      },
+      "er_top": 0.136905,
+      "resp": {
+        "positive": 0.5,
+        "neutral": 0.25,
+        "negative": 0.25
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.083333,
+        "ci_hi": 0.113095,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.107143,
+        "ci_hi": 0.166667,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 390.0,
+        "ci_hi": 616.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.75
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.4754,
+      "z_age": -1.4929,
+      "z_er_bg": 0.4913,
+      "z_top_vol": -0.3333,
+      "z_top_focus": 0.0,
+      "z_reach": -0.1811,
+      "structural_composite": -0.4923,
+      "topic_composite": -0.1715,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Галина Фомина",
+      "screenName": "фомина_г",
+      "followers": 136,
+      "topicPostCount": 3,
+      "baselinePostCount": 3,
+      "commentCount": 8,
+      "aud": 4.92,
+      "age": 0.4018,
+      "er_bg": 0.139706,
+      "top_vol": 3,
+      "top_focus": 0.5,
+      "reach": 615,
+      "pos": {
+        "positive": 0.3333,
+        "neutral": 0.3333,
+        "negative": 0.3333
+      },
+      "er_top": 0.164216,
+      "resp": {
+        "positive": 0.75,
+        "neutral": 0.125,
+        "negative": 0.125
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.080882,
+        "ci_hi": 0.220588,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.139706,
+        "ci_hi": 0.205882,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 441.0,
+        "ci_hi": 867.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.428571,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.416667
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.6028,
+      "z_age": -2.657,
+      "z_er_bg": 1.555,
+      "z_top_vol": -0.1667,
+      "z_top_focus": 0.0,
+      "z_reach": -0.1507,
+      "structural_composite": -0.5683,
+      "topic_composite": -0.1058,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Яков Третьяков",
+      "screenName": "третьяков_я",
+      "followers": 214,
+      "topicPostCount": 1,
+      "baselinePostCount": 6,
+      "commentCount": 4,
+      "aud": 5.3706,
+      "age": 0.8844,
+      "er_bg": 0.091121,
+      "top_vol": 1,
+      "top_focus": 0.1429,
+      "reach": 244,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.116822,
+      "resp": {
+        "positive": 0.5,
+        "neutral": 0.25,
+        "negative": 0.25
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.063065,
+        "ci_hi": 0.120717,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": -0.3293,
+      "z_age": 0.1464,
+      "z_er_bg": 0.3094,
+      "z_top_vol": -0.5,
+      "z_top_focus": -1.4009,
+      "z_reach": -0.2513,
+      "structural_composite": 0.0422,
+      "topic_composite": -0.7174,
+      "role": "SLEEPING_GIANT",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Людмила Власова",
+      "screenName": "власова_л",
+      "followers": 196,
+      "topicPostCount": 2,
+      "baselinePostCount": 5,
+      "commentCount": 4,
+      "aud": 5.2832,
+      "age": 0.6335,
+      "er_bg": 0.119388,
+      "top_vol": 2,
+      "top_focus": 0.2857,
+      "reach": 396,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.0,
+        "negative": 0.5
+      },
+      "er_top": 0.112245,
+      "resp": {
+        "positive": 0.75,
+        "neutral": 0.25,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.086735,
+        "ci_hi": 0.153138,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.096939,
+        "ci_hi": 0.127551,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 242.0,
+        "ci_hi": 550.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.3823,
+      "z_age": -1.3111,
+      "z_er_bg": 1.0341,
+      "z_top_vol": -0.3333,
+      "z_top_focus": -0.8407,
+      "z_reach": -0.2101,
+      "structural_composite": -0.2198,
+      "topic_composite": -0.4614,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Лидия Суханова",
+      "screenName": "суханова_л",
+      "followers": 71,
+      "topicPostCount": 3,
+      "baselinePostCount": 5,
+      "commentCount": 7,
+      "aud": 4.2767,
+      "age": 0.7106,
+      "er_bg": 0.101408,
+      "top_vol": 3,
+      "top_focus": 0.375,
+      "reach": 357,
+      "pos": {
+        "positive": 0.0,
+        "neutral": 1.0,
+        "negative": 0.0
+      },
+      "er_top": 0.192488,
+      "resp": {
+        "positive": 0.2857,
+        "neutral": 0.5714,
+        "negative": 0.1429
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.073169,
+        "ci_hi": 0.132394,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.169014,
+        "ci_hi": 0.239437,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 318.0,
+        "ci_hi": 411.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.833333
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.5
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.9933,
+      "z_age": -0.8632,
+      "z_er_bg": 0.5731,
+      "z_top_vol": -0.1667,
+      "z_top_focus": -0.4904,
+      "z_reach": -0.2206,
+      "structural_composite": -0.4278,
+      "topic_composite": -0.2926,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "NEUTRAL",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Нина Архипова",
+      "screenName": "архипова_н",
+      "followers": 201,
+      "topicPostCount": 3,
+      "baselinePostCount": 5,
+      "commentCount": 9,
+      "aud": 5.3083,
+      "age": 0.704,
+      "er_bg": 0.076617,
+      "top_vol": 3,
+      "top_focus": 0.375,
+      "reach": 356,
+      "pos": {
+        "positive": 0.3333,
+        "neutral": 0.6667,
+        "negative": 0.0
+      },
+      "er_top": 0.094527,
+      "resp": {
+        "positive": 0.5556,
+        "neutral": 0.3333,
+        "negative": 0.1111
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.045771,
+        "ci_hi": 0.110448,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.044776,
+        "ci_hi": 0.139303,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 291.0,
+        "ci_hi": 399.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.25,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.333333
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.3671,
+      "z_age": -0.9015,
+      "z_er_bg": -0.0625,
+      "z_top_vol": -0.1667,
+      "z_top_focus": -0.4904,
+      "z_reach": -0.2209,
+      "structural_composite": -0.4437,
+      "topic_composite": -0.2927,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "NEUTRAL",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Пётр Шестаков",
+      "screenName": "шестаков_п",
+      "followers": 358,
+      "topicPostCount": 1,
+      "baselinePostCount": 4,
+      "commentCount": 1,
+      "aud": 5.8833,
+      "age": 0.7686,
+      "er_bg": 0.086592,
+      "top_vol": 1,
+      "top_focus": 0.2,
+      "reach": 140,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.072626,
+      "resp": {
+        "positive": 0.0,
+        "neutral": 0.0,
+        "negative": 1.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.067039,
+        "ci_hi": 0.104749,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": -0.0181,
+      "z_age": -0.5263,
+      "z_er_bg": 0.1933,
+      "z_top_vol": -0.5,
+      "z_top_focus": -1.1769,
+      "z_reach": -0.2795,
+      "structural_composite": -0.117,
+      "topic_composite": -0.6521,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "CRITICAL",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Алиса Тихонова",
+      "screenName": "тихонова_а",
+      "followers": 103,
+      "topicPostCount": 1,
+      "baselinePostCount": 5,
+      "commentCount": 4,
+      "aud": 4.6444,
+      "age": 0.7957,
+      "er_bg": 0.11068,
+      "top_vol": 1,
+      "top_focus": 0.1667,
+      "reach": 59,
+      "pos": {
+        "positive": 0.0,
+        "neutral": 1.0,
+        "negative": 0.0
+      },
+      "er_top": 0.116505,
+      "resp": {
+        "positive": 0.5,
+        "neutral": 0.5,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.097087,
+        "ci_hi": 0.126214,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": -0.7701,
+      "z_age": -0.3689,
+      "z_er_bg": 0.8109,
+      "z_top_vol": -0.5,
+      "z_top_focus": -1.3076,
+      "z_reach": -0.3014,
+      "structural_composite": -0.1094,
+      "topic_composite": -0.703,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "NEUTRAL",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Тимофей Семёнов",
+      "screenName": "семeнов_т",
+      "followers": 42,
+      "topicPostCount": 2,
+      "baselinePostCount": 4,
+      "commentCount": 5,
+      "aud": 3.7612,
+      "age": 0.8982,
+      "er_bg": 0.071429,
+      "top_vol": 2,
+      "top_focus": 0.3333,
+      "reach": 32,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.107143,
+      "resp": {
+        "positive": 0.8,
+        "neutral": 0.2,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.041667,
+        "ci_hi": 0.095238,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.095238,
+        "ci_hi": 0.119048,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 30.0,
+        "ci_hi": 34.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 1.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.25,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.0
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -1.3063,
+      "z_age": 0.2265,
+      "z_er_bg": -0.1955,
+      "z_top_vol": -0.3333,
+      "z_top_focus": -0.654,
+      "z_reach": -0.3087,
+      "structural_composite": -0.4251,
+      "topic_composite": -0.432,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Григорий Панов",
+      "screenName": "панов_г",
+      "followers": 214,
+      "topicPostCount": 1,
+      "baselinePostCount": 6,
+      "commentCount": 3,
+      "aud": 5.3706,
+      "age": 0.8043,
+      "er_bg": 0.086449,
+      "top_vol": 1,
+      "top_focus": 0.1429,
+      "reach": 297,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.121495,
+      "resp": {
+        "positive": 0.3333,
+        "neutral": 0.6667,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.066199,
+        "ci_hi": 0.107477,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": -0.3293,
+      "z_age": -0.3189,
+      "z_er_bg": 0.1896,
+      "z_top_vol": -0.5,
+      "z_top_focus": -1.4009,
+      "z_reach": -0.2369,
+      "structural_composite": -0.1529,
+      "topic_composite": -0.7126,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Софья Данилова",
+      "screenName": "данилова_с",
+      "followers": 315,
+      "topicPostCount": 4,
+      "baselinePostCount": 3,
+      "commentCount": 8,
+      "aud": 5.7557,
+      "age": 0.2738,
+      "er_bg": 0.104762,
+      "top_vol": 4,
+      "top_focus": 0.5714,
+      "reach": 646,
+      "pos": {
+        "positive": 0.5,
+        "neutral": 0.0,
+        "negative": 0.5
+      },
+      "er_top": 0.061111,
+      "resp": {
+        "positive": 0.375,
+        "neutral": 0.25,
+        "negative": 0.375
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.08254,
+        "ci_hi": 0.139683,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": {
+        "ci_lo": 0.046032,
+        "ci_hi": 0.081746,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "reach_ci": {
+        "ci_lo": 361.0,
+        "ci_hi": 1007.0,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "pos_ci": {
+        "positive_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 1.0
+        },
+        "procedure": "one_level_distribution",
+        "B": 1000
+      },
+      "resp_ci": {
+        "positive_ci": {
+          "ci_lo": 0.076923,
+          "ci_hi": 0.833333
+        },
+        "negative_ci": {
+          "ci_lo": 0.0,
+          "ci_hi": 0.8
+        },
+        "procedure": "two_level",
+        "B_outer": 300,
+        "B_inner": 100
+      },
+      "z_aud": -0.0955,
+      "z_age": -3.4005,
+      "z_er_bg": 0.6591,
+      "z_top_vol": 0.0,
+      "z_top_focus": 0.2801,
+      "z_reach": -0.1423,
+      "structural_composite": -0.9456,
+      "topic_composite": 0.0459,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Эдуард Калашников",
+      "screenName": "калашников_э",
+      "followers": 252,
+      "topicPostCount": 1,
+      "baselinePostCount": 2,
+      "commentCount": 1,
+      "aud": 5.5334,
+      "age": 0.5842,
+      "er_bg": 0.087302,
+      "top_vol": 1,
+      "top_focus": 0.3333,
+      "reach": 144,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.087302,
+      "resp": {
+        "positive": 0.0,
+        "neutral": 1.0,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.075397,
+        "ci_hi": 0.099206,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": -0.2305,
+      "z_age": -1.5974,
+      "z_er_bg": 0.2115,
+      "z_top_vol": -0.5,
+      "z_top_focus": -0.654,
+      "z_reach": -0.2784,
+      "structural_composite": -0.5388,
+      "topic_composite": -0.4775,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Георгий Гусев",
+      "screenName": "гусев_г",
+      "followers": 341,
+      "topicPostCount": 1,
+      "baselinePostCount": 6,
+      "commentCount": 4,
+      "aud": 5.8348,
+      "age": 0.5721,
+      "er_bg": 0.082111,
+      "top_vol": 1,
+      "top_focus": 0.1429,
+      "reach": 111,
+      "pos": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_top": 0.090909,
+      "resp": {
+        "positive": 1.0,
+        "neutral": 0.0,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.053763,
+        "ci_hi": 0.110459,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": -0.0475,
+      "z_age": -1.6677,
+      "z_er_bg": 0.0784,
+      "z_top_vol": -0.5,
+      "z_top_focus": -1.4009,
+      "z_reach": -0.2873,
+      "structural_composite": -0.5456,
+      "topic_composite": -0.7294,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "SUPPORTIVE",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Захар Цветков",
+      "screenName": "цветков_з",
+      "followers": 209,
+      "topicPostCount": 1,
+      "baselinePostCount": 3,
+      "commentCount": 2,
+      "aud": 5.3471,
+      "age": 0.5267,
+      "er_bg": 0.087719,
+      "top_vol": 1,
+      "top_focus": 0.25,
+      "reach": 91,
+      "pos": {
+        "positive": 0.0,
+        "neutral": 0.0,
+        "negative": 1.0
+      },
+      "er_top": 0.090909,
+      "resp": {
+        "positive": 0.0,
+        "neutral": 0.5,
+        "negative": 0.5
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.066986,
+        "ci_hi": 0.129187,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": -0.3436,
+      "z_age": -1.9315,
+      "z_er_bg": 0.2222,
+      "z_top_vol": -0.5,
+      "z_top_focus": -0.9808,
+      "z_reach": -0.2927,
+      "structural_composite": -0.6843,
+      "topic_composite": -0.5912,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "CRITICAL",
+      "audience_response": "MIXED",
+      "data_sufficiency": "UNRELIABLE"
+    },
+    {
+      "author": "Карина Быкова",
+      "screenName": "быкова_к",
+      "followers": 213,
+      "topicPostCount": 1,
+      "baselinePostCount": 4,
+      "commentCount": 4,
+      "aud": 5.366,
+      "age": 0.5764,
+      "er_bg": 0.079812,
+      "top_vol": 1,
+      "top_focus": 0.2,
+      "reach": 101,
+      "pos": {
+        "positive": 0.0,
+        "neutral": 1.0,
+        "negative": 0.0
+      },
+      "er_top": 0.079812,
+      "resp": {
+        "positive": 0.75,
+        "neutral": 0.25,
+        "negative": 0.0
+      },
+      "er_bg_ci": {
+        "ci_lo": 0.046948,
+        "ci_hi": 0.110329,
+        "procedure": "one_level",
+        "B": 1000
+      },
+      "er_top_ci": null,
+      "reach_ci": null,
+      "pos_ci": null,
+      "resp_ci": null,
+      "z_aud": -0.3321,
+      "z_age": -1.6428,
+      "z_er_bg": 0.0195,
+      "z_top_vol": -0.5,
+      "z_top_focus": -1.1769,
+      "z_reach": -0.29,
+      "structural_composite": -0.6518,
+      "topic_composite": -0.6557,
+      "role": "BACKGROUND_AUTHOR",
+      "author_position": "NEUTRAL",
+      "audience_response": "APPROVING",
+      "data_sufficiency": "UNRELIABLE"
+    }
+  ]
+}

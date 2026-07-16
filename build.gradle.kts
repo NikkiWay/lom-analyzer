@@ -26,6 +26,7 @@ val flywayVersion = "10.21.0"
 dependencies {
     // Compose Desktop
     implementation(compose.desktop.currentOs)
+    implementation(compose.materialIconsExtended)
 
     // Ktor Client (CIO)
     implementation("io.ktor:ktor-client-core:$ktorVersion")

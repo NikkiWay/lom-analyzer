@@ -1,0 +1,1 @@
+ALTER TABLE analysis_session ADD COLUMN role_mode TEXT NOT NULL DEFAULT 'QUADRANT';

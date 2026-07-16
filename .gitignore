@@ -27,6 +27,12 @@ __pycache__/
 logs/
 app_data/
 
+# Downloaded ML model weights (HuggingFace cache, ~115 MB; fetched at first run)
+models/
+
+# Scratch Gradle experiment, not part of the build
+sample-search/
+
 # OS files
 .DS_Store
 Thumbs.db

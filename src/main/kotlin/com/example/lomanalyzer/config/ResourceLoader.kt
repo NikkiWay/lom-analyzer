@@ -1,95 +1,61 @@
+/*
+ * НАЗНАЧЕНИЕ
+ * Загрузчик встроенных (bundled) ресурсов из classpath: словарь тональности
+ * (sentilex) и тестовый корпус. Дополнительно умеет считать SHA-256 ресурса для
+ * проверки целостности.
+ *
+ * ЧТО ВНУТРИ
+ * Класс ResourceLoader: loadSentilex(), loadTestCorpus(), computeSha256() и
+ * приватные помощники loadResource() (чтение из classpath) и sha256() (хеш).
+ *
+ * СВЯЗИ
+ * Регистрируется как single в Koin (di/AppModule.kt). Словарь sentilex
+ * используется резервным (fallback) словарным сентиментом (analysis/content/),
+ * тест-корпус — в тестах/бенчмарках. Логирование — через Logger (observability/).
+ *
+ * БИБЛИОТЕКИ
+ * java.security.MessageDigest — вычисление SHA-256; стандартное чтение ресурсов
+ * через getResourceAsStream.
+ */
 package com.example.lomanalyzer.config
 
-import com.example.lomanalyzer.observability.AppEvent
 import com.example.lomanalyzer.observability.Logger
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import java.security.MessageDigest
 
-@Serializable
-data class QuantileStats(
-    val q10: Double = 0.0,
-    val q25: Double = 0.0,
-    val q50: Double = 0.0,
-    val q75: Double = 0.0,
-    val q90: Double = 0.0,
-    val iqr: Double = 0.0,
-)
-
-@Serializable
-data class IBasePercentiles(val p50: Double = 0.0, val p75: Double = 0.0, val p90: Double = 0.0)
-
-@Serializable
-data class RawQuantileStatistics(
-    @SerialName("ln_F") val lnF: QuantileStats = QuantileStats(),
-    @SerialName("ln_r_bar") val lnRBar: QuantileStats = QuantileStats(),
-)
-
-@Serializable
-data class ComputedStatsAtGamma(
-    @SerialName("E_raw_at_gamma_0_45") val eRawAtGamma: QuantileStats = QuantileStats(),
-    @SerialName("I_base_at_gamma_0_45") val iBaseAtGamma: IBasePercentiles = IBasePercentiles(),
-)
-
-@Serializable
-data class IBaseThresholds(
-    @SerialName("tau_base_p75_at_gamma_ref") val tauBaseP75: Double = 0.78,
-    @SerialName("F_p75") val fP75: Int = 13000,
-)
-
-@Serializable
-data class ReferenceBase(
-    val version: String = "",
-    @SerialName("collected_at") val collectedAt: String = "",
-    @SerialName("sample_size") val sampleSize: Int = 0,
-    @SerialName("gamma_used_in_collection") val gammaUsedInCollection: Double = 0.45,
-    @SerialName("raw_quantile_statistics") val rawQuantileStatistics: RawQuantileStatistics = RawQuantileStatistics(),
-    @SerialName("computed_statistics_at_gamma_ref")
-    val computedStatsAtGammaRef: ComputedStatsAtGamma = ComputedStatsAtGamma(),
-    @SerialName("I_base_thresholds") val iBaseThresholds: IBaseThresholds = IBaseThresholds(),
-)
-
+/**
+ * Loads bundled resources (sentilex dictionary, test corpus, etc.).
+ *
+ * Загружает встроенные ресурсы (словарь sentilex, тестовый корпус и т. п.).
+ *
+ * @param logger логгер для диагностики (observability/).
+ */
 class ResourceLoader(private val logger: Logger) {
-    private val json = Json { ignoreUnknownKeys = true }
-
-    var referenceBase: ReferenceBase? = null
-        private set
-
-    @Suppress("ReturnCount")
-    fun loadReferenceBase(expectedSha256: String? = null): ReferenceBase? {
-        val content = loadResource("/resources/reference_base.json") ?: return null
-        if (expectedSha256 != null && !verifySha256(content, expectedSha256)) {
-            logger.event(AppEvent.REFERENCE_BASE_MISMATCH, mapOf(
-                "expected" to expectedSha256,
-                "actual" to sha256(content),
-            ))
-            return null
-        }
-        referenceBase = json.decodeFromString<ReferenceBase>(content)
-        logger.event(AppEvent.REFERENCE_BASE_LOADED, mapOf(
-            "version" to (referenceBase?.version ?: "unknown"),
-        ))
-        return referenceBase
-    }
-
-    fun loadHolidays(): String? = loadResource("/resources/holidays.json")
+    /** Загружает JSON словаря тональности sentilex; null, если ресурс не найден. */
     fun loadSentilex(): String? = loadResource("/resources/sentilex_base.json")
+
+    /** Загружает JSON тестового корпуса; null, если ресурс не найден. */
     fun loadTestCorpus(): String? = loadResource("/resources/test_corpus.json")
 
+    /**
+     * Считает SHA-256 содержимого ресурса (для проверки целостности).
+     *
+     * @param resourcePath путь к ресурсу в classpath.
+     * @return hex-строку хеша или null, если ресурс не найден.
+     */
     fun computeSha256(resourcePath: String): String? {
+        // Сначала читаем содержимое; если ресурса нет — хеш не считаем
         val content = loadResource(resourcePath) ?: return null
         return sha256(content)
     }
 
+    /** Читает текстовый ресурс из classpath в строку; null, если ресурс отсутствует. */
     private fun loadResource(path: String): String? =
         ResourceLoader::class.java.getResourceAsStream(path)?.bufferedReader()?.readText()
 
-    private fun verifySha256(content: String, expected: String): Boolean =
-        sha256(content).equals(expected, ignoreCase = true)
-
+    /** Вычисляет SHA-256 от UTF-8-байтов строки и возвращает hex-представление. */
     private fun sha256(content: String): String {
         val digest = MessageDigest.getInstance("SHA-256")
+        // Каждый байт хеша форматируем как две hex-цифры и склеиваем в строку
         return digest.digest(content.toByteArray(Charsets.UTF_8))
             .joinToString("") { "%02x".format(it) }
     }
