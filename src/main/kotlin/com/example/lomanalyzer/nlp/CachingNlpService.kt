@@ -121,16 +121,19 @@ class CachingNlpService(
 
     /** Пакетный sentiment постов с кэшем (режим "dostoevsky"). */
     override suspend fun batchSentimentForPosts(texts: List<String>): List<SentimentDistribution> =
-        batchSentimentCached(texts, "dostoevsky")
+        batchSentiment(texts, "dostoevsky").map { sentimentDistribution(it) }
 
     /** Пакетный sentiment комментариев с кэшем (режим "dostoevsky_short"). */
     override suspend fun batchSentimentForComments(texts: List<String>): List<SentimentDistribution> =
-        batchSentimentCached(texts, "dostoevsky_short")
+        batchSentiment(texts, "dostoevsky_short").map { sentimentDistribution(it) }
 
-    /** Общая логика кэшированного батч-sentiment: кэш -> добор некэшированных -> запись. */
-    private suspend fun batchSentimentCached(texts: List<String>, mode: String): List<SentimentDistribution> {
+    /**
+     * Пакетный sentiment с кэшем: чтение кэша одним запросом, добор некэшированных
+     * одним обращением к модели, запись результатов.
+     */
+    override suspend fun batchSentiment(texts: List<String>, mode: String): List<SentimentScore> {
         // Массив результатов фиксированного размера, чтобы сохранить исходный порядок
-        val results = arrayOfNulls<SentimentDistribution>(texts.size)
+        val results = arrayOfNulls<SentimentScore>(texts.size)
         val uncachedIndices = mutableListOf<Int>()
         val uncachedTexts = mutableListOf<String>()
 
@@ -145,7 +148,7 @@ class CachingNlpService(
             val score = cached?.get(NlpResults.score)
             val method = cached?.get(NlpResults.method)
             if (sentiment != null && score != null && method != null) {
-                results[i] = sentimentDistribution(SentimentScore(sentiment, score, method))
+                results[i] = SentimentScore(sentiment, score, method)
             } else {
                 uncachedIndices.add(i)
                 uncachedTexts.add(text)
@@ -153,18 +156,21 @@ class CachingNlpService(
         }
 
         if (uncachedTexts.isNotEmpty()) {
-            // Считаем sentiment для некэшированных и сохраняем результаты в кэш
-            val batchScores = uncachedTexts.map { delegate.scoreSentiment(it, mode) }
+            // Некэшированные уходят в модель ОДНИМ пакетным вызовом: поштучный
+            // scoreSentiment сводил бы пакетный режим к N обращениям к sidecar.
+            val computed = delegate.batchSentiment(uncachedTexts, mode)
             for ((j, idx) in uncachedIndices.withIndex()) {
-                val ss = batchScores[j]
-                results[idx] = sentimentDistribution(ss)
-                nlpResultDao.insertSentiment(sha256(texts[idx]), ss.label, ss.score, ss.method, modelVersion)
+                val score = computed[j]
+                results[idx] = score
+                nlpResultDao.insertSentiment(
+                    sha256(texts[idx]), score.label, score.score, score.method, modelVersion,
+                )
             }
         }
 
         // К этому моменту все ячейки заполнены — безопасно приводим к не-nullable
         @Suppress("UNCHECKED_CAST")
-        return (results as Array<SentimentDistribution>).toList()
+        return (results as Array<SentimentScore>).toList()
     }
 
     /** Вычисляет SHA-256 текста в виде hex-строки — ключ кэша. */

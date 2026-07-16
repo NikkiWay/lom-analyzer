@@ -60,6 +60,19 @@ interface NlpService {
     suspend fun batchLemmatize(texts: List<String>): List<List<String>> =
         texts.map { lemmatize(it).lemmas }
 
+    /**
+     * Тональность батча текстов: метка и оценка на каждый текст.
+     *
+     * Объявлен в интерфейсе, а не только в реализации sidecar, чтобы вызов
+     * проходил через декораторы (CachingNlpService) — иначе добраться до
+     * пакетного режима можно было бы лишь приведением типа к конкретной
+     * реализации, а на обёртке такое приведение не срабатывает.
+     *
+     * Реализация по умолчанию делегирует одиночному методу.
+     */
+    suspend fun batchSentiment(texts: List<String>, mode: String = "dostoevsky"): List<SentimentScore> =
+        texts.map { scoreSentiment(it, mode) }
+
     /** Тональность батча постов: распределение {positive, neutral, negative}. */
     suspend fun batchSentimentForPosts(texts: List<String>): List<SentimentDistribution> =
         texts.map { sentimentDistribution(scoreSentiment(it)) }

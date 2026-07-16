@@ -46,15 +46,26 @@ class CachingNlpServiceTest {
     /** Заглушка модели: считает вызовы и запоминает, что у неё спрашивали. */
     private class CountingNlpService : NlpService {
         var batchLemmatizeCalls = 0
+        var batchSentimentCalls = 0
+        var scoreSentimentCalls = 0
         val lemmatizeRequested = mutableListOf<String>()
+        val sentimentRequested = mutableListOf<String>()
 
         override suspend fun lemmatize(text: String) = LemmatizeResult(listOf(text.lowercase()))
         override suspend fun detectLanguage(text: String) = LanguageDetectResult("ru", 1.0f)
-        override suspend fun scoreSentiment(text: String, mode: String) =
-            SentimentScore("POSITIVE", 0.9f, "stub")
+        override suspend fun scoreSentiment(text: String, mode: String): SentimentScore {
+            scoreSentimentCalls++
+            return SentimentScore("POSITIVE", 0.9f, "stub")
+        }
         override suspend fun semanticSimilarity(a: String, b: String) = SimilarityResult(0.5f)
         override suspend fun embed(text: String) = EmbeddingResult(listOf(0f))
         override suspend fun extractEntities(text: String): List<NerEntity> = emptyList()
+
+        override suspend fun batchSentiment(texts: List<String>, mode: String): List<SentimentScore> {
+            batchSentimentCalls++
+            sentimentRequested.addAll(texts)
+            return texts.map { SentimentScore("NEGATIVE", 0.7f, "stub_batch") }
+        }
 
         override suspend fun batchLemmatize(texts: List<String>): List<List<String>> {
             batchLemmatizeCalls++
@@ -178,5 +189,49 @@ class CachingNlpServiceTest {
 
         assertEquals(emptyList<List<String>>(), result)
         assertEquals(0, delegate.batchLemmatizeCalls)
+    }
+
+    /**
+     * Пакетная тональность доходит до модели ОДНИМ вызовом.
+     *
+     * Регрессия: раньше декоратор внутри «пакетного» метода вызывал
+     * delegate.scoreSentiment на каждый текст, то есть пакетный режим сводился к
+     * N обращениям к sidecar — ровно то, ради устранения чего он и существует.
+     */
+    @Test
+    fun `batch sentiment reaches the model in one call`() = runBlocking {
+        val texts = (1..10).map { "текст $it" }
+
+        val result = caching.batchSentiment(texts)
+
+        assertEquals(1, delegate.batchSentimentCalls, "batch must be one call to the model")
+        assertEquals(0, delegate.scoreSentimentCalls, "no per-text calls in a batch path")
+        assertEquals(10, result.size)
+        assertEquals("NEGATIVE", result[0].label, "result must come from the batch path")
+    }
+
+    /** Повторная пакетная тональность берётся из кэша, модель не вызывается. */
+    @Test
+    fun `second batch sentiment is served from cache`() = runBlocking {
+        val texts = listOf("экология", "загрязнение")
+
+        val first = caching.batchSentiment(texts)
+        val second = caching.batchSentiment(texts)
+
+        assertEquals(1, delegate.batchSentimentCalls, "cached batch must not reach the model")
+        assertEquals(first.map { it.label }, second.map { it.label })
+    }
+
+    /** При частичном попадании в модель уходят только некэшированные тексты, порядок сохраняется. */
+    @Test
+    fun `partial sentiment hit asks the model only for uncached texts`() = runBlocking {
+        caching.batchSentiment(listOf("первый"))
+        delegate.sentimentRequested.clear()
+
+        val result = caching.batchSentiment(listOf("первый", "второй", "третий"))
+
+        assertEquals(listOf("второй", "третий"), delegate.sentimentRequested)
+        assertEquals(3, result.size)
+        assertTrue(result.all { it.label == "NEGATIVE" }, "cached and fresh must agree")
     }
 }

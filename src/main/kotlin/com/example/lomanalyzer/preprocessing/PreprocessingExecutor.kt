@@ -25,7 +25,6 @@
 package com.example.lomanalyzer.preprocessing
 
 import com.example.lomanalyzer.nlp.NlpServiceSelector
-import com.example.lomanalyzer.nlp.PythonSidecarNlpService
 import com.example.lomanalyzer.observability.AppEvent
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.orchestration.PipelineStage
@@ -67,10 +66,12 @@ class PreprocessingExecutor(
     @Suppress("LongMethod", "TooGenericExceptionCaught", "CyclomaticComplexMethod")
     override suspend fun execute(sessionId: Int, stage: PipelineStage) {
         logger.event(AppEvent.PREPROCESSING_STARTED, mapOf("session_id" to sessionId))
-        // Выбираем NLP-сервис; если это Python sidecar — включаем пакетный режим
+        // Режим берём у селектора. Раньше здесь стояло приведение
+        // `getService() as? PythonSidecarNlpService`, но getService() возвращает
+        // декоратор CachingNlpService, и приведение всегда давало null: пакетный
+        // режим не включался ни разу, даже при работающем sidecar.
         val nlpService = nlpServiceSelector.getService()
-        val pythonService = nlpService as? PythonSidecarNlpService
-        val usePython = pythonService != null
+        val usePython = nlpServiceSelector.mode == "FULL"
 
         val posts = postDao.findBySession(sessionId)
         val total = posts.size
@@ -121,8 +122,8 @@ class PreprocessingExecutor(
             val result = mutableListOf<List<String>>()
             for (chunk in textsForLemma.chunked(BATCH_SIZE)) {
                 try {
-                    // Запрос к sidecar; приводим леммы к нижнему регистру
-                    val batch = pythonService!!.batchLemmatize(chunk)
+                    // Запрос к sidecar через кэширующий слой; леммы — в нижний регистр
+                    val batch = nlpService.batchLemmatize(chunk)
                     result.addAll(batch.map { it.map { l -> l.lowercase() } })
                 } catch (e: Exception) {
                     // Мягкая деградация: при сбое батча стеммим этот чанк локально в Kotlin
@@ -137,10 +138,22 @@ class PreprocessingExecutor(
             }
             result
         } else {
-            // Fallback-режим: лемматизация (стемминг) целиком в Kotlin
-            textsForLemma.map { text ->
-                lemmatizer.stemFallback(text.split(" ").filter { it.isNotBlank() }).map { it.lemma }
+            // Fallback-режим: лемматизация (стемминг) целиком в Kotlin.
+            // Прогресс обновляется чанками той же величины, что и в режиме sidecar:
+            // без этого экран замирал на последнем сообщении шага 1 до конца этапа.
+            val result = mutableListOf<List<String>>()
+            for (chunk in textsForLemma.chunked(BATCH_SIZE)) {
+                result.addAll(
+                    chunk.map { text ->
+                        lemmatizer.stemFallback(text.split(" ").filter { it.isNotBlank() })
+                            .map { it.lemma }
+                    },
+                )
+                progressReporter.update(ProgressEvent(
+                    "Лемматизация: ${result.size}/$total", result.size, total,
+                ))
             }
+            result
         }
 
         // Сохраняем леммы (как JSON) в processed_texts
@@ -163,7 +176,7 @@ class PreprocessingExecutor(
             val texts = currentPosts.map { it.cleanText }
             for ((chunkIdx, chunk) in texts.chunked(BATCH_SIZE).withIndex()) {
                 try {
-                    val scores = pythonService!!.batchSentiment(chunk)
+                    val scores = nlpService.batchSentiment(chunk)
                     // offset — смещение чанка в исходном списке для сопоставления результатов
                     val offset = chunkIdx * BATCH_SIZE
                     for ((j, score) in scores.withIndex()) {
@@ -193,8 +206,9 @@ class PreprocessingExecutor(
                 ))
             }
         } else {
-            // Fallback-режим: поштучный словарный sentiment в Kotlin
-            for (cp in currentPosts) {
+            // Fallback-режим: поштучный словарный sentiment в Kotlin.
+            // Прогресс отчитывается чанками — иначе экран стоит до конца этапа.
+            for ((index, cp) in currentPosts.withIndex()) {
                 try {
                     val s = nlpService.scoreSentiment(cp.cleanText)
                     sentimentResultDao.insert(
@@ -213,6 +227,12 @@ class PreprocessingExecutor(
                         method = "fallback_error",
                     )
                 }
+                if ((index + 1) % BATCH_SIZE == 0 || index == currentPosts.size - 1) {
+                    progressReporter.update(ProgressEvent(
+                        "Сентимент постов: ${index + 1}/${currentPosts.size}",
+                        index + 1, currentPosts.size,
+                    ))
+                }
             }
         }
 
@@ -227,7 +247,7 @@ class PreprocessingExecutor(
             val texts = commentsWithText.map { it[Comments.text] ?: "" }
             for ((chunkIdx, chunk) in texts.chunked(BATCH_SIZE).withIndex()) {
                 try {
-                    val scores = pythonService!!.batchSentiment(chunk)
+                    val scores = nlpService.batchSentiment(chunk)
                     val offset = chunkIdx * BATCH_SIZE
                     for ((j, score) in scores.withIndex()) {
                         sentimentResultDao.insert(
@@ -263,8 +283,9 @@ class PreprocessingExecutor(
                 ))
             }
         } else {
-            // Fallback-режим: поштучный словарный sentiment комментариев
-            for (comment in commentsWithText) {
+            // Fallback-режим: поштучный словарный sentiment комментариев.
+            // Прогресс отчитывается чанками — иначе экран стоит до конца этапа.
+            for ((index, comment) in commentsWithText.withIndex()) {
                 val cid = comment[Comments.id].value
                 val text = comment[Comments.text] ?: ""
                 try {

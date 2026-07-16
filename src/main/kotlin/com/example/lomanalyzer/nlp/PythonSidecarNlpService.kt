@@ -124,7 +124,7 @@ class PythonSidecarNlpService(
     }
 
     /** Пакетный sentiment через /batch/sentiment (используется в PreprocessingExecutor). */
-    suspend fun batchSentiment(texts: List<String>): List<SentimentScore> {
+    override suspend fun batchSentiment(texts: List<String>, mode: String): List<SentimentScore> {
         val textsJson = texts.joinToString(",") { "\"${escapeJson(it)}\"" }
         val resp: BatchSentimentResponse = post("/batch/sentiment", """{"texts":[$textsJson]}""")
         return resp.results.map { SentimentScore(it.label, it.score, "MODEL") }
