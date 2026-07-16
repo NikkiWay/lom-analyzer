@@ -8,16 +8,16 @@
  *
  * ЧТО ВНУТРИ
  * @Composable ScatterPlot — легенда + Canvas. Приватные хелперы: positionColor
- * (цвет по тональности позиции), lerpColor (интерполяция цвета), niceMax/niceTicks/
- * fmtTick (красивые границы и засечки осей), DrawScope.drawScatterContent (вся
- * низкоуровневая отрисовка: квадранты, сетка, оси, пороговые линии, подписи, точки).
+ * (цвет по тональности позиции), niceMax/niceTicks/fmtTick (красивые границы и
+ * засечки осей), DrawScope.drawScatterContent (вся низкоуровневая отрисовка:
+ * квадранты, сетка, оси, пороговые линии, подписи, точки).
  *
  * МЕТОД
- * Цвет точки: градиент зелёный→серый→красный по score = posPositive − posNegative,
- * интенсивность = sqrt|score| (усиливает малые отклонения). Размер точки растёт с
- * тематическим ER. Подписи имён расставляются жадно без наложений, приоритет — по
- * сумме композитов. Квадранты: активист, авторитетный лидер, фоновый участник,
- * спящий гигант.
+ * Цвет точки берётся из общей с таблицей ЛОМ шкалы тональности (SentimentColor):
+ * градиент зелёный→серый→красный по score = posPositive − posNegative. Размер
+ * точки растёт с тематическим ER. Подписи имён расставляются жадно без наложений,
+ * приоритет — по сумме композитов. Квадранты: активист, авторитетный лидер,
+ * фоновый участник, спящий гигант.
  *
  * ФРЕЙМВОРКИ
  * Compose Desktop; Canvas + DrawScope — ручная отрисовка графика; TextMeasurer/
@@ -53,7 +53,6 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lomanalyzer.ui.theme.AppColors
-import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.log10
 import kotlin.math.pow
@@ -76,43 +75,13 @@ private val Q_BG = Quadrant("ФОН", "Фоновый участник", Color(0
 
 /**
  * Цвет точки по позиции автора: зелёный (поддержка) → серый (нейтрально) →
- * красный (критика). score = posPositive − posNegative, диапазон [-1, 1].
- * Кривая sqrt усиливает малые отклонения от нейтрали: уже при score ±0.05 цвет
- * сдвигается примерно на 22%, а не остаётся почти незаметным.
+ * красный (критика). Шкала общая с таблицей ЛОМ — см. [sentimentLeanColor].
  *
  * @param posPositive доля позитивной позиции автора.
  * @param posNegative доля негативной позиции автора.
  */
-private fun positionColor(posPositive: Float, posNegative: Float): Color {
-    // Тональный счёт позиции, зажатый в [-1, 1]
-    val score = (posPositive - posNegative).coerceIn(-1f, 1f)
-    val green = Color(0xFF2E7D32)
-    val gray = Color(0xFF9E9E9E)
-    val red = Color(0xFFC62828)
-    // sqrt усиливает малые значения: sqrt(0.05)=0.22, sqrt(0.1)=0.32, sqrt(0.3)=0.55
-    val intensity = kotlin.math.sqrt(abs(score))
-
-    // Положительный счёт — к зелёному, отрицательный — к красному (от нейтрального серого)
-    return if (score >= 0) {
-        lerpColor(gray, green, intensity)
-    } else {
-        lerpColor(gray, red, intensity)
-    }
-}
-
-/**
- * Линейная интерполяция между двумя цветами по компонентам RGB.
- * @param fraction доля перехода [0..1]: 0 — from, 1 — to.
- */
-private fun lerpColor(from: Color, to: Color, fraction: Float): Color {
-    val f = fraction.coerceIn(0f, 1f)
-    return Color(
-        red = from.red + (to.red - from.red) * f,
-        green = from.green + (to.green - from.green) * f,
-        blue = from.blue + (to.blue - from.blue) * f,
-        alpha = 1f,
-    )
-}
+private fun positionColor(posPositive: Float, posNegative: Float): Color =
+    sentimentLeanColor(posPositive, posNegative)
 
 /**
  * Квадрантный точечный график классификации ЛОМ.
@@ -158,15 +127,15 @@ fun ScatterPlot(
             modifier = Modifier.padding(bottom = 8.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Box(Modifier.size(10.dp).background(Color(0xFF2E7D32), CircleShape))
+                Box(Modifier.size(10.dp).background(SENTIMENT_POSITIVE, CircleShape))
                 Text("Поддержка", fontSize = 10.sp, color = AppColors.textSecondary)
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Box(Modifier.size(10.dp).background(Color(0xFF9E9E9E), CircleShape))
+                Box(Modifier.size(10.dp).background(SENTIMENT_NEUTRAL, CircleShape))
                 Text("Нейтрально", fontSize = 10.sp, color = AppColors.textSecondary)
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Box(Modifier.size(10.dp).background(Color(0xFFC62828), CircleShape))
+                Box(Modifier.size(10.dp).background(SENTIMENT_NEGATIVE, CircleShape))
                 Text("Критика", fontSize = 10.sp, color = AppColors.textSecondary)
             }
             Spacer(Modifier.weight(1f))

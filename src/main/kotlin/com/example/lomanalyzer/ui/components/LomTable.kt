@@ -9,15 +9,13 @@
  * @Composable LomTable — заголовок с сортировкой + прокручиваемые строки.
  * Приватные @Composable: CellW (текстовая ячейка), CellFW (числовая Float-ячейка),
  * CellSentiment (ячейка тональности с цветным кружком), CellRole (ячейка роли).
- * Функция lerpColor — линейная интерполяция цвета.
  *
  * МЕТОД
  * Сортировка: Comparator по выбранному столбцу (sortColumn) и направлению
  * (sortAsc), результат кэшируется через remember по (rows, sortColumn, sortAsc).
  * Для столбцов позиции/отклика сортировка по тональности (positive − negative);
- * для роли — по фиксированному порядку ролей. Цвет тональности: градиент
- * зелёный→серый→красный, интенсивность = sqrt|score| (усиливает малые отклонения,
- * как в ScatterPlot).
+ * для роли — по фиксированному порядку ролей. Цвет тональности берётся из общей
+ * с диаграммой рассеяния шкалы (SentimentColor).
  *
  * ФРЕЙМВОРКИ
  * Compose Desktop; LazyColumn — виртуализированный список строк; horizontalScroll
@@ -53,7 +51,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lomanalyzer.ui.theme.AppColors
-import kotlin.math.abs
 
 /**
  * Таблица ЛОМ с сортируемыми столбцами.
@@ -230,7 +227,7 @@ private fun CellFW(value: Float?) {
 /**
  * Ячейка тональности: цветной кружок + подпись «поз / нейтр / нег» (в процентах).
  * Зелёный = позитив, серый = нейтрально, красный = негатив.
- * Интенсивность цвета = sqrt|score| — усиливает малые отклонения (как в ScatterPlot).
+ * Шкала цвета общая с диаграммой рассеяния — см. [sentimentLeanColor].
  *
  * @param pos доля позитива [0..1] или null.
  * @param neu доля нейтрального [0..1] или null.
@@ -244,16 +241,8 @@ private fun CellSentiment(pos: Float?, neu: Float?, neg: Float?) {
         Text("—", fontSize = 12.sp, color = AppColors.textTertiary, modifier = Modifier.width(COL_W).padding(horizontal = 4.dp))
         return
     }
-    // Тональный счёт: доля позитива минус доля негатива, зажат в [-1, 1]
     val p = pos ?: 0f; val n = neg ?: 0f
-    val score = (p - n).coerceIn(-1f, 1f)
-    // sqrt усиливает малые отклонения от нейтрали
-    val intensity = kotlin.math.sqrt(abs(score))
-    val green = Color(0xFF2E7D32)
-    val gray = Color(0xFF9E9E9E)
-    val red = Color(0xFFC62828)
-    // Положительный счёт — к зелёному, отрицательный — к красному (от нейтрального серого)
-    val color = if (score >= 0) lerpColor(gray, green, intensity) else lerpColor(gray, red, intensity)
+    val color = sentimentLeanColor(p, n)
 
     val u = neu ?: 0f
     // Подпись со всеми тремя долями в процентах: позитив / нейтрально / негатив
@@ -268,20 +257,6 @@ private fun CellSentiment(pos: Float?, neu: Float?, neg: Float?) {
         Box(Modifier.size(10.dp).background(color, CircleShape))
         Text(label, fontSize = 11.sp, color = AppColors.textPrimary)
     }
-}
-
-/**
- * Линейная интерполяция между двумя цветами по компонентам RGB.
- * @param fraction доля перехода [0..1]: 0 — from, 1 — to.
- */
-private fun lerpColor(from: Color, to: Color, fraction: Float): Color {
-    val f = fraction.coerceIn(0f, 1f)
-    return Color(
-        red = from.red + (to.red - from.red) * f,
-        green = from.green + (to.green - from.green) * f,
-        blue = from.blue + (to.blue - from.blue) * f,
-        alpha = 1f,
-    )
 }
 
 /**
