@@ -82,8 +82,7 @@ class PipelineWiring(
     private val sessionMetricsDao: SessionMetricsDao,
     private val linkDao: LinkDao,
     private val vkApiClient: VkApiClient,
-    private val baselineCollector: BaselineCollector,
-    private val currentCollector: CurrentCollector,
+    private val communityPostCollector: CommunityPostCollector,
     private val newsfeedSearchCollector: NewsfeedSearchCollector,
     private val authorWallCollector: AuthorWallCollector,
     private val commentCollector: CommentCollector,
@@ -172,13 +171,15 @@ class PipelineWiring(
                     // A1: заданы сообщества → собираем тематические посты периода через wall.get
                     sessionEventService.logInfo(sessionId,
                         "Сбор из ${communityVkIds.size} сообществ за $currentDays дней")
-                    currentCollector.collect(sessionId, communityVkIds, currentDays, accessToken)
+                    communityPostCollector.collect(
+                        sessionId, communityVkIds, currentDays, CollectionWindow.CURRENT, accessToken)
 
                     // Also collect baseline from same communities
                     // Дополнительно собираем фон из тех же сообществ за более длинное окно
                     sessionEventService.logInfo(sessionId,
                         "Сбор фона из сообществ за $baselineDays дней")
-                    baselineCollector.collect(sessionId, communityVkIds, baselineDays, accessToken)
+                    communityPostCollector.collect(
+                        sessionId, communityVkIds, baselineDays, CollectionWindow.BASELINE, accessToken)
                 } else {
                     // A2: No communities → newsfeed.search with date segmentation
                     // A2: сообществ нет → ищем по теме через newsfeed.search (сегментация по датам)

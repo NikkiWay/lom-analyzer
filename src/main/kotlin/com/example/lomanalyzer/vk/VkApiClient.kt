@@ -25,7 +25,7 @@
  * СВЯЗИ
  * Все запросы проходят через VkRateLimiter (ограничение частоты, rate limit) и
  * VkBackoff (повтор при HTTP 429 и 5xx с экспоненциальной задержкой). Клиент
- * используют коллекторы (CurrentCollector, BaselineCollector, AuthorWallCollector,
+ * используют коллекторы (CommunityPostCollector, AuthorWallCollector,
  * CommentCollector, NewsfeedSearchCollector, AuthorProfileCollector) и
  * PaginationManager.
  */

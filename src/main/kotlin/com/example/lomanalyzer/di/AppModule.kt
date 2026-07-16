@@ -179,8 +179,7 @@ val appModule = module {
             sessionMetricsDao = get(),
             linkDao = get(),
             vkApiClient = get(),
-            baselineCollector = get(),
-            currentCollector = get(),
+            communityPostCollector = get(),
             newsfeedSearchCollector = get(),
             authorWallCollector = get(),
             commentCollector = get(),
@@ -238,18 +237,9 @@ val appModule = module {
     // соответствующие DAO (postDao, authorDao, commentDao, linkDao) — модуль сбора
     // не зависит от аналитики, та позже читает эти таблицы.
     single {
-        // Сбор фоновых публикаций (baseline-период)
-        BaselineCollector(
-            paginationManager = get(),
-            postDao = get(),
-            checkpointDao = get(),
-            progressReporter = get(),
-            logger = get(),
-        )
-    }
-    single {
-        // Сбор тематических публикаций (текущий период)
-        CurrentCollector(
+        // Сбор публикаций сообществ; окно (фон либо тематический период)
+        // передаётся аргументом вызова, а не отдельным классом на окно
+        CommunityPostCollector(
             paginationManager = get(),
             postDao = get(),
             checkpointDao = get(),
