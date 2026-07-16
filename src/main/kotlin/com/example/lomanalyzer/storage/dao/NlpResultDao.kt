@@ -45,6 +45,31 @@ class NlpResultDao(private val db: Database) {
     }
 
     /**
+     * Массовая выборка кэша сразу по набору хэшей — одним запросом и одной
+     * транзакцией.
+     *
+     * Нужна пакетным путям NLP: поштучный findByHash в цикле открывает отдельную
+     * транзакцию на каждый текст, поэтому «батч» из 50 текстов стоил 50 обращений
+     * к БД ещё до единственного полезного вызова модели. Запрос опирается на
+     * uniqueIndex(text_hash, model_version).
+     *
+     * @param textHashes хэши текстов; пустой список не порождает запроса.
+     * @return карта хэш -> строка кэша. Отсутствующие в кэше тексты в карту не попадают.
+     */
+    fun findByHashes(
+        textHashes: List<String>,
+        modelVersion: String = "v1",
+    ): Map<String, ResultRow> {
+        if (textHashes.isEmpty()) return emptyMap()
+        return transaction(db) {
+            NlpResults.selectAll().where {
+                (NlpResults.textHash inList textHashes.distinct()) and
+                    (NlpResults.modelVersion eq modelVersion)
+            }.associateBy { it[NlpResults.textHash] }
+        }
+    }
+
+    /**
      * Upsert лемм в кэш по ключу (textHash, modelVersion).
      * @param lemmasJson сериализованные в JSON леммы текста.
      * @return id обновлённой или вновь созданной строки.

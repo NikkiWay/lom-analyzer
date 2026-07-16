@@ -170,11 +170,13 @@ class QualityCheckExecutor(
             allIntervals.map { (it[BootstrapIntervals.ciHi] - it[BootstrapIntervals.ciLo]) }.average().toFloat()
         } else 0f
 
-        // Доля закрытых аккаунтов среди авторов сессии
+        // Доля закрытых аккаунтов среди авторов сессии. Профили читаем одной
+        // выборкой: точечный findById на каждого автора давал отдельный запрос
+        // к БД в цикле (N+1).
         val sessionAuthors = linkDao.getAuthorsForSession(sessionId)
+        val authorsById = authorDao.findAll().associateBy { it[Authors.id].value }
         val closedCount = sessionAuthors.count { sa ->
-            val a = authorDao.findById(sa[SessionAuthors.authorId].value)
-            a?.get(Authors.isClosed) == true
+            authorsById[sa[SessionAuthors.authorId].value]?.get(Authors.isClosed) == true
         }
         val closedRatio = if (sessionAuthors.isNotEmpty())
             closedCount.toFloat() / sessionAuthors.size else 0f

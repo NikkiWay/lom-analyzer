@@ -1,0 +1,182 @@
+/*
+ * НАЗНАЧЕНИЕ
+ * Тесты кэширующего декоратора NLP. Пакетные пути раньше опрашивали кэш
+ * поштучно — по отдельной транзакции на каждый текст, — и не покрывались
+ * тестами: ни корректность порядка результатов, ни число обращений к БД.
+ *
+ * ЧТО ВНУТРИ
+ * Класс CachingNlpServiceTest: число обращений к кэшу на батч, обращение к
+ * модели только за некэшированными текстами, сохранение порядка результатов,
+ * работа кэша при повторном прогоне.
+ *
+ * ФРЕЙМВОРКИ
+ * JUnit 5; kotlinx.coroutines.runBlocking; Exposed ORM + JDBC SQLite (временная
+ * БД с миграциями); MockK (spyk) — подсчёт вызовов реального DAO, класс которого
+ * финальный. Делегат — учётная заглушка вместо реальной модели.
+ *
+ * СВЯЗИ
+ * CachingNlpService (nlp/), NlpResultDao (storage/dao), NlpService (nlp/).
+ */
+package com.example.lomanalyzer.nlp
+
+import com.example.lomanalyzer.core.SentimentDistribution
+import com.example.lomanalyzer.observability.Logger
+import com.example.lomanalyzer.storage.Migrations
+import com.example.lomanalyzer.storage.dao.NlpResultDao
+import io.mockk.clearMocks
+import io.mockk.spyk
+import io.mockk.verify
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.exposed.sql.Database
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import java.nio.file.Files
+import java.nio.file.Path
+
+class CachingNlpServiceTest {
+    private lateinit var tempDb: Path
+    private lateinit var db: Database
+    private lateinit var dao: NlpResultDao
+    private lateinit var delegate: CountingNlpService
+    private lateinit var caching: CachingNlpService
+
+    /** Заглушка модели: считает вызовы и запоминает, что у неё спрашивали. */
+    private class CountingNlpService : NlpService {
+        var batchLemmatizeCalls = 0
+        val lemmatizeRequested = mutableListOf<String>()
+
+        override suspend fun lemmatize(text: String) = LemmatizeResult(listOf(text.lowercase()))
+        override suspend fun detectLanguage(text: String) = LanguageDetectResult("ru", 1.0f)
+        override suspend fun scoreSentiment(text: String, mode: String) =
+            SentimentScore("POSITIVE", 0.9f, "stub")
+        override suspend fun semanticSimilarity(a: String, b: String) = SimilarityResult(0.5f)
+        override suspend fun embed(text: String) = EmbeddingResult(listOf(0f))
+        override suspend fun extractEntities(text: String): List<NerEntity> = emptyList()
+
+        override suspend fun batchLemmatize(texts: List<String>): List<List<String>> {
+            batchLemmatizeCalls++
+            lemmatizeRequested.addAll(texts)
+            return texts.map { listOf("lemma_of_$it") }
+        }
+
+        override suspend fun batchSentimentForPosts(texts: List<String>): List<SentimentDistribution> =
+            texts.map { SentimentDistribution(1.0, 0.0, 0.0) }
+
+        override suspend fun batchSentimentForComments(texts: List<String>): List<SentimentDistribution> =
+            texts.map { SentimentDistribution(1.0, 0.0, 0.0) }
+    }
+
+    @BeforeEach
+    fun setup() {
+        tempDb = Files.createTempFile("nlp_cache_", ".db")
+        Migrations.migrate(tempDb)
+        db = Database.connect("jdbc:sqlite:${tempDb.toAbsolutePath()}", driver = "org.sqlite.JDBC")
+        // spyk: NlpResultDao — финальный класс, но поведение нужно настоящее (реальная БД),
+        // а вызовы — подсчитанные
+        dao = spyk(NlpResultDao(db))
+        delegate = CountingNlpService()
+        caching = CachingNlpService(
+            delegate = delegate,
+            nlpResultDao = dao,
+            modelVersion = "test-v1",
+            logger = Logger("nlp-cache-test"),
+        )
+    }
+
+    @AfterEach
+    fun cleanup() {
+        Files.deleteIfExists(tempDb)
+    }
+
+    /**
+     * Чтение кэша для всего батча — ОДИН запрос, а не по одному на текст: раньше
+     * поштучный findByHash открывал отдельную транзакцию на каждый текст, и батч
+     * из 10 текстов стоил 10 обращений к БД ещё до вызова модели.
+     */
+    @Test
+    fun `batch reads the cache with a single bulk lookup`() = runBlocking {
+        val texts = (1..10).map { "текст $it" }
+
+        caching.batchLemmatize(texts)
+
+        verify(exactly = 1) { dao.findByHashes(any(), any()) }
+    }
+
+    /**
+     * Полностью закэшированный батч не делает поштучных обращений вовсе: чтение —
+     * один запрос, записи нет.
+     *
+     * На холодном батче поштучные findByHash всё же случаются, но не при чтении:
+     * их делает insertLemmas, будучи upsert'ом — он проверяет наличие строки,
+     * чтобы выбрать между вставкой и обновлением. Это фаза записи новых
+     * результатов, и к оптимизации чтения она отношения не имеет.
+     */
+    @Test
+    fun `fully cached batch performs no per-text lookups`() = runBlocking {
+        val texts = (1..10).map { "текст $it" }
+        caching.batchLemmatize(texts) // прогрев: тексты попадают в кэш
+        clearMocks(dao, answers = false)
+
+        caching.batchLemmatize(texts)
+
+        verify(exactly = 1) { dao.findByHashes(any(), any()) }
+        verify(exactly = 0) { dao.findByHash(any(), any()) }
+    }
+
+    /** Повторный батч берётся из кэша и не доходит до модели. */
+    @Test
+    fun `second batch is served from cache without calling the model`() = runBlocking {
+        val texts = listOf("экология", "загрязнение")
+
+        val first = caching.batchLemmatize(texts)
+        val second = caching.batchLemmatize(texts)
+
+        assertEquals(1, delegate.batchLemmatizeCalls, "cached batch must not reach the model")
+        assertEquals(first, second, "cached result must equal the computed one")
+    }
+
+    /**
+     * При частичном попадании модель спрашивают только о некэшированных текстах,
+     * а порядок результатов соответствует порядку входа.
+     */
+    @Test
+    fun `partial hit asks the model only for uncached texts and keeps order`() = runBlocking {
+        caching.batchLemmatize(listOf("первый"))
+        delegate.lemmatizeRequested.clear()
+
+        val result = caching.batchLemmatize(listOf("первый", "второй", "третий"))
+
+        assertEquals(
+            listOf("второй", "третий"),
+            delegate.lemmatizeRequested,
+            "only uncached texts go to the model",
+        )
+        assertEquals(
+            listOf(listOf("lemma_of_первый"), listOf("lemma_of_второй"), listOf("lemma_of_третий")),
+            result,
+            "results must stay aligned with the input order",
+        )
+    }
+
+    /** Повторяющиеся тексты внутри батча не ломают раскладку результатов. */
+    @Test
+    fun `duplicate texts in one batch resolve to the same result`() = runBlocking {
+        val result = caching.batchLemmatize(listOf("повтор", "другой", "повтор"))
+
+        assertEquals(3, result.size)
+        assertEquals(result[0], result[2], "identical texts must map to identical results")
+        assertTrue(result[1] != result[0])
+    }
+
+    /** Пустой батч не обращается к модели. */
+    @Test
+    fun `empty batch does not call the model`() = runBlocking {
+        val result = caching.batchLemmatize(emptyList())
+
+        assertEquals(emptyList<List<String>>(), result)
+        assertEquals(0, delegate.batchLemmatizeCalls)
+    }
+}

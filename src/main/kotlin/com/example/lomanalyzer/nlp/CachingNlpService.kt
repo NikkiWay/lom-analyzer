@@ -88,10 +88,15 @@ class CachingNlpService(
         val uncachedIndices = mutableListOf<Int>()
         val uncachedTexts = mutableListOf<String>()
 
-        // Проверяем кэш для каждого текста, сохраняя порядок результатов
+        // Кэш поднимаем одним запросом на весь батч: поштучный findByHash открывал
+        // отдельную транзакцию на каждый текст, и «батч» из 50 текстов стоил
+        // 50 обращений к БД ещё до единственного вызова модели.
+        val hashes = texts.map { sha256(it) }
+        val cachedByHash = nlpResultDao.findByHashes(hashes, modelVersion)
+
+        // Раскладываем результаты, сохраняя исходный порядок текстов
         for ((i, text) in texts.withIndex()) {
-            val hash = sha256(text)
-            val cached = nlpResultDao.findByHash(hash, modelVersion)
+            val cached = cachedByHash[hashes[i]]
             val lemmasJson = cached?.get(NlpResults.lemmasJson)
             if (lemmasJson != null) {
                 results.add(json.decodeFromString(lemmasJson))
@@ -129,10 +134,13 @@ class CachingNlpService(
         val uncachedIndices = mutableListOf<Int>()
         val uncachedTexts = mutableListOf<String>()
 
+        // Кэш поднимаем одним запросом на весь батч (см. batchLemmatize)
+        val hashes = texts.map { sha256(it) }
+        val cachedByHash = nlpResultDao.findByHashes(hashes, modelVersion)
+
         // Сначала пытаемся взять из кэша
         for ((i, text) in texts.withIndex()) {
-            val hash = sha256(text)
-            val cached = nlpResultDao.findByHash(hash, modelVersion)
+            val cached = cachedByHash[hashes[i]]
             val sentiment = cached?.get(NlpResults.sentiment)
             val score = cached?.get(NlpResults.score)
             val method = cached?.get(NlpResults.method)
