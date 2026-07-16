@@ -7,7 +7,7 @@
 
 **A desktop application that quantitatively identifies opinion leaders on VKontakte.**
 
-It collects posts on a given topic, finds the authors discussing it, and measures their influence along four independent axes. The output is not a ranking of importance but a breakdown of authors into roles, each with confidence intervals and an explicit marker where the data is too thin to support a conclusion.
+It collects posts on a given topic, finds the authors discussing it, and measures their influence along four independent axes. For each author the output is: 11 quantitative scores, a role in the discussion, confidence intervals for the scores computed from a sample, and a data-sufficiency label.
 
 [Русская версия](README.md) · [Algorithm](docs/algorithm.md) · [Formulas](docs/formulas.md) · [Architecture](docs/architecture.md)
 
@@ -34,9 +34,9 @@ It collects posts on a given topic, finds the authors discussing it, and measure
 
 The analyst defines a topic (keywords plus reference texts), a time period and optionally a set of communities. The application then runs ten stages: it collects posts, resolves their authors, fetches profiles and comments, cleans and lemmatises the texts, selects topical posts, computes the scores, derives confidence intervals by bootstrap, assigns roles and exports the result.
 
-The defining choice of the method is that **there is no single composite score**. Influence is decomposed along four axes that do not reduce to one another. An author with a million followers who never posts on the topic and an author with a thousand followers driving the discussion are different roles — not "more" and "less" influential.
+The method rests on a **four-dimensional model of influence**. Each axis describes a different facet of an author and is measured independently of the others: position in the network (axis 1), involvement in the specific topic (axis 2), the stance expressed (axis 3), and the audience's reaction to it (axis 4). A role follows from the combination of axes, so an author with a large audience outside the topic and an author with a small audience at the centre of the discussion resolve to different roles.
 
-The application deliberately **offers no recommendations and exposes no tunable weights**: composite weights are fixed at 1/3 each (OECD Handbook practice), and thresholds are derived from the session's own data rather than chosen by the user.
+Composite weights are fixed at 1/3 each (OECD Handbook practice), and role thresholds are derived from the session's own data. The application exposes no tunable parameters that affect the result.
 
 ## Method
 
@@ -58,7 +58,7 @@ The application deliberately **offers no recommendations and exposes no tunable 
 
 ### From scores to roles
 
-Axes 1 and 2 collapse into two composites via robust z-scoring — median and IQR instead of mean and σ, because outliers are the norm in social data, not the exception:
+Axes 1 and 2 collapse into two composites via robust z-scoring on the median and the interquartile range (IQR) — estimators that resist the outliers which make up a sizable share of audience and reach distributions:
 
 ```
 Struct_a = ⅓·(z(Aud) + z(ER_bg) + z(Age))
@@ -72,24 +72,24 @@ The thresholds θ_Struct and θ_Topic are the session medians. Crossing them yie
 | **Struct_a ≥ θ** | Authoritative leader | Sleeping giant |
 | **Struct_a < θ** | Topic activist | Background author |
 
-Axes 3 and 4 are not roles but attributes: the author's stance and the character of the audience response are attached to the role separately.
+Axes 3 and 4 do not enter the composites: the author's stance and the character of the audience response are attached to the role as separate attributes.
 
 ### Uncertainty
 
 Every score computed from a sample carries a 95% confidence interval:
 
 - **One-level bootstrap** (B = 1000, percentile method) for `ER_bg`, `ER_top`, `Reach` and `Pos_a`.
-- **Two-level bootstrap** (300 × 100) for `Resp_a` only. Comments are clustered by post, so a flat bootstrap would understate the variance by ignoring that structure.
-- Point estimates (`Aud`, `Age`, `TopVol`, `TopFocus`) are deliberately left without intervals (`NULL`).
+- **Two-level bootstrap** (300 × 100) for `Resp_a`. Comments are clustered by post: resampling runs over posts first, then over the comments within each post, which accounts for the within-cluster correlation when estimating variance.
+- Point estimates (`Aud`, `Age`, `TopVol`, `TopFocus`) are computed over the whole population rather than a sample, so no interval is defined for them and it stays `NULL`.
 
-Each author also receives a data-sufficiency label — `RELIABLE`, `PRELIMINARY` or `UNRELIABLE` (fewer than 3 topical posts, fewer than 10 comments, or an interval wider than 0.50) — as a guard against drawing conclusions from nothing.
+Each author also receives a data-sufficiency label — `RELIABLE`, `PRELIMINARY` or `UNRELIABLE` (fewer than 3 topical posts, fewer than 10 comments, or an interval wider than 0.50) — showing how many observations the estimate rests on.
 
 ### Two-pass topic filtering
 
 1. **L1, keywords.** `L1 = min(primary + 0.3·secondary, 3) / 3`. A post is accepted outright at `L1 ≥ 0.50`.
 2. **L2, semantics.** Borderline posts are compared by cosine similarity of RuBERT embeddings (`cointegrated/rubert-tiny2`) against the topic's reference texts, with a 0.55 threshold.
 
-Without the Python sidecar the second pass is unavailable, and borderline posts go to the analyst's manual review queue instead of being silently dropped. Filter quality is measured against the analyst's labels: precision and recall with 95% Beta-posterior intervals.
+Without the Python sidecar the second pass is unavailable: borderline posts take the `DISPUTED` stratum and go to the analyst's manual review queue. Filter quality is measured against the analyst's labels: precision and recall with 95% Beta-posterior intervals.
 
 ## Interface
 
@@ -270,7 +270,7 @@ The application handles personal data, so:
 ## Known limitations
 
 - Without the Python sidecar the second filter pass is unavailable and borderline posts fall to manual validation. On narrow topics this noticeably increases the disputed share.
-- Role thresholds are session medians, so roles are always relative to the sample: "authoritative leader" means "above this session's median", not an absolute status.
+- Role thresholds are session medians, so a role is always relative to the sample: "authoritative leader" means "above this session's median".
 - `Reach_a` falls back to follower count when VK does not report view counts.
 - Collection completeness is assumed to be 1.0: the application cannot know about posts hidden by privacy settings or deleted before collection.
 
