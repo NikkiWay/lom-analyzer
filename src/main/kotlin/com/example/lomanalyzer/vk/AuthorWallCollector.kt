@@ -78,11 +78,6 @@ class AuthorWallCollector(
         /** Частота сохранения чекпойнта — каждые N авторов. */
         private const val CHECKPOINT_EVERY = 10
 
-        /** Максимум повторов при flood control (ошибка 9). */
-        private const val MAX_FLOOD_RETRIES = 3
-
-        /** Нарастающие задержки повторов при flood control: 10с, 30с, 60с. */
-        private val FLOOD_RETRY_DELAYS_MS = longArrayOf(10_000L, 30_000L, 60_000L)
     }
 
     /**
@@ -273,7 +268,8 @@ class AuthorWallCollector(
     ): WallResult {
         var offset = 0 // смещение пагинации
         var collected = 0
-        var floodRetries = 0
+        // Свои повторы на каждое окно автора: попытки не переносятся между авторами
+        val floodControl = VkFloodControlPolicy(logger, "wall.get")
         val pageSize = 100
 
         while (collected < maxPosts) {
@@ -294,18 +290,15 @@ class AuthorWallCollector(
             // Обработка ошибок VK по коду
             if (response.error != null) {
                 when (response.error.errorCode) {
-                    9 -> { // Flood control — ждём по нарастающей и повторяем ту же страницу
-                        floodRetries++
-                        if (floodRetries > MAX_FLOOD_RETRIES) {
+                    // Flood control — ждём по нарастающей и повторяем ту же страницу
+                    VkFloodControlPolicy.FLOOD_CONTROL_ERROR_CODE -> {
+                        if (!floodControl.awaitRetry("author $authorVkId ($window)")) {
                             // Исчерпали повторы — сигнализируем блокировку наверх (прервёт фазу C)
                             sessionEventService.logApiError(sessionId, "wall.get",
-                                9, "Flood control: max retries for author $authorVkId ($window)")
+                                VkFloodControlPolicy.FLOOD_CONTROL_ERROR_CODE,
+                                "Flood control: max retries for author $authorVkId ($window)")
                             return WallResult(collected, floodBlocked = true)
                         }
-                        val delayMs = FLOOD_RETRY_DELAYS_MS[floodRetries - 1]
-                        logger.warn("VK flood control for author $authorVkId ($window), " +
-                            "retry $floodRetries/$MAX_FLOOD_RETRIES, waiting ${delayMs / 1000}s")
-                        delay(delayMs)
                         continue // повтор без смены offset
                     }
                     18 -> {
@@ -331,7 +324,7 @@ class AuthorWallCollector(
                 }
                 break // на любой ошибке (кроме повтора flood) прекращаем сбор окна
             }
-            floodRetries = 0 // успешная страница сбрасывает счётчик повторов
+            floodControl.reset() // успешная страница сбрасывает счётчик повторов
 
             val wall = response.response ?: break
             if (wall.items.isEmpty()) break // пустая страница — конец стены

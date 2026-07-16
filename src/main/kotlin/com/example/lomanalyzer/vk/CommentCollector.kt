@@ -51,11 +51,6 @@ class CommentCollector(
         /** Пауза между постами (мс). */
         private const val DELAY_BETWEEN_POSTS_MS = 500L
 
-        /** Максимум повторов при flood control (ошибка 9). */
-        private const val MAX_FLOOD_RETRIES = 3
-
-        /** Нарастающие задержки повторов при flood control: 10с, 30с, 60с. */
-        private val FLOOD_RETRY_DELAYS_MS = longArrayOf(10_000L, 30_000L, 60_000L)
     }
 
     /**
@@ -144,7 +139,8 @@ class CommentCollector(
     ): Int {
         var offset = 0 // смещение пагинации
         var collected = 0
-        var floodRetries = 0
+        // Свои повторы на каждый пост: попытки не переносятся между постами
+        val floodControl = VkFloodControlPolicy(logger, "wall.getComments")
 
         while (collected < expectedCount) {
             // Запрос страницы комментариев поста
@@ -158,15 +154,13 @@ class CommentCollector(
 
             if (response.error != null) {
                 // Ошибка 9 — flood control: ждём по нарастающей и повторяем ту же страницу
-                if (response.error.errorCode == 9) {
-                    floodRetries++
-                    if (floodRetries > MAX_FLOOD_RETRIES) {
+                if (response.error.errorCode == VkFloodControlPolicy.FLOOD_CONTROL_ERROR_CODE) {
+                    if (!floodControl.awaitRetry("post $vkPostId")) {
                         sessionEventService.logApiError(sessionId, "wall.getComments",
-                            9, "Flood control: max retries for post $vkPostId")
+                            VkFloodControlPolicy.FLOOD_CONTROL_ERROR_CODE,
+                            "Flood control: max retries for post $vkPostId")
                         break
                     }
-                    val delayMs = FLOOD_RETRY_DELAYS_MS[floodRetries - 1]
-                    delay(delayMs)
                     continue // повтор без смены offset
                 }
                 // Прочие ошибки VK — журналируем и прекращаем сбор по этому посту
@@ -178,7 +172,7 @@ class CommentCollector(
                 )
                 break
             }
-            floodRetries = 0 // успешная страница сбрасывает счётчик повторов
+            floodControl.reset() // успешная страница сбрасывает счётчик повторов
 
             val comments = response.response?.items ?: break
             if (comments.isEmpty()) break // пустая страница — конец комментариев

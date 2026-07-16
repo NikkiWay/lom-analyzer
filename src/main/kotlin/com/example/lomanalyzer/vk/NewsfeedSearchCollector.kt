@@ -76,11 +76,6 @@ class NewsfeedSearchCollector(
         /** Пауза между сегментами (мс). */
         private const val DELAY_BETWEEN_SEGMENTS_MS = 500L
 
-        /** Максимум повторов при flood control (ошибка 9). */
-        private const val MAX_FLOOD_RETRIES = 3
-
-        /** Нарастающие задержки повторов при flood control: 10с, 30с, 60с. */
-        private val FLOOD_RETRY_DELAYS_MS = longArrayOf(10_000L, 30_000L, 60_000L)
     }
 
     /**
@@ -162,7 +157,8 @@ class NewsfeedSearchCollector(
     ): Int {
         var collected = 0
         var startFrom: String? = null // курсор пагинации (next_from), null для первой страницы
-        var floodRetries = 0
+        // Свои повторы на каждый сегмент: попытки не переносятся между сегментами
+        val floodControl = VkFloodControlPolicy(logger, "newsfeed.search")
 
         while (collected < MAX_PER_QUERY) {
             // Запрос страницы постов за диапазон [segStart, segEnd] с курсором startFrom
@@ -177,16 +173,13 @@ class NewsfeedSearchCollector(
 
             if (response.error != null) {
                 // Ошибка 9 — flood control: ждём по нарастающей и повторяем эту же страницу
-                if (response.error.errorCode == 9) {
-                    floodRetries++
-                    if (floodRetries > MAX_FLOOD_RETRIES) {
+                if (response.error.errorCode == VkFloodControlPolicy.FLOOD_CONTROL_ERROR_CODE) {
+                    if (!floodControl.awaitRetry("segment $segStart..$segEnd")) {
                         sessionEventService.logApiError(sessionId, "newsfeed.search",
-                            9, "Flood control: max retries exceeded")
+                            VkFloodControlPolicy.FLOOD_CONTROL_ERROR_CODE,
+                            "Flood control: max retries exceeded")
                         break
                     }
-                    val delayMs = FLOOD_RETRY_DELAYS_MS[floodRetries - 1]
-                    logger.warn("VK flood control on newsfeed.search, retry $floodRetries/$MAX_FLOOD_RETRIES, waiting ${delayMs / 1000}s")
-                    delay(delayMs)
                     continue // повтор без смены курсора
                 }
                 // Прочие ошибки VK — фиксируем и прекращаем сбор сегмента
@@ -194,7 +187,7 @@ class NewsfeedSearchCollector(
                     response.error.errorCode, response.error.errorMsg)
                 break
             }
-            floodRetries = 0 // успешная страница сбрасывает счётчик повторов
+            floodControl.reset() // успешная страница сбрасывает счётчик повторов
 
             val items = response.response?.items ?: break
             if (items.isEmpty()) break // пустая страница — конец сегмента
