@@ -1,9 +1,26 @@
 # Python 3.12 required.
+
+# HTTP-слой sidecar'а. pydantic импортируется напрямую (модели запросов),
+# поэтому объявлен явно, а не как транзитивная зависимость fastapi.
 fastapi>=0.110
 uvicorn>=0.29
+pydantic>=2.0
+
+# Лемматизация: /lemmatize, /batch/lemmatize
 pymorphy3>=2.0
-dostoevsky>=0.6
-natasha>=1.6
-langdetect>=1.0.9
+
+# Тональность: /sentiment/dostoevsky, /batch/sentiment — модель
+# seara/rubert-tiny2-russian-sentiment через transformers.pipeline.
+# Имя эндпоинта историческое; пакет dostoevsky в коде не используется.
+transformers>=4.38
+
+# Эмбеддинги и семантическая близость (проход 2 тематического фильтра):
+# /embed, /semantic_similarity — модель cointegrated/rubert-tiny2.
+# Тянет за собой torch.
 sentence-transformers>=2.7
-fasttext-wheel>=0.9.2
+
+# Именованные сущности: /ner/natasha
+natasha>=1.6
+
+# Определение языка: /language/detect
+langdetect>=1.0.9

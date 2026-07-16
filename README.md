@@ -1,113 +1,277 @@
 # LOM Analyzer
 
-Desktop application for automated identification and analysis of opinion leaders (Leaders of Public Opinion — LOM) within a specified thematic niche on VKontakte. The system builds aggregated analytical models of key public actors and provides early warning signals about changes in discourse structure, emergence of new actors, and anomalous shifts in public communication content.
+[![Build & Test](https://github.com/USERNAME/lom-analyzer/actions/workflows/build.yml/badge.svg)](https://github.com/USERNAME/lom-analyzer/actions/workflows/build.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF.svg)](https://kotlinlang.org)
+[![JVM](https://img.shields.io/badge/JVM-17-orange.svg)](https://adoptium.net)
 
-## Status
+**Десктопное приложение для количественной идентификации лидеров общественного мнения (ЛОМ) во ВКонтакте.**
 
-**v1.0 Released** — full analytical pipeline with 35 processing stages, 9 UI screens, 294 unit/integration tests.
+Приложение собирает публикации по заданной теме, определяет авторов, участвующих в её обсуждении, и измеряет их влияние по четырём независимым осям. На выходе — не «рейтинг важности», а разложение авторов по ролям с доверительными интервалами и честной пометкой о том, где данных недостаточно для выводов.
 
-See [Release Notes](docs/release_notes_v1_0.md) | [User Manual](docs/user_manual.md) | [Project Status](PROJECT_STATUS.md)
+[English version](README.en.md) · [Алгоритм](docs/algorithm.md) · [Формулы](docs/formulas.md) · [Архитектура](docs/architecture.md)
 
-## Technology Stack
+---
 
-- **Language:** Kotlin 2.0+ / JVM 17
-- **UI:** Compose Desktop 1.7+
-- **Build:** Gradle (Kotlin DSL)
-- **Database:** SQLite (via Exposed ORM, Flyway migrations)
-- **HTTP Client:** Ktor (CIO engine)
-- **DI:** Koin
-- **Charting:** Lets-Plot for Kotlin
+## Содержание
 
-## Build & Run
+- [Что делает приложение](#что-делает-приложение)
+- [Метод](#метод)
+- [Интерфейс](#интерфейс)
+- [Архитектура](#архитектура)
+- [Технологии](#технологии)
+- [Установка и запуск](#установка-и-запуск)
+- [Тесты и статический анализ](#тесты-и-статический-анализ)
+- [Приватность и данные](#приватность-и-данные)
+- [Известные ограничения](#известные-ограничения)
+- [Лицензия](#лицензия)
 
-### Prerequisites
+---
 
-- JDK 17+
-- Gradle 8+ (or use the included wrapper)
+## Что делает приложение
 
-### Build
+Аналитик задаёт тему (ключевые слова и эталонные тексты), период и, при желании, список сообществ. Дальше приложение проходит десять стадий: собирает публикации, находит их авторов, догружает профили и комментарии, очищает и лемматизирует тексты, отбирает тематические публикации, считает оценки, строит доверительные интервалы бутстрапом, распределяет авторов по ролям и выгружает результат.
 
-```bash
-./gradlew build
+Ключевая особенность метода — **отказ от единого интегрального балла**. Влияние раскладывается по четырём осям, которые не сводятся друг к другу. Автор с миллионом подписчиков, не пишущий по теме, и автор с тысячей подписчиков, ведущий обсуждение, — это разные роли, а не «более» и «менее» влиятельный.
+
+Приложение сознательно **не даёт рекомендаций и не подбирает веса под результат**: веса композитов зафиксированы (1/3, 1/3, 1/3 — подход OECD Handbook), пороги вычисляются от данных сессии, а не задаются пользователем.
+
+## Метод
+
+### Четыре оси и 11 оценок
+
+| Ось | Оценка | Формула | Смысл |
+|---|---|---|---|
+| **1. Структурное влияние** | `Aud_a` | `ln(1 + F_a)` | Аудитория, лог-сжатие правого хвоста |
+| | `Age_a` | `d_a / max_b(d_b)` | Возраст аккаунта, нормированный на максимум сессии |
+| | `ER_a^bg` | `avg((L+C+R) / F_a)` по фоновым постам | Базовая вовлечённость (Bonsón & Ratkai) |
+| **2. Тематическая активность** | `TopVol_a` | `\|T_a\|` | Число тематических публикаций |
+| | `TopFocus_a` | `\|T_a\| / (\|T_a\| + \|B_a\|)` | Доля темы в потоке автора |
+| | `Reach_a` | `Σ V_i` | Суммарный охват тематических публикаций |
+| **3. Позиция автора** | `Pos_a` | `(p+, p0, p-)` | Тональность собственных публикаций |
+| **4. Отклик аудитории** | `ER_a^top` | `avg((L+C+R) / F_a)` по тематическим постам | Вовлечённость на теме |
+| | `Resp_a` | `(q+, q0, q-)` | Тональность комментариев под публикациями |
+
+`Pos_a` и `Resp_a` — распределения из трёх компонент, отсюда 11 чисел на автора.
+
+### От оценок к ролям
+
+Оси 1 и 2 сворачиваются в два композита робастной z-нормировкой (медиана и IQR вместо среднего и σ — устойчиво к выбросам, которых в социальных данных большинство):
+
+```
+Struct_a = ⅓·(z(Aud) + z(ER_bg) + z(Age))
+Topic_a  = ⅓·(z(TopVol) + z(TopFocus) + z(Reach))
 ```
 
-### Run
+Пороги θ_Struct и θ_Topic — медианы по сессии. Пересечение даёт четыре роли:
 
-```bash
-./gradlew run
+|  | **Topic_a ≥ θ** | **Topic_a < θ** |
+|---|---|---|
+| **Struct_a ≥ θ** | Авторитетный лидер | Спящий гигант |
+| **Struct_a < θ** | Тематический активист | Фоновый участник |
+
+Оси 3 и 4 — не роли, а атрибуты: позиция автора и характер отклика аудитории приписываются к роли отдельно.
+
+### Неопределённость
+
+Оценки, вычисляемые по выборке, сопровождаются 95% доверительными интервалами:
+
+- **Одноуровневый бутстрап** (B = 1000, перцентильный метод) — для `ER_bg`, `ER_top`, `Reach`, `Pos_a`.
+- **Двухуровневый бутстрап** (300 × 100) — только для `Resp_a`. Комментарии сгруппированы по постам, и плоский бутстрап занизил бы дисперсию, проигнорировав кластерную структуру.
+- Точечные оценки (`Aud`, `Age`, `TopVol`, `TopFocus`) не бутстрапируются — их интервал остаётся `NULL` осознанно.
+
+Каждому автору присваивается индикатор достаточности данных: `RELIABLE`, `PRELIMINARY` или `UNRELIABLE` (< 3 тематических постов, < 10 комментариев или ширина интервала > 0.50). Это защита от выводов на пустом месте.
+
+### Тематическая фильтрация в два прохода
+
+1. **L1 — ключевые слова.** `L1 = min(primary + 0.3·secondary, 3) / 3`. При `L1 ≥ 0.50` пост принимается сразу.
+2. **L2 — семантика.** Пограничные посты проверяются косинусной близостью эмбеддингов RuBERT (`cointegrated/rubert-tiny2`) к эталонным текстам темы; порог 0.55.
+
+Без Python-сайдкара второй проход недоступен, и пограничные посты попадают в очередь ручной проверки аналитика (экран «Валидация»), а не отбрасываются молча. Качество фильтра измеряется по разметке аналитика: precision и recall с 95% интервалом по бета-распределению.
+
+## Интерфейс
+
+> **Все скриншоты ниже сделаны на синтетическом датасете** (см. [`docs/synthetic_datasets_spec.md`](docs/synthetic_datasets_spec.md)). Имена публичных лиц использованы в нём как метки авторов; **показанные метрики, тональность и роли сгенерированы искусственно и не являются результатом измерения реальных людей.**
+
+### Дашборд
+
+Диаграмма квадрантов (Struct_a × Topic_a) с линиями порогов и таблица всех авторов с 11 оценками и ролью. Справа — справочник метрик с формулами.
+
+![Дашборд](docs/screenshots/dashboard.png)
+
+### Карточка автора
+
+Роль, атрибуты позиции и отклика, индикатор достаточности данных, оценки по осям и тематические публикации с тональностью.
+
+![Карточка автора](docs/screenshots/author-detail.png)
+
+### Настройка сессии
+
+Тема, n-граммы, эталонные тексты, окна наблюдения, выбор сообществ или импорт готового JSON.
+
+![Настройка сессии](docs/screenshots/setup.png)
+
+### Качество сессии и журнал
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/session-quality.png" alt="Качество сессии"></td>
+<td width="50%"><img src="docs/screenshots/session-log.png" alt="Журнал сессии"></td>
+</tr>
+</table>
+
+## Архитектура
+
+Модули не вызывают друг друга напрямую — они обмениваются данными только через локальную БД. Это позволяет перезапускать пайплайн с любой контрольной точки.
+
+```
+                    ┌──────────────┐
+   VK API  ────────▶│      vk/     │  сбор: newsfeed.search, wall.get,
+                    │              │  профили, комментарии; rate limit,
+                    └──────┬───────┘  backoff, execute-батчи, чекпоинты
+                           │
+                    ┌──────▼───────┐
+                    │   storage/   │  SQLite (WAL) + Exposed ORM
+                    │              │  Flyway V1..V12 — единственный
+                    └──────┬───────┘  канал обмена между модулями
+                           │
+        ┌──────────────────┼──────────────────┐
+        │                  │                  │
+ ┌──────▼───────┐   ┌──────▼───────┐   ┌──────▼───────┐
+ │preprocessing/│   │   analysis/  │   │    export/   │
+ │ очистка,     │   │ topic, dedup │   │  CSV / JSON  │
+ │ токенизация, │   │ scoring,     │   │  safe / raw  │
+ │ лемматизация │   │ inference,   │   └──────────────┘
+ └──────┬───────┘   │ composite,   │
+        │           │ roles,       │
+        │           │ quality      │
+        │           └──────┬───────┘
+ ┌──────▼───────┐          │
+ │     nlp/     │   ┌──────▼───────┐   ┌──────────────┐
+ │  FULL или    │   │orchestration/│──▶│     ui/      │
+ │  FALLBACK    │   │  10 стадий   │   │ Compose,     │
+ └──────┬───────┘   └──────────────┘   │ 11 экранов   │
+        │                              └──────────────┘
+ ┌──────▼─────────────┐
+ │ Python FastAPI     │  loopback HTTP + общий секрет;
+ │ sidecar (nlp/python)│ pymorphy3, RuBERT, natasha
+ └────────────────────┘
 ```
 
-### Tests
+### Пайплайн из 10 стадий
+
+`SESSION_INIT → DATA_COLLECTION → PREPROCESSING → TOPIC_FILTERING → SCORING → BOOTSTRAP → COMPOSITE_ROLES → QUALITY_CHECK → EXPORT → PUBLISH_TO_UI`
+
+Стадии перечислены в `orchestration/PipelineStage.kt`, исполнители регистрируются в `PipelineWiring.kt`, прогон — в `PipelineOrchestrator.kt`. Каждая стадия пишет чекпоинт, поэтому прерванную сессию можно продолжить.
+
+### Два режима NLP
+
+| | FULL | FALLBACK |
+|---|---|---|
+| Лемматизация | pymorphy3 (sidecar) | Snowball-стеммер (Lucene) |
+| Тональность | `seara/rubert-tiny2-russian-sentiment` | словарь + учёт отрицаний |
+| Проход L2 | RuBERT-эмбеддинги | недоступен → ручная валидация |
+| Требует Python | да | нет |
+
+Режим выбирается автоматически (`NlpServiceSelector`) по доступности сайдкара. Приложение работает и без Python, но с деградацией качества фильтрации.
+
+## Технологии
+
+**Kotlin / JVM**
+- Kotlin 2.0.21, JVM 17, Gradle 8.11.1 (Kotlin DSL)
+- Compose Multiplatform Desktop 1.7.3 — UI
+- Exposed 0.56.0 + SQLite (xerial 3.47.1.0), режим WAL
+- Flyway 10.21.0 — миграции схемы, forward-only
+- Ktor Client 3.0.3 (CIO) — VK API и сайдкар
+- Koin 3.5.6 — DI, kotlinx.coroutines 1.9.0
+- Lets-Plot 4.9.3 — диаграмма квадрантов
+- Lucene 9.12.1 — Snowball-стеммер для FALLBACK
+- JUnit 5.11.3, MockK 1.13.13, detekt 1.23.7
+
+**Python-сайдкар** (Python 3.12)
+- FastAPI + uvicorn
+- pymorphy3 — лемматизация
+- transformers — `seara/rubert-tiny2-russian-sentiment`
+- sentence-transformers — `cointegrated/rubert-tiny2` (эмбеддинги)
+- natasha — именованные сущности, langdetect — язык
+
+## Установка и запуск
+
+### Требования
+
+- **JDK 17+** — обязательно
+- **Python 3.12** — опционально, для режима FULL
+- **Приложение VK** (Standalone) — для сбора живых данных; без него доступен импорт JSON
+
+### Сборка и запуск
 
 ```bash
-./gradlew test
+git clone https://github.com/USERNAME/lom-analyzer.git
+cd lom-analyzer
+
+./gradlew run        # запуск
+./gradlew build      # сборка
+./gradlew test       # тесты
+./gradlew detekt     # статический анализ
 ```
 
-### Static Analysis
+Нативный дистрибутив (MSI / DMG / DEB):
 
 ```bash
-./gradlew detekt
+./gradlew packageDistributionForCurrentOS
 ```
 
-## Database
-
-SQLite database at `<appDataDir>/lom_analyzer.db` with WAL mode. Schema is managed by Flyway (forward-only, no downgrades).
-
-**V1 schema** includes 23 tables:
-- `analysis_session` — full session config, gamma/threshold/quality fields, status enum (8 values)
-- `community`, `author`, `post` — core VK entities with all v6 fields
-- `processed_text`, `sentiment_result` — NLP pipeline outputs
-- `lom_score` — influence scores with confidence intervals and role classification
-- `repost_relation`, `dedup_group` — content linkage
-- `anomaly_event`, `risk_signal` — detection outputs with CI and holiday/routine flags
-- `collection_checkpoint`, `audit_log`, `recovery_choice`, `session_metrics` — operational tables
-- `persona_aggregate` — aggregated actor profiles per session
-- `holiday_day_stats` — materialized daily stats with `(session_id, date)` index
-- `post_metrics_snapshot` — reserved for SessionFamily (v2.0)
-- Link tables: `session_community`, `session_author`, `anomaly_author_link`, `anomaly_post_link`, `risk_anomaly_link`
-
-## First Launch
-
-The app enforces a **single-instance lock** — if another instance is already running, the new one exits with a message. Stale locks are auto-removed.
-
-On first launch the application will prompt you to **create a master password**. This password is used to derive an AES-256-GCM encryption key (via PBKDF2, 100 000 iterations) that protects your VK API token at rest.
-
-- **New vault** — you will be asked to enter and confirm a password. The encrypted vault is stored at `<appDataDir>/token_vault.bin`.
-- **Existing vault** — you will be asked to enter your password to unlock the vault. If the password is wrong, decryption will fail and you can retry.
-- **On exit** — the token is securely wiped from memory and the vault key is cleared.
-
-You must enter the master password each time you start the application.
-
-After unlocking, the main window shows a setup screen where you can create analysis sessions. Each session tracks a topic query and region, and progresses through a 35-stage pipeline from data collection through risk scoring and export.
-
-## VK API Setup
-
-To use VK data collection you need a VK developer application:
-
-1. Go to [VK Apps](https://vk.com/apps?act=manage) and create a new Standalone app.
-2. Note the **App ID** (client_id).
-3. The redirect URI is `https://oauth.vk.com/blank.html` (VK default for Implicit Flow).
-4. On first analysis run, the app opens an embedded browser for VK OAuth. After granting access, the token is encrypted and stored in `<appDataDir>/token_vault.bin`.
-
-Required permissions: `wall`, `friends`, `groups`, `stats`.
-
-## Python NLP Sidecar
-
-The application uses a Python FastAPI sidecar for FULL NLP mode (pymorphy3, dostoevsky, natasha, rubert-tiny2, langdetect). If the sidecar is unavailable, it falls back to Kotlin-native Snowball stemmer and heuristic language detection.
-
-### Setup (reuse venv from Prompt 01 spike)
+### Python-сайдкар (режим FULL)
 
 ```bash
 cd nlp/python
-python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
+python3.12 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-The app auto-starts the sidecar on analysis launch. Set `pythonEnvPath` in AppConfig to point to the venv directory.
+Путь к окружению указывается в настройках приложения; сайдкар запускается и останавливается автоматически (`PythonServiceManager`: свободный порт из 8300–8399, общий секрет, health-check, до 3 перезапусков). Модели (~120 МБ) скачиваются с HuggingFace при первом обращении и кешируются в `models/`.
 
-See [`nlp/python/README.md`](nlp/python/README.md) for manual debugging instructions.
+### Первый запуск
 
-## License
+1. Приложение просит **создать мастер-пароль**. Из него по PBKDF2 (100 000 итераций) выводится ключ AES-256-GCM, которым шифруется токен VK.
+2. Вход во ВКонтакте: VK ID (OAuth 2.1 + PKCE) или вставка токена вручную.
+3. Экран «Настройка» — создание сессии. Далее «Сбор данных» с прогрессом и возможностью отмены.
 
-MIT — see [LICENSE](LICENSE).
+БД создаётся автоматически в каталоге данных ОС (`%LOCALAPPDATA%\LomAnalyzer` в Windows, `~/.local/share/LomAnalyzer` в Linux, `~/Library/Application Support/LomAnalyzer` в macOS); миграции Flyway накатываются при старте. Приложение защищено single-instance-блокировкой.
+
+### Демонстрация без VK API
+
+Готовые синтетические датасеты лежат в [`examples/`](examples/) — их можно загрузить на экране «Настройка» через импорт JSON, минуя VK и получив полный прогон пайплайна.
+
+## Тесты и статический анализ
+
+```bash
+./gradlew test      # 211 тестов, JUnit 5
+./gradlew detekt    # detekt 1.23.7
+```
+
+Покрыты формулы оценок, робастная статистика (медиана, IQR, квантили типа 7), корректность бутстрап-интервалов, двухпроходная фильтрация, дедупликация, тональность с отрицаниями, шифрование токена и хеширование PII, DAO, оркестрация и отмена, rate limiter / backoff / батчер VK, а также сквозной прогон пайплайна на минимальном корпусе (`MvpSmokeTest`).
+
+CI (GitHub Actions) прогоняет сборку, тесты и detekt на каждый push. Накопленные замечания detekt зафиксированы в `detekt-baseline.xml`: сборку ломает любое **новое** замечание.
+
+## Приватность и данные
+
+Приложение работает с персональными данными, поэтому:
+
+- **Токен VK шифруется** (AES-256-GCM, ключ из мастер-пароля через PBKDF2 100k) и хранится в `token_vault.bin`; при выходе стирается из памяти.
+- **Экспорт по умолчанию обезличен** — идентификаторы авторов хешируются с солью (`PiiHasher`). Выгрузка «как есть» требует явного подтверждения и пишется в журнал событий.
+- **Данные не покидают машину**: SQLite локально, sidecar доступен только на loopback и защищён секретом.
+- **Закрытые профили исключаются** из анализа.
+- Все датасеты в `examples/` — синтетические.
+
+## Известные ограничения
+
+- Без Python-сайдкара второй проход фильтра недоступен: пограничные посты уходят в ручную валидацию. На узких темах это заметно увеличивает долю спорных публикаций.
+- Пороги ролей — медианы по сессии, поэтому роли всегда относительны составу выборки: «авторитетный лидер» означает «выше медианы в этой сессии», а не абсолютный статус.
+- `Reach_a` использует число подписчиков как оценку охвата, если VK не отдаёт просмотры.
+- Полнота сбора принимается за 1.0: приложение не может знать о постах, скрытых приватностью или удалённых до сбора.
+
+## Лицензия
+
+MIT — см. [LICENSE](LICENSE).
