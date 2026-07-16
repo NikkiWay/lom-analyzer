@@ -20,6 +20,7 @@
  */
 package com.example.lomanalyzer.storage.dao
 
+import com.example.lomanalyzer.core.SentimentDistribution
 import com.example.lomanalyzer.storage.tables.NlpResults
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -105,6 +106,7 @@ class NlpResultDao(private val db: Database) {
         score: Float,
         method: String,
         modelVersion: String = "v1",
+        probabilities: SentimentDistribution? = null,
     ): Int = transaction(db) {
         // Проверяем кэш по хэшу+версии
         val existing = findByHash(textHash, modelVersion)
@@ -114,6 +116,9 @@ class NlpResultDao(private val db: Database) {
                 it[NlpResults.sentiment] = sentiment
                 it[NlpResults.score] = score
                 it[NlpResults.method] = method
+                it[NlpResults.probPositive] = probabilities?.positive?.toFloat()
+                it[NlpResults.probNeutral] = probabilities?.neutral?.toFloat()
+                it[NlpResults.probNegative] = probabilities?.negative?.toFloat()
             }
             return@transaction existing[NlpResults.id].value
         }
@@ -124,6 +129,9 @@ class NlpResultDao(private val db: Database) {
             it[NlpResults.sentiment] = sentiment
             it[NlpResults.score] = score
             it[NlpResults.method] = method
+            it[NlpResults.probPositive] = probabilities?.positive?.toFloat()
+            it[NlpResults.probNeutral] = probabilities?.neutral?.toFloat()
+            it[NlpResults.probNegative] = probabilities?.negative?.toFloat()
             it[NlpResults.createdAt] = Instant.now().toEpochMilli()
         }.value
     }

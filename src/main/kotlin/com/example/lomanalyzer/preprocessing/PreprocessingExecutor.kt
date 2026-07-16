@@ -186,6 +186,7 @@ class PreprocessingExecutor(
                             sentiment = score.label.uppercase(),
                             score = score.score,
                             method = "python_rubert",
+                            probabilities = score.probabilities,
                         )
                     }
                 } catch (e: Exception) {
@@ -217,6 +218,7 @@ class PreprocessingExecutor(
                         sentiment = s.label.uppercase(),
                         score = s.score,
                         method = "kotlin_rusentilex",
+                        probabilities = s.probabilities,
                     )
                 } catch (_: Exception) {
                     sentimentResultDao.insert(
@@ -256,6 +258,7 @@ class PreprocessingExecutor(
                             sentiment = score.label.uppercase(),
                             score = score.score,
                             method = "python_rubert",
+                            probabilities = score.probabilities,
                         )
                     }
                 } catch (e: Exception) {
@@ -296,6 +299,7 @@ class PreprocessingExecutor(
                         sentiment = s.label.uppercase(),
                         score = s.score,
                         method = "kotlin_rusentilex",
+                        probabilities = s.probabilities,
                     )
                 } catch (_: Exception) {
                     // Запасная запись гасится отдельно — см. комментарий в батчевой ветке.

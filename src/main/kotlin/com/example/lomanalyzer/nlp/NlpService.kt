@@ -31,7 +31,25 @@ data class LemmatizeResult(val lemmas: List<String>)
 /** Результат определения языка: код языка и уверенность [0..1]. */
 data class LanguageDetectResult(val language: String, val confidence: Float)
 /** Оценка тональности: метка, числовой score и метод получения. */
-data class SentimentScore(val label: String, val score: Float, val method: String)
+/**
+ * Оценка тональности одного текста.
+ *
+ * @property label метка-победитель (positive/neutral/negative).
+ * @property score уверенность в метке-победителе.
+ * @property method источник оценки (модель sidecar либо словарный fallback).
+ * @property probabilities распределение вероятностей по трём классам, если
+ *   источник его даёт. Модель считает распределение всегда, и метка-победитель
+ *   теряет силу склонности: у сдержанного текста бывает neutral 0.80 при
+ *   positive 0.15, и по одной метке этот перевес уже не восстановить. Оси
+ *   позиции автора (Pos_a) и отклика аудитории (Resp_a) усредняют именно
+ *   вероятности. Словарный fallback распределения не даёт — там null.
+ */
+data class SentimentScore(
+    val label: String,
+    val score: Float,
+    val method: String,
+    val probabilities: SentimentDistribution? = null,
+)
 /** Семантическая близость двух текстов [0..1]. */
 data class SimilarityResult(val similarity: Float)
 /** Векторное представление (embedding) текста. */

@@ -91,4 +91,26 @@ object ResponseScores {
             negative = negCount / n,
         )
     }
+
+    /**
+     * Вычисляет Resp_a усреднением распределений вероятностей по комментариям
+     * (мягкое голосование) — см. PositionScore.authorPositionFromProbabilities.
+     *
+     * @param commentDistributions распределения по каждому комментарию под
+     *   тематическими постами автора.
+     * @return Resp_a как среднее распределение; (0, 1, 0) при отсутствии комментариев.
+     */
+    fun audienceResponseFromProbabilities(
+        commentDistributions: List<SentimentDistribution>,
+    ): SentimentDistribution {
+        // Нет комментариев → отклик не определён, считаем нейтральным
+        if (commentDistributions.isEmpty()) return SentimentDistribution(0.0, 1.0, 0.0)
+
+        val n = commentDistributions.size.toDouble()
+        return SentimentDistribution(
+            positive = commentDistributions.sumOf { it.positive } / n,
+            neutral = commentDistributions.sumOf { it.neutral } / n,
+            negative = commentDistributions.sumOf { it.negative } / n,
+        )
+    }
 }

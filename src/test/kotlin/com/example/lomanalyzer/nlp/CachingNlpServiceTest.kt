@@ -64,7 +64,12 @@ class CachingNlpServiceTest {
         override suspend fun batchSentiment(texts: List<String>, mode: String): List<SentimentScore> {
             batchSentimentCalls++
             sentimentRequested.addAll(texts)
-            return texts.map { SentimentScore("NEGATIVE", 0.7f, "stub_batch") }
+            return texts.map {
+                SentimentScore(
+                    "NEGATIVE", 0.7f, "stub_batch",
+                    SentimentDistribution(positive = 0.1, neutral = 0.2, negative = 0.7),
+                )
+            }
         }
 
         override suspend fun batchLemmatize(texts: List<String>): List<List<String>> {
@@ -220,6 +225,34 @@ class CachingNlpServiceTest {
 
         assertEquals(1, delegate.batchSentimentCalls, "cached batch must not reach the model")
         assertEquals(first.map { it.label }, second.map { it.label })
+    }
+
+    /**
+     * Распределение вероятностей переживает круг через кэш.
+     *
+     * Регрессия: кэш хранил только метку, оценку и метод, поэтому при попадании
+     * возвращался результат без вероятностей — и повторный прогон той же сессии
+     * откатывался к расчёту осей по меткам, то есть исправление работало ровно
+     * один раз.
+     */
+    @Test
+    fun `probability distribution survives a cache round-trip`() = runBlocking {
+        val texts = listOf("экология", "загрязнение")
+
+        val computed = caching.batchSentiment(texts)
+        val fromCache = caching.batchSentiment(texts)
+
+        assertEquals(1, delegate.batchSentimentCalls, "второй батч обязан прийти из кэша")
+
+        val fresh = computed[0].probabilities!!
+        val cached = fromCache[0].probabilities!!
+        assertEquals(0.7, fresh.negative, 1e-6, "распределение должно доходить от модели")
+        // Сравниваем с допуском: в БД вероятности лежат как REAL (Float), поэтому
+        // круг Double -> Float -> Double даёт 0.1 -> 0.10000000149. Для вероятностей,
+        // округляемых моделью до 4 знаков, точности float с запасом.
+        assertEquals(fresh.positive, cached.positive, 1e-6, "позитив обязан пережить кэш")
+        assertEquals(fresh.neutral, cached.neutral, 1e-6, "нейтраль обязана пережить кэш")
+        assertEquals(fresh.negative, cached.negative, 1e-6, "негатив обязан пережить кэш")
     }
 
     /** При частичном попадании в модель уходят только некэшированные тексты, порядок сохраняется. */

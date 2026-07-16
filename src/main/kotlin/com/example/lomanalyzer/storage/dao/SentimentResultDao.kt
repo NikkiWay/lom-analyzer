@@ -24,6 +24,7 @@
  */
 package com.example.lomanalyzer.storage.dao
 
+import com.example.lomanalyzer.core.SentimentDistribution
 import com.example.lomanalyzer.storage.tables.SentimentEntityType
 import com.example.lomanalyzer.storage.tables.SentimentResults
 import org.jetbrains.exposed.sql.*
@@ -44,8 +45,8 @@ class SentimentResultDao(private val db: Database) {
      * @param score числовая оценка тональности или NULL.
      * @param method способ получения тональности.
      * @param negationApplied признак учёта отрицаний при разборе.
-     * @param bootstrapAgreement доля согласия вариантов бутстрапа сентимента или NULL.
-     * @param bootstrapVariants сериализованные варианты бутстрапа или NULL.
+     * @param probabilities распределение вероятностей по классам или NULL, если
+     *   источник его не даёт (словарный fallback).
      */
     fun insert(
         entityType: SentimentEntityType,
@@ -54,8 +55,7 @@ class SentimentResultDao(private val db: Database) {
         score: Float? = null,
         method: String,
         negationApplied: Boolean = false,
-        bootstrapAgreement: Float? = null,
-        bootstrapVariants: String? = null,
+        probabilities: SentimentDistribution? = null,
     ) = transaction(db) {
         SentimentResults.insert {
             it[SentimentResults.entityType] = entityType.name
@@ -64,8 +64,9 @@ class SentimentResultDao(private val db: Database) {
             it[SentimentResults.score] = score
             it[SentimentResults.method] = method
             it[SentimentResults.negationApplied] = negationApplied
-            it[SentimentResults.bootstrapAgreement] = bootstrapAgreement
-            it[SentimentResults.bootstrapVariants] = bootstrapVariants
+            it[SentimentResults.probPositive] = probabilities?.positive?.toFloat()
+            it[SentimentResults.probNeutral] = probabilities?.neutral?.toFloat()
+            it[SentimentResults.probNegative] = probabilities?.negative?.toFloat()
         }
     }
 
@@ -94,4 +95,31 @@ class SentimentResultDao(private val db: Database) {
             .where { SentimentResults.entityType eq entityType.name }
             .associate { it[SentimentResults.entityId] to it[SentimentResults.sentiment] }
     }
+
+    /**
+     * Массовая загрузка распределений вероятностей одного типа сущности.
+     *
+     * В карту попадают только строки, у которых распределение есть: его даёт
+     * модель sidecar, а словарный fallback — нет (там колонки NULL, см. V13).
+     * Отсутствие ключа означает «вероятностей нет», и вызывающий возвращается к
+     * расчёту по долям меток.
+     *
+     * @param entityType тип сущности, по которому строится карта.
+     * @return Map id сущности -> распределение вероятностей.
+     */
+    fun findProbabilitiesAsMap(entityType: SentimentEntityType): Map<Int, SentimentDistribution> =
+        transaction(db) {
+            SentimentResults.selectAll()
+                .where {
+                    (SentimentResults.entityType eq entityType.name) and
+                        (SentimentResults.probNeutral.isNotNull())
+                }
+                .associate { row ->
+                    row[SentimentResults.entityId] to SentimentDistribution(
+                        positive = (row[SentimentResults.probPositive] ?: 0f).toDouble(),
+                        neutral = (row[SentimentResults.probNeutral] ?: 0f).toDouble(),
+                        negative = (row[SentimentResults.probNegative] ?: 0f).toDouble(),
+                    )
+                }
+        }
 }

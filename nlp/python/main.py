@@ -262,6 +262,25 @@ def detect_language(req: TextRequest, x_auth_token: str = Header(...)):
         return {"language": "unknown", "confidence": 0.0}
 
 
+def _distribution(scores) -> dict:
+    """Собирает ответ по одному тексту: метка-победитель и полное распределение.
+
+    Распределение возвращается целиком, потому что метка-победитель теряет силу
+    склонности: у сдержанного текста может быть neutral 0.80 при positive 0.15,
+    и по одной метке «neutral» этот перевес уже не восстановить. Оценки по осям
+    позиции автора и отклика аудитории усредняют именно вероятности.
+    """
+    top = max(scores, key=lambda r: r["score"])
+    by_label = {r["label"].lower(): r["score"] for r in scores}
+    return {
+        "label": top["label"].lower(),
+        "score": round(top["score"], 4),
+        "positive": round(by_label.get("positive", 0.0), 4),
+        "neutral": round(by_label.get("neutral", 0.0), 4),
+        "negative": round(by_label.get("negative", 0.0), 4),
+    }
+
+
 @app.post("/sentiment/dostoevsky")
 def sentiment(req: SentimentRequest, x_auth_token: str = Header(...)):
     """Sentiment-анализ одного текста (rubert-tiny2-russian-sentiment).
@@ -273,17 +292,8 @@ def sentiment(req: SentimentRequest, x_auth_token: str = Header(...)):
     pipe = get_sentiment_pipeline()
     # Обрезаем до 2000 символов: модель ограничена ~512 токенами
     text = req.text[:2000]
-    results = pipe(text)[0]
-    # results — список словарей {label, score}; выбираем класс с максимальной оценкой
-    top = max(results, key=lambda r: r["score"])
-    # Приводим метки модели к dostoevsky-совместимым меткам (нижний регистр)
-    label_map = {
-        "neutral": "neutral",
-        "positive": "positive",
-        "negative": "negative",
-    }
-    label = label_map.get(top["label"].lower(), top["label"])
-    return {"label": label, "score": round(top["score"], 4)}
+    # results — список словарей {label, score} по всем классам (top_k=None)
+    return _distribution(pipe(text)[0])
 
 
 @app.post("/batch/lemmatize")
@@ -315,12 +325,7 @@ def batch_sentiment(req: BatchTextRequest, x_auth_token: str = Header(...)):
     truncated = [t[:2000] for t in req.texts]  # ограничиваем длину каждого текста
     # Pipeline принимает список на вход и считает sentiment пакетом — это быстрее
     all_results = pipe(truncated)
-    output = []
-    for res in all_results:
-        top = max(res, key=lambda r: r["score"])  # класс с максимальной оценкой
-        label = top["label"].lower()
-        output.append({"label": label, "score": round(top["score"], 4)})
-    return {"results": output}
+    return {"results": [_distribution(res) for res in all_results]}
 
 
 @app.post("/semantic_similarity")

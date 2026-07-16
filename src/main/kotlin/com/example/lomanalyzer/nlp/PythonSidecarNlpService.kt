@@ -25,6 +25,8 @@
  */
 package com.example.lomanalyzer.nlp
 
+import com.example.lomanalyzer.core.SentimentDistribution
+
 import com.example.lomanalyzer.observability.AppEvent
 import com.example.lomanalyzer.observability.Logger
 import io.ktor.client.*
@@ -90,7 +92,7 @@ class PythonSidecarNlpService(
             "/sentiment/dostoevsky",
             """{"text":"${escapeJson(text)}","mode":"$mode"}""",
         )
-        return SentimentScore(resp.label, resp.score, "MODEL")
+        return SentimentScore(resp.label, resp.score, "MODEL", resp.toDistribution())
     }
 
     /** Семантическая близость двух текстов через /semantic_similarity (embeddings RuBERT). */
@@ -127,7 +129,7 @@ class PythonSidecarNlpService(
     override suspend fun batchSentiment(texts: List<String>, mode: String): List<SentimentScore> {
         val textsJson = texts.joinToString(",") { "\"${escapeJson(it)}\"" }
         val resp: BatchSentimentResponse = post("/batch/sentiment", """{"texts":[$textsJson]}""")
-        return resp.results.map { SentimentScore(it.label, it.score, "MODEL") }
+        return resp.results.map { SentimentScore(it.label, it.score, "MODEL", it.toDistribution()) }
     }
 
     /** Экранирует спецсимволы для безопасной вставки строки в JSON-тело запроса. */
@@ -137,7 +139,20 @@ class PythonSidecarNlpService(
     // DTO ответов sidecar (десериализуются kotlinx.serialization)
     @Serializable data class LemmatizeResponse(val lemmas: List<String>)
     @Serializable data class LangResponse(val language: String, val confidence: Float)
-    @Serializable data class SentimentResponse(val label: String, val score: Float)
+    @Serializable data class SentimentResponse(
+        val label: String,
+        val score: Float,
+        val positive: Float = 0f,
+        val neutral: Float = 0f,
+        val negative: Float = 0f,
+    ) {
+        /** Распределение по трём классам в виде доменной модели. */
+        fun toDistribution() = SentimentDistribution(
+            positive = positive.toDouble(),
+            neutral = neutral.toDouble(),
+            negative = negative.toDouble(),
+        )
+    }
     @Serializable data class SimResponse(val similarity: Float)
     @Serializable data class EmbedResponse(val vector: List<Float>)
     @Serializable data class NerEntityDto(val text: String, val type: String, val start: Int, val end: Int)

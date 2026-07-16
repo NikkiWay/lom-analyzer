@@ -40,6 +40,14 @@ object NlpResults : IntIdTable("nlp_result") {
     /** Метод получения результата (модель/fallback); может отсутствовать. */
     val method = text("method").nullable()
     /** Момент сохранения результата в кэш (Unix-время, мс). */
+    // Распределение вероятностей модели; NULL для словарного fallback (см. V13).
+    /** Вероятность позитивного класса [0..1]; NULL, если источник её не даёт. */
+    val probPositive = float("prob_positive").nullable()
+    /** Вероятность нейтрального класса [0..1]; NULL, если источник её не даёт. */
+    val probNeutral = float("prob_neutral").nullable()
+    /** Вероятность негативного класса [0..1]; NULL, если источник её не даёт. */
+    val probNegative = float("prob_negative").nullable()
+
     val createdAt = long("created_at")
 
     init {

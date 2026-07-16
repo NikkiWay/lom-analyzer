@@ -94,6 +94,11 @@ class ScoringExecutor(
         // независимо и пересекаются (см. V11__sentiment_result_entity_type.sql).
         val postSentimentMap = sentimentResultDao.findAllAsMap(SentimentEntityType.POST)
         val commentSentimentMap = sentimentResultDao.findAllAsMap(SentimentEntityType.COMMENT)
+        // Распределения вероятностей — основной путь расчёта осей 3 и 4. Их даёт
+        // модель sidecar; для строк словарного fallback карта пуста, и расчёт
+        // возвращается к долям меток.
+        val postProbabilities = sentimentResultDao.findProbabilitiesAsMap(SentimentEntityType.POST)
+        val commentProbabilities = sentimentResultDao.findProbabilitiesAsMap(SentimentEntityType.COMMENT)
         val allComments = commentDao.findBySession(sessionId)
 
         // Тематические посты = окно CURRENT И прошедшие тематический фильтр (is_topic_relevant)
@@ -153,11 +158,20 @@ class ScoringExecutor(
             }
             val reachScore = TopicScores.topicalReach(reachValues)                     // Reach_a = Σ V_i
 
-            // === Ось 3: позиция автора (берём метки тональности из заранее загруженной карты) ===
-            val postSentiments = authorTopicPosts.mapNotNull { post ->
-                postSentimentMap[post[Posts.id].value]
+            // === Ось 3: позиция автора ===
+            // Если для постов автора есть распределения вероятностей — усредняем их
+            // (мягкое голосование). Иначе, на словарном fallback, считаем доли меток.
+            val postDistributions = authorTopicPosts.mapNotNull { post ->
+                postProbabilities[post[Posts.id].value]
             }
-            val posDistribution = PositionScore.authorPositionDistribution(postSentiments)            // Pos_a = (p+,p0,p-)
+            val posDistribution = if (postDistributions.size == authorTopicPosts.size) {
+                PositionScore.authorPositionFromProbabilities(postDistributions)
+            } else {
+                val postSentiments = authorTopicPosts.mapNotNull { post ->
+                    postSentimentMap[post[Posts.id].value]
+                }
+                PositionScore.authorPositionDistribution(postSentiments)
+            }                                                                          // Pos_a = (p+,p0,p-)
 
             // === Ось 4: отклик аудитории (Е.4.4) ===
             // Реакции по тематическим постам → тематический engagement rate
@@ -168,11 +182,19 @@ class ScoringExecutor(
             val topicPostIds = authorTopicPosts.map { it[Posts.id].value }.toSet()
             val authorComments = allComments.filter { it[Comments.postId].value in topicPostIds }
             val totalComments = authorComments.size
-            // Метка комментария из карты тональностей; при отсутствии считаем NEUTRAL
-            val commentSentiments = authorComments.map { comment ->
-                commentSentimentMap[comment[Comments.id].value] ?: "NEUTRAL"
+            // Как и для оси 3: вероятности, если они есть для всех комментариев,
+            // иначе доли меток (при отсутствии метки считаем комментарий нейтральным).
+            val commentDistributions = authorComments.mapNotNull { comment ->
+                commentProbabilities[comment[Comments.id].value]
             }
-            val respDistribution = ResponseScores.audienceResponseDistribution(commentSentiments)     // Resp_a = (q+,q0,q-)
+            val respDistribution = if (commentDistributions.size == authorComments.size) {
+                ResponseScores.audienceResponseFromProbabilities(commentDistributions)
+            } else {
+                val commentSentiments = authorComments.map { comment ->
+                    commentSentimentMap[comment[Comments.id].value] ?: "NEUTRAL"
+                }
+                ResponseScores.audienceResponseDistribution(commentSentiments)
+            }                                                                          // Resp_a = (q+,q0,q-)
 
             // === Сохранение всех 11 оценок в LomScores (upsert по (sessionId, authorId)) ===
             lomScoreDao.upsert(

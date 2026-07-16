@@ -9,10 +9,17 @@
  * sentiment-меток тематических постов строит распределение Pos_a.
  *
  * МЕТОД
- * Pos_a = (p_a^+, p_a^0, p_a^-), где p_a^k = |{i ∈ T_a : s_i = k}| / |T_a| —
- * доли постов с тональностью positive/neutral/negative. Сумма компонент = 1.
- * Метки тональности s_i присваивает NLP-модуль (sidecar dostoevsky/rubert,
- * см. architecture.md); здесь — только агрегация в доли.
+ * Pos_a = (p_a^+, p_a^0, p_a^-), сумма компонент = 1. Агрегация двухвариантная,
+ * по тому, что даёт источник тональности:
+ *
+ *  - authorPositionFromProbabilities — среднее распределений вероятностей по
+ *    постам (мягкое голосование). Основной путь: модель sidecar возвращает
+ *    вероятности всех классов.
+ *  - authorPositionDistribution — доли меток, p_a^k = |{i ∈ T_a : s_i = k}| / |T_a|.
+ *    Путь для словарного fallback, который вероятностей не даёт.
+ *
+ * Оба возвращают распределение с единичной суммой и взаимозаменяемы для
+ * последующих этапов.
  *
  * БИБЛИОТЕКИ
  * Stdlib Kotlin; тип результата — core.SentimentDistribution.
@@ -60,6 +67,36 @@ object PositionScore {
             positive = posCount / n,
             neutral = neuCount / n,
             negative = negCount / n,
+        )
+    }
+
+    /**
+     * Вычисляет Pos_a усреднением распределений вероятностей по тематическим
+     * постам автора (мягкое голосование).
+     *
+     * Модель тональности возвращает вероятности всех классов, и метка-победитель
+     * их огрубляет: пост с распределением neutral 0.80 / positive 0.15 и пост с
+     * neutral 0.80 / negative 0.15 дают одну и ту же метку «neutral», хотя
+     * склонности у них противоположные. Особенно это заметно у авторов с одним
+     * тематическим постом: по меткам Pos_a вырождается ровно в (0, 1, 0).
+     *
+     * Усреднение сохраняет перевес: сумма компонент остаётся равной 1, так как
+     * каждое слагаемое — распределение с единичной суммой.
+     *
+     * @param distributions распределения по каждому тематическому посту автора.
+     * @return Pos_a как среднее распределение; (0, 1, 0) при отсутствии постов.
+     */
+    fun authorPositionFromProbabilities(
+        distributions: List<SentimentDistribution>,
+    ): SentimentDistribution {
+        // Нет тематических постов → позиция не определена, считаем её нейтральной
+        if (distributions.isEmpty()) return SentimentDistribution(0.0, 1.0, 0.0)
+
+        val n = distributions.size.toDouble()
+        return SentimentDistribution(
+            positive = distributions.sumOf { it.positive } / n,
+            neutral = distributions.sumOf { it.neutral } / n,
+            negative = distributions.sumOf { it.negative } / n,
         )
     }
 }

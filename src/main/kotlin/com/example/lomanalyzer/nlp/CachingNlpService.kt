@@ -20,6 +20,8 @@
  */
 package com.example.lomanalyzer.nlp
 
+import org.jetbrains.exposed.sql.ResultRow
+
 import com.example.lomanalyzer.core.SentimentDistribution
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.storage.dao.NlpResultDao
@@ -68,17 +70,14 @@ class CachingNlpService(
     override suspend fun scoreSentiment(text: String, mode: String): SentimentScore {
         val hash = sha256(text)
         val cached = nlpResultDao.findByHash(hash, modelVersion)
-        if (cached != null) {
-            val sentiment = cached[NlpResults.sentiment]
-            val score = cached[NlpResults.score]
-            val method = cached[NlpResults.method]
-            // Используем кэш, только если все поля sentiment заполнены
-            if (sentiment != null && score != null && method != null) {
-                return SentimentScore(sentiment, score, method)
-            }
-        }
+        // Используем кэш, только если все поля sentiment заполнены
+        cached?.let { scoreFromCache(it) }?.let { return it }
+
         val result = delegate.scoreSentiment(text, mode)
-        nlpResultDao.insertSentiment(hash, result.label, result.score, result.method, modelVersion)
+        nlpResultDao.insertSentiment(
+            hash, result.label, result.score, result.method, modelVersion,
+            probabilities = result.probabilities,
+        )
         return result
     }
 
@@ -143,12 +142,9 @@ class CachingNlpService(
 
         // Сначала пытаемся взять из кэша
         for ((i, text) in texts.withIndex()) {
-            val cached = cachedByHash[hashes[i]]
-            val sentiment = cached?.get(NlpResults.sentiment)
-            val score = cached?.get(NlpResults.score)
-            val method = cached?.get(NlpResults.method)
-            if (sentiment != null && score != null && method != null) {
-                results[i] = SentimentScore(sentiment, score, method)
+            val fromCache = cachedByHash[hashes[i]]?.let { scoreFromCache(it) }
+            if (fromCache != null) {
+                results[i] = fromCache
             } else {
                 uncachedIndices.add(i)
                 uncachedTexts.add(text)
@@ -164,6 +160,7 @@ class CachingNlpService(
                 results[idx] = score
                 nlpResultDao.insertSentiment(
                     sha256(texts[idx]), score.label, score.score, score.method, modelVersion,
+                    probabilities = score.probabilities,
                 )
             }
         }
@@ -171,6 +168,30 @@ class CachingNlpService(
         // К этому моменту все ячейки заполнены — безопасно приводим к не-nullable
         @Suppress("UNCHECKED_CAST")
         return (results as Array<SentimentScore>).toList()
+    }
+
+    /**
+     * Собирает SentimentScore из строки кэша, включая распределение вероятностей.
+     * Распределение восстанавливается, только если оно там есть: у словарного
+     * fallback колонки пустые, и score остаётся без вероятностей.
+     */
+    private fun scoreFromCache(row: ResultRow): SentimentScore? {
+        val sentiment = row[NlpResults.sentiment]
+        val score = row[NlpResults.score]
+        val method = row[NlpResults.method]
+        // Строка кэша годится, только если заполнены все поля тональности:
+        // тот же ключ используют и записи лемматизации, у которых их нет.
+        if (sentiment == null || score == null || method == null) return null
+
+        val neutral = row[NlpResults.probNeutral]
+        val probabilities = neutral?.let {
+            SentimentDistribution(
+                positive = (row[NlpResults.probPositive] ?: 0f).toDouble(),
+                neutral = it.toDouble(),
+                negative = (row[NlpResults.probNegative] ?: 0f).toDouble(),
+            )
+        }
+        return SentimentScore(sentiment, score, method, probabilities)
     }
 
     /** Вычисляет SHA-256 текста в виде hex-строки — ключ кэша. */

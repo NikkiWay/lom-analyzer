@@ -67,6 +67,15 @@ object SentimentResults : Table("sentiment_result") {
     /** Распределение меток по бутстрап-вариантам (JSON); может отсутствовать. */
     val bootstrapVariants = text("bootstrap_variants").nullable()
 
+    // Распределение вероятностей по классам, как его вернула модель. NULL, если
+    // источник распределения не даёт (словарный fallback) — см. V13.
+    /** Вероятность позитивного класса [0..1]; NULL для словарного fallback. */
+    val probPositive = float("prob_positive").nullable()
+    /** Вероятность нейтрального класса [0..1]; NULL для словарного fallback. */
+    val probNeutral = float("prob_neutral").nullable()
+    /** Вероятность негативного класса [0..1]; NULL для словарного fallback. */
+    val probNegative = float("prob_negative").nullable()
+
     /** Составной первичный ключ — пара (тип сущности, её идентификатор). */
     override val primaryKey = PrimaryKey(entityType, entityId)
 }
