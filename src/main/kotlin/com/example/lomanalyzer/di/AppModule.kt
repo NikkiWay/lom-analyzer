@@ -31,7 +31,6 @@
  * запрашивают у контейнера уже зарегистрированные зависимости нужного типа
  * (разрешение по типу). Порядок объявлений не важен — Koin разрешает граф лениво
  * при первом обращении. single<Интерфейс> { get<Реализация>() } публикует
- * реализацию под интерфейсом (см. AuditDao → AuditLogDao).
  *
  * СВЯЗИ
  * Модуль подключается при старте приложения (App.kt) через startKoin.
@@ -47,7 +46,6 @@ package com.example.lomanalyzer.di
 import com.example.lomanalyzer.config.AppConfig
 import com.example.lomanalyzer.config.ConfigManager
 import com.example.lomanalyzer.observability.Logger
-import com.example.lomanalyzer.observability.MetricsCollector
 import com.example.lomanalyzer.analysis.content.*
 import com.example.lomanalyzer.analysis.dedup.*
 import com.example.lomanalyzer.analysis.quality.*
@@ -60,8 +58,6 @@ import com.example.lomanalyzer.preprocessing.*
 import com.example.lomanalyzer.ui.components.ErrorNotifier
 import com.example.lomanalyzer.ui.navigation.AppNavigator
 import com.example.lomanalyzer.security.AuthManager
-import com.example.lomanalyzer.security.AuditDao
-import com.example.lomanalyzer.security.AuditLog
 import com.example.lomanalyzer.security.TokenVault
 import com.example.lomanalyzer.storage.DatabaseFactory
 import com.example.lomanalyzer.storage.dao.*
@@ -83,11 +79,10 @@ val appModule = module {
     // ── Config ──
     // Конфигурация. ConfigManager создаётся первым; его initialize() возвращает
     // AppConfig, который публикуется как отдельный single и используется везде,
-    // где нужны пути (БД, логи, токены, Python). Также общие Logger и MetricsCollector.
+    // где нужны пути (БД, логи, токены, Python). Также общий Logger.
     single { ConfigManager() }
     single { get<ConfigManager>().initialize() }
     single { Logger() }
-    single { MetricsCollector() }
 
     // ── Security ──
     // Зашифрованное хранилище токенов VK. Путь к файлу и число итераций PBKDF2
@@ -121,7 +116,6 @@ val appModule = module {
     single { CommunityDao(get()) }
     single { LomScoreDao(get()) }
     single { CheckpointDao(get()) }
-    single { AuditLogDao(get()) }
     single { SessionMetricsDao(get()) }
     single { ProcessedTextDao(get()) }
     single { SentimentResultDao(get()) }
@@ -134,10 +128,6 @@ val appModule = module {
     single { CompositeDao(get()) }
 
     // ── Audit ──
-    // Аудит действий. AuditLogDao публикуется ещё и под интерфейсом AuditDao
-    // (single<AuditDao>), чтобы AuditLog зависел от абстракции, а не от реализации.
-    single<AuditDao> { get<AuditLogDao>() }
-    single { AuditLog(logger = get(), dao = get()) }
 
     // ── Orchestration ──
     // Оркестрация пайплайна: управление сессиями, единственный экземпляр приложения,

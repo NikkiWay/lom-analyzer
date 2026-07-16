@@ -32,7 +32,7 @@ package com.example.lomanalyzer.integration
 import com.example.lomanalyzer.analysis.content.DictionarySentiment
 import com.example.lomanalyzer.analysis.dedup.ExactHasher
 import com.example.lomanalyzer.analysis.dedup.HashablePost
-import com.example.lomanalyzer.analysis.lom.AudienceComponent
+import com.example.lomanalyzer.analysis.scoring.StructuralScores
 import com.example.lomanalyzer.analysis.topic.NgramMatcher
 import com.example.lomanalyzer.analysis.topic.TopicRelevanceFilter
 import com.example.lomanalyzer.analysis.topic.TopicStratum
@@ -223,10 +223,11 @@ class MvpSmokeTest {
         val authors = authorDao.findAll()
         assertEquals(5, authors.size)
 
-        // 6. Структурная оценка аудитории (упрощённо): сырое значение по подписчикам
+        // 6. Структурная оценка аудитории (упрощённо): сырое значение по подписчикам.
+        // Aud_a = ln(1 + F_a) — та же функция, что используется в пайплайне (этап 7).
         val lomScoreDao = LomScoreDao(db)
         val aRaws = authors.map {
-            AudienceComponent.computeRaw(
+            StructuralScores.aud(
                 it[com.example.lomanalyzer.storage.tables.Authors.followersCount] ?: 0,
             )
         }

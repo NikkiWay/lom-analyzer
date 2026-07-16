@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.sp
 import com.example.lomanalyzer.orchestration.ActiveSessionHolder
 import com.example.lomanalyzer.storage.dao.SessionEventDao
 import com.example.lomanalyzer.storage.tables.SessionEvents
-import com.example.lomanalyzer.ui.components.QualityGauge
 import com.example.lomanalyzer.ui.theme.AppColors
 import com.example.lomanalyzer.ui.theme.EmptyStateMessage
 import com.example.lomanalyzer.ui.theme.ScreenHeader

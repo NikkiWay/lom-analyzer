@@ -72,7 +72,7 @@ class StorageTest {
      * набор пользовательских таблиц (служебные flyway_ и sqlite_ исключены).
      */
     @Test
-    fun `V1 schema creates all tables`() {
+    fun `migrated schema contains exactly the expected tables`() {
         // Читаем имена пользовательских таблиц из системного каталога SQLite
         val tables = transaction(db) {
             val result = mutableListOf<String>()
@@ -87,7 +87,7 @@ class StorageTest {
         }
         // Полный ожидаемый список таблиц схемы (в алфавитном порядке)
         val expected = listOf(
-            "analysis_session", "audit_log", "author", "author_role",
+            "analysis_session", "author", "author_role",
             "bootstrap_interval", "collection_checkpoint", "comment", "community",
             "composite_score", "dedup_group", "lom_score", "nlp_result",
             "pipeline_checkpoint", "post", "processed_text",
@@ -185,7 +185,6 @@ class StorageTest {
         assertTrue(indexes.contains("idx_post_session_holiday"))
         assertTrue(indexes.contains("idx_lom_score_session"))
         assertTrue(indexes.contains("idx_checkpoint_session_ep"))
-        assertTrue(indexes.contains("idx_audit_session_time"))
         assertTrue(indexes.contains("idx_session_deleted_at"))
         assertTrue(indexes.contains("idx_comment_session_post"))
         assertTrue(indexes.contains("idx_comment_session_from"))
