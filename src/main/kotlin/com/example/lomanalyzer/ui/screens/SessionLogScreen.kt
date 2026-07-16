@@ -44,6 +44,9 @@ import org.koin.java.KoinJavaComponent.get
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.jetbrains.exposed.sql.ResultRow
 
 /**
  * Экран журнала событий сессии (раздел диплома 2.2.6).
@@ -61,10 +64,14 @@ fun SessionLogScreen() {
     var searchQuery by remember { mutableStateOf("") }
     var typeFilter by remember { mutableStateOf<String?>(null) }
 
-    // Загрузка всех событий активной сессии; пересчитывается при смене сессии/версии данных
-    val events = remember(sessionId, dataVersion) {
-        val sid = sessionId ?: return@remember emptyList()
-        sessionEventDao.findBySession(sid)
+    // Загрузка всех событий активной сессии; перезапускается при смене сессии/версии данных.
+    // Запрос идёт в Dispatchers.IO: DAO выполняет блокирующую JDBC-транзакцию, и вызов
+    // прямо в composition подвешивал бы отрисовку экрана на время чтения журнала.
+    val events by produceState(emptyList<ResultRow>(), sessionId, dataVersion) {
+        val sid = sessionId
+        value = if (sid == null) emptyList() else withContext(Dispatchers.IO) {
+            sessionEventDao.findBySession(sid)
+        }
     }
 
     // Применение фильтров: по типу события и по подстроке (в сообщении или типе)

@@ -57,6 +57,10 @@ import java.nio.file.Files
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import org.jetbrains.exposed.sql.ResultRow
 
 /**
  * Экран профиля и управления данными: аккаунт VK, мастер-пароль, сессии, хранилище.
@@ -71,10 +75,25 @@ fun ProfileScreen() {
     val config = remember { get<AppConfig>(AppConfig::class.java) }
     val fmt = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm").withZone(ZoneId.systemDefault())
 
-    // Списки активных и удалённых сессий и данные сессии VK
-    var sessions by remember { mutableStateOf(sessionDao.findAll()) }
-    var deletedSessions by remember { mutableStateOf(sessionDao.findSoftDeleted()) }
+    // Списки активных и удалённых сессий и данные сессии VK.
+    // Начальные значения пустые: выборки из БД блокирующие и выполняются ниже в
+    // Dispatchers.IO, а не в потоке composition.
+    var sessions by remember { mutableStateOf(emptyList<ResultRow>()) }
+    var deletedSessions by remember { mutableStateOf(emptyList<ResultRow>()) }
     val sessionInfo = remember { authManager.getSessionInfo() }
+    val coroutineScope = rememberCoroutineScope()
+
+    /** Перечитывает оба списка сессий в IO-диспетчере (после удаления/восстановления). */
+    suspend fun reloadSessionLists() {
+        val loaded = withContext(Dispatchers.IO) {
+            sessionDao.findAll() to sessionDao.findSoftDeleted()
+        }
+        sessions = loaded.first
+        deletedSessions = loaded.second
+    }
+
+    // Первичная загрузка списков при появлении экрана
+    LaunchedEffect(Unit) { reloadSessionLists() }
 
     // Состояния диалогов и статусного сообщения
     var showChangePassword by remember { mutableStateOf(false) }              // диалог смены мастер-пароля
@@ -162,9 +181,11 @@ fun ProfileScreen() {
                         } ?: "",
                         // Восстановление сессии из корзины с обновлением обоих списков
                         onRestore = {
-                            sessionDao.restore(session[AnalysisSessions.id].value)
-                            sessions = sessionDao.findAll()
-                            deletedSessions = sessionDao.findSoftDeleted()
+                            val restoredId = session[AnalysisSessions.id].value
+                            coroutineScope.launch {
+                                withContext(Dispatchers.IO) { sessionDao.restore(restoredId) }
+                                reloadSessionLists()
+                            }
                         },
                         onHardDelete = {
                             showConfirmHardDelete = session[AnalysisSessions.id].value
@@ -247,11 +268,12 @@ fun ProfileScreen() {
             title = "Удалить сессию #$sessionId?",
             text = "Сессия будет перемещена в корзину. Вы сможете восстановить её позже.",
             onConfirm = {
-                sessionDao.softDelete(sessionId)
-                sessions = sessionDao.findAll()
-                deletedSessions = sessionDao.findSoftDeleted()
+                coroutineScope.launch {
+                    withContext(Dispatchers.IO) { sessionDao.softDelete(sessionId) }
+                    reloadSessionLists()
+                    statusMessage = "Сессия #$sessionId удалена"
+                }
                 showConfirmDeleteSession = null
-                statusMessage = "Сессия #$sessionId удалена"
             },
             onDismiss = { showConfirmDeleteSession = null },
         )
@@ -263,10 +285,12 @@ fun ProfileScreen() {
             title = "Удалить навсегда #$sessionId?",
             text = "Сессия будет удалена безвозвратно. Это действие нельзя отменить.",
             onConfirm = {
-                sessionDao.hardDelete(sessionId)
-                deletedSessions = sessionDao.findSoftDeleted()
+                coroutineScope.launch {
+                    withContext(Dispatchers.IO) { sessionDao.hardDelete(sessionId) }
+                    reloadSessionLists()
+                    statusMessage = "Сессия #$sessionId удалена навсегда"
+                }
                 showConfirmHardDelete = null
-                statusMessage = "Сессия #$sessionId удалена навсегда"
             },
             onDismiss = { showConfirmHardDelete = null },
         )

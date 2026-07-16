@@ -57,7 +57,28 @@ import com.example.lomanalyzer.ui.theme.AppColors
 import com.example.lomanalyzer.ui.theme.EmptyStateMessage
 import com.example.lomanalyzer.ui.theme.ScreenHeader
 import com.example.lomanalyzer.ui.theme.SectionCard
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.koin.java.KoinJavaComponent.get
+
+/**
+ * Согласованный снимок данных дашборда, прочитанный за один заход в БД.
+ *
+ * Держать эти три набора вместе важно по двум причинам: они читаются одним
+ * фоновым запросом (а не тремя независимыми) и относятся к одной и той же
+ * версии данных, поэтому таблица и диаграмма не могут разъехаться между собой.
+ *
+ * @param rows строки таблицы: 11 оценок автора, его роль и достаточность данных.
+ * @param thetaStruct порог θ_struct — вертикальная линия квадрантов.
+ * @param thetaTopic порог θ_topic — горизонтальная линия квадрантов.
+ * @param compositeCoordinates координаты авторов на диаграмме: authorId -> (Struct_a, Topic_a).
+ */
+private data class DashboardSnapshot(
+    val rows: List<LomTableRow> = emptyList(),
+    val thetaStruct: Float = 0f,
+    val thetaTopic: Float = 0f,
+    val compositeCoordinates: Map<Int, Pair<Float, Float>> = emptyMap(),
+)
 
 /**
  * Главный дашборд результатов: scatter-диаграмма квадрантов, таблица авторов с
@@ -78,46 +99,72 @@ fun LomDashboardScreen() {
     val dataVersion by sessionHolder.dataVersion.collectAsState()
     var roleFilter by remember { mutableStateOf<String?>(null) }
 
-    // Загрузка из БД и сборка строк таблицы: 11 оценок + композиты + роли по каждому автору
-    val allRows = remember(sessionId, dataVersion) {
-        val sid = sessionId ?: return@remember emptyList<LomTableRow>()
-        val scores = lomScoreDao.findBySession(sid)
-        // Композиты и роли индексируем по authorId для быстрого сопоставления с оценками
-        val composites = compositeDao.findCompositesBySession(sid)
-            .associateBy { it[CompositeScores.authorId].value }
-        val roles = compositeDao.findRolesBySession(sid)
-            .associateBy { it[AuthorRoles.authorId].value }
+    // Чтение результатов сессии. Все обращения к БД идут через Dispatchers.IO:
+    // DAO выполняют блокирующие JDBC-транзакции, и вызов их прямо в composition
+    // подвешивал бы отрисовку на время запроса (на больших сессиях — заметно).
+    // produceState перезапускает загрузку при смене сессии или версии данных и
+    // сам отменяет предыдущую загрузку, если она ещё идёт.
+    val snapshot by produceState(DashboardSnapshot(), sessionId, dataVersion) {
+        val sid = sessionId
+        if (sid == null) {
+            value = DashboardSnapshot()
+            return@produceState
+        }
+        value = withContext(Dispatchers.IO) {
+            val scores = lomScoreDao.findBySession(sid)
+            // Композиты и роли индексируем по authorId для быстрого сопоставления с оценками
+            val compositeRows = compositeDao.findCompositesBySession(sid)
+            val roles = compositeDao.findRolesBySession(sid)
+                .associateBy { it[AuthorRoles.authorId].value }
+            // Авторов читаем одной выборкой: точечный findById на каждую оценку давал
+            // отдельный запрос к БД на автора (N+1) прямо во время отрисовки.
+            val authorsById = authorDao.findAll().associateBy { it[Authors.id].value }
+            val thresholds = compositeDao.findThresholds(sid)
 
-        scores.mapNotNull { lom ->
-            val authorId = lom[LomScores.authorId].value
-            val author = authorDao.findById(authorId) ?: return@mapNotNull null
-            val name = listOfNotNull(author[Authors.firstName], author[Authors.lastName])
-                .joinToString(" ").ifBlank { "Author #$authorId" }
-            val roleRow = roles[authorId]
+            val rows = scores.mapNotNull { lom ->
+                val authorId = lom[LomScores.authorId].value
+                val author = authorsById[authorId] ?: return@mapNotNull null
+                val name = listOfNotNull(author[Authors.firstName], author[Authors.lastName])
+                    .joinToString(" ").ifBlank { "Author #$authorId" }
+                val roleRow = roles[authorId]
 
-            LomTableRow(
-                authorId = authorId,
-                authorName = name,
-                aud = lom[LomScores.aud],
-                age = lom[LomScores.age],
-                erBg = lom[LomScores.erBg],
-                topVol = lom[LomScores.topVol],
-                topFocus = lom[LomScores.topFocus],
-                reach = lom[LomScores.reach],
-                posPositive = lom[LomScores.posPositive],
-                posNeutral = lom[LomScores.posNeutral],
-                posNegative = lom[LomScores.posNegative],
-                erTop = lom[LomScores.erTop],
-                respPositive = lom[LomScores.respPositive],
-                respNeutral = lom[LomScores.respNeutral],
-                respNegative = lom[LomScores.respNegative],
-                topicPostCount = lom[LomScores.topicPostCount],
-                commentCount = lom[LomScores.commentCount],
-                role = roleRow?.get(AuthorRoles.baseRole),
-                sufficiency = roleRow?.get(AuthorRoles.sufficiency),
+                LomTableRow(
+                    authorId = authorId,
+                    authorName = name,
+                    aud = lom[LomScores.aud],
+                    age = lom[LomScores.age],
+                    erBg = lom[LomScores.erBg],
+                    topVol = lom[LomScores.topVol],
+                    topFocus = lom[LomScores.topFocus],
+                    reach = lom[LomScores.reach],
+                    posPositive = lom[LomScores.posPositive],
+                    posNeutral = lom[LomScores.posNeutral],
+                    posNegative = lom[LomScores.posNegative],
+                    erTop = lom[LomScores.erTop],
+                    respPositive = lom[LomScores.respPositive],
+                    respNeutral = lom[LomScores.respNeutral],
+                    respNegative = lom[LomScores.respNegative],
+                    topicPostCount = lom[LomScores.topicPostCount],
+                    commentCount = lom[LomScores.commentCount],
+                    role = roleRow?.get(AuthorRoles.baseRole),
+                    sufficiency = roleRow?.get(AuthorRoles.sufficiency),
+                )
+            }
+
+            DashboardSnapshot(
+                rows = rows,
+                // Пороги осей (0, если ещё не рассчитаны) — положение разделительных линий
+                thetaStruct = thresholds?.get(SessionThresholds.thetaStruct) ?: 0f,
+                thetaTopic = thresholds?.get(SessionThresholds.thetaTopic) ?: 0f,
+                compositeCoordinates = compositeRows.associate {
+                    it[CompositeScores.authorId].value to
+                        (it[CompositeScores.structComposite] to it[CompositeScores.topicComposite])
+                },
             )
         }
     }
+
+    val allRows = snapshot.rows
 
     // Применяем фильтр по роли (если выбран): оставляем авторов, чья роль содержит подстроку фильтра
     val rows = remember(allRows, roleFilter) {
@@ -125,23 +172,9 @@ fun LomDashboardScreen() {
         else allRows.filter { it.role?.contains(roleFilter!!, ignoreCase = true) == true }
     }
 
-    // Пороги квадрантов θ_struct/θ_topic для линий-разделителей на scatter-диаграмме
-    val thresholds = remember(sessionId, dataVersion) {
-        val sid = sessionId ?: return@remember null
-        compositeDao.findThresholds(sid)
-    }
-    // Композитные координаты авторов: authorId -> (структурный композит, тематический композит)
-    val composites = remember(sessionId, dataVersion) {
-        val sid = sessionId ?: return@remember emptyMap<Int, Pair<Float, Float>>()
-        compositeDao.findCompositesBySession(sid).associate {
-            it[CompositeScores.authorId].value to
-                (it[CompositeScores.structComposite] to it[CompositeScores.topicComposite])
-        }
-    }
-
-    // Пороги осей (0, если не рассчитаны) — положение разделительных линий квадрантов
-    val tauStruct = thresholds?.get(SessionThresholds.thetaStruct) ?: 0f
-    val tauTopic = thresholds?.get(SessionThresholds.thetaTopic) ?: 0f
+    val composites = snapshot.compositeCoordinates
+    val tauStruct = snapshot.thetaStruct
+    val tauTopic = snapshot.thetaTopic
 
     // Точки для scatter-диаграммы: координаты (композиты) + данные для цвета (позиция/отклик)
     val points = remember(rows, composites) {

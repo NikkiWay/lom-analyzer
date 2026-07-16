@@ -55,6 +55,28 @@ import org.koin.java.KoinJavaComponent.get
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.jetbrains.exposed.sql.ResultRow
+
+/**
+ * Согласованный снимок данных по одному автору, прочитанный за один заход в БД.
+ *
+ * @param author строка профиля автора или null, если автор не выбран/не найден.
+ * @param lom строка с 11 оценками для пары (сессия, автор).
+ * @param ciMap доверительные интервалы бутстрапа: имя оценки -> CI.
+ * @param roleRow строка роли и атрибутов автора в рамках сессии.
+ * @param posts тематически релевантные публикации автора.
+ * @param sentimentByPostId метки тональности постов: post.id -> метка.
+ */
+private data class AuthorDetailSnapshot(
+    val author: ResultRow? = null,
+    val lom: ResultRow? = null,
+    val ciMap: Map<String, CiInfo> = emptyMap(),
+    val roleRow: ResultRow? = null,
+    val posts: List<ResultRow> = emptyList(),
+    val sentimentByPostId: Map<Int, String> = emptyMap(),
+)
 
 /**
  * Детальная карточка автора: роль, атрибуты, оценки по 4 осям и публикации.
@@ -77,40 +99,52 @@ fun LomDetailScreen() {
     val sessionId by sessionHolder.sessionId.collectAsState()
     val dataVersion by sessionHolder.dataVersion.collectAsState()
 
-    // Запись автора по выбранному id
-    val author = remember(authorId) { authorId?.let { authorDao.findById(it) } }
-    // 11 оценок (LomScores) для пары (сессия, автор)
-    val lom = remember(sessionId, authorId, dataVersion) {
-        val sid = sessionId ?: return@remember null
-        val aid = authorId ?: return@remember null
-        lomScoreDao.findBySessionAndAuthor(sid, aid)
-    }
-    // Доверительные интервалы бутстрапа по выбранному автору: карта «имя оценки -> CI».
-    // Заполнены только оценки, считавшиеся по выборке (ER_bg, ER_top, Reach, доли тональности).
-    val ciMap = remember(sessionId, authorId, dataVersion) {
-        val sid = sessionId ?: return@remember emptyMap<String, CiInfo>()
-        val aid = authorId ?: return@remember emptyMap<String, CiInfo>()
-        bootstrapDao.findBySessionAndAuthor(sid, aid).associate { row ->
-            row[BootstrapIntervals.scoreName] to CiInfo(
-                lo = row[BootstrapIntervals.ciLo],
-                hi = row[BootstrapIntervals.ciHi],
-                procedure = row[BootstrapIntervals.procedureType],
-                iterations = row[BootstrapIntervals.iterations],
+    // Все данные экрана читаются одним заходом в Dispatchers.IO: DAO выполняют
+    // блокирующие JDBC-транзакции, которые нельзя вызывать в потоке composition.
+    // Перезапуск — при смене сессии, автора или версии данных.
+    val detail by produceState(AuthorDetailSnapshot(), sessionId, authorId, dataVersion) {
+        val sid = sessionId
+        val aid = authorId
+        if (sid == null || aid == null) {
+            value = AuthorDetailSnapshot()
+            return@produceState
+        }
+        value = withContext(Dispatchers.IO) {
+            val authorRow = authorDao.findById(aid)
+            val postRows = authorRow?.get(Authors.vkId)?.let { vkId ->
+                postDao.findBySessionAndFromId(sid, vkId).filter { it[Posts.isTopicRelevant] == true }
+            } ?: emptyList()
+
+            AuthorDetailSnapshot(
+                author = authorRow,
+                // 11 оценок (LomScores) для пары (сессия, автор)
+                lom = lomScoreDao.findBySessionAndAuthor(sid, aid),
+                // Доверительные интервалы бутстрапа: карта «имя оценки -> CI». Заполнены
+                // только оценки, считавшиеся по выборке (ER_bg, ER_top, Reach, доли тональности).
+                ciMap = bootstrapDao.findBySessionAndAuthor(sid, aid).associate { row ->
+                    row[BootstrapIntervals.scoreName] to CiInfo(
+                        lo = row[BootstrapIntervals.ciLo],
+                        hi = row[BootstrapIntervals.ciHi],
+                        procedure = row[BootstrapIntervals.procedureType],
+                        iterations = row[BootstrapIntervals.iterations],
+                    )
+                },
+                // Строка роли/атрибутов автора (AuthorRoles) в рамках сессии
+                roleRow = compositeDao.findRolesBySession(sid)
+                    .firstOrNull { it[AuthorRoles.authorId].value == aid },
+                posts = postRows,
+                // Тональность показываемых публикаций — одной картой. Точечный запрос
+                // на каждый пост в цикле отрисовки давал отдельное обращение к БД (N+1).
+                sentimentByPostId = sentimentDao.findAllAsMap(SentimentEntityType.POST),
             )
         }
     }
-    // Строка роли/атрибутов автора (AuthorRoles) в рамках сессии
-    val roleRow = remember(sessionId, authorId, dataVersion) {
-        val sid = sessionId ?: return@remember null
-        val aid = authorId ?: return@remember null
-        compositeDao.findRolesBySession(sid).firstOrNull { it[AuthorRoles.authorId].value == aid }
-    }
-    // Тематически релевантные публикации автора в рамках сессии (по vkId)
-    val posts = remember(sessionId, authorId, dataVersion) {
-        val sid = sessionId ?: return@remember emptyList()
-        val vkId = author?.get(Authors.vkId) ?: return@remember emptyList()
-        postDao.findBySessionAndFromId(sid, vkId).filter { it[Posts.isTopicRelevant] == true }
-    }
+
+    val author = detail.author
+    val lom = detail.lom
+    val ciMap = detail.ciMap
+    val roleRow = detail.roleRow
+    val posts = detail.posts
 
     // Отображаемое имя автора (имя + фамилия) с запасным вариантом по id
     val authorName = author?.let {
@@ -213,9 +247,9 @@ fun LomDetailScreen() {
             } else {
                 val dtFmt = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm").withZone(ZoneId.systemDefault()) }
                 posts.take(50).forEach { post ->
-                    // Тональность поста из результатов анализа (SentimentResultDao)
-                    val sentiment = sentimentDao.findByEntity(SentimentEntityType.POST, post[Posts.id].value)
-                    PostCard(post, dtFmt, sentiment)
+                    // Тональность поста берём из уже загруженной карты (без запроса к БД при отрисовке)
+                    val sentimentLabel = detail.sentimentByPostId[post[Posts.id].value]
+                    PostCard(post, dtFmt, sentimentLabel)
                 }
                 // Если публикаций больше 50, показываем подпись с остатком
                 if (posts.size > 50) {
@@ -358,11 +392,10 @@ private fun CiDetail(value: Float, ci: CiInfo, fractionScale: Boolean) {
  */
 @Composable
 @Suppress("FunctionNaming")
-private fun PostCard(post: org.jetbrains.exposed.sql.ResultRow, dtFmt: DateTimeFormatter, sentiment: org.jetbrains.exposed.sql.ResultRow?) {
-    // Текст (обрезан до 300 символов), дата публикации и метка тональности
+private fun PostCard(post: org.jetbrains.exposed.sql.ResultRow, dtFmt: DateTimeFormatter, sentLabel: String?) {
+    // Текст (обрезан до 300 символов) и дата публикации
     val text = post[Posts.text]?.take(300) ?: ""
     val date = dtFmt.format(Instant.ofEpochMilli(post[Posts.publishedAt]))
-    val sentLabel = sentiment?.get(SentimentResults.sentiment)
 
     Surface(shape = RoundedCornerShape(8.dp), color = AppColors.surfaceVariant, modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
         Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {

@@ -56,6 +56,9 @@ import com.example.lomanalyzer.ui.theme.AppColors
 import com.example.lomanalyzer.ui.theme.ScreenHeader
 import com.example.lomanalyzer.ui.theme.SectionCard
 import org.koin.java.KoinJavaComponent.get
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 
 /**
  * Экран постановки задачи и создания сессии анализа (этап 1 пайплайна).
@@ -83,6 +86,7 @@ fun SetupScreen() {
     var currentDays by remember { mutableStateOf("30") }         // текущее окно (событийная активность), дни
     var roleMode by remember { mutableStateOf("QUADRANT") }      // режим классификации ролей: QUADRANT или GMM
     var lastCreatedId by remember { mutableStateOf<Int?>(null) } // id только что созданной сессии (активирует кнопку «Начать сбор»)
+    val coroutineScope = rememberCoroutineScope()
     var importJsonPath by remember { mutableStateOf<String?>(null) } // путь к JSON-файлу импорта (минуя VK API)
 
     // Состояние выбора сообществ: флаг показа диалога и список выбранных сообществ
@@ -297,9 +301,13 @@ fun SetupScreen() {
         ) {
             Button(
                 onClick = {
+                    // Создание сессии и привязка сообществ — блокирующие обращения к БД,
+                    // поэтому выполняются в IO-диспетчере, а не в UI-потоке композиции.
+                    coroutineScope.launch {
+                    val id = withContext(Dispatchers.IO) {
                     // Создаём сессию: парсим n-граммы (через запятую) и референсы (по строкам),
                     // подставляем дефолты окон (60/30 дней) при некорректном вводе
-                    val id = sessionManager.createSession(
+                    sessionManager.createSession(
                         SessionParams(
                             name = name.ifBlank { "Unnamed" },
                             topicQuery = topicQuery.ifBlank { "default" },
@@ -314,23 +322,27 @@ fun SetupScreen() {
                             importJsonPath = importJsonPath,
                         ),
                     )
-                    // Привязываем выбранные сообщества к сессии (создавая записи в БД при отсутствии)
-                    for (community in selectedCommunities) {
-                        val existing = communityDao.findByVkId(community.vkId)
-                        val communityId = existing?.let {
-                            it[Communities.id].value
-                        } ?: communityDao.insert(
-                            vkId = community.vkId,
-                            name = community.name,
-                            screenName = community.screenName,
-                            membersCount = community.membersCount,
-                            isClosed = community.isClosed,
-                            communityType = community.type,
-                        )
-                        linkDao.linkSessionCommunity(id, communityId)
+                    }
+                    withContext(Dispatchers.IO) {
+                        // Привязываем выбранные сообщества к сессии (создавая записи в БД при отсутствии)
+                        for (community in selectedCommunities) {
+                            val existing = communityDao.findByVkId(community.vkId)
+                            val communityId = existing?.let {
+                                it[Communities.id].value
+                            } ?: communityDao.insert(
+                                vkId = community.vkId,
+                                name = community.name,
+                                screenName = community.screenName,
+                                membersCount = community.membersCount,
+                                isClosed = community.isClosed,
+                                communityType = community.type,
+                            )
+                            linkDao.linkSessionCommunity(id, communityId)
+                        }
                     }
                     // Запоминаем id созданной сессии — это разблокирует кнопку «Начать сбор»
                     lastCreatedId = id
+                    }
                 },
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.height(44.dp),

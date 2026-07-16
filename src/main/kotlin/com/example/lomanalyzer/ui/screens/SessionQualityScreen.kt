@@ -43,6 +43,8 @@ import com.example.lomanalyzer.ui.theme.EmptyStateMessage
 import com.example.lomanalyzer.ui.theme.ScreenHeader
 import com.example.lomanalyzer.ui.theme.SectionCard
 import org.koin.java.KoinJavaComponent.get
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Экран индикаторов качества сессии (разделы диплома 2.2.6, 2.2.8).
@@ -61,21 +63,29 @@ fun SessionQualityScreen() {
     /** Распарсенный индикатор качества: название, значение, статус и описание. */
     data class QualityItem(val name: String, val value: Float, val status: String, val description: String)
 
-    // Загрузка и разбор индикаторов из событий QUALITY_INDICATOR активной сессии
-    val indicators = remember(sessionId, dataVersion) {
-        val sid = sessionId ?: return@remember emptyList<QualityItem>()
-        val events = sessionEventDao.findBySession(sid)
-            .filter { it[SessionEvents.eventType] == "QUALITY_INDICATOR" }
-        events.mapNotNull { event ->
-            val msg = event[SessionEvents.message] ?: return@mapNotNull null
-            // Разбор сообщения формата «Название: СТАТУС (0.123)»
-            val colonIdx = msg.indexOf(':')
-            if (colonIdx < 0) return@mapNotNull null
-            val name = msg.substring(0, colonIdx).trim()                  // часть до двоеточия — название
-            val rest = msg.substring(colonIdx + 1).trim()                // часть после двоеточия
-            val status = rest.substringBefore(" (").trim()               // статус — до открывающей скобки
-            val valueStr = rest.substringAfter("(", "0").substringBefore(")") // значение — внутри скобок
-            QualityItem(name, valueStr.toFloatOrNull() ?: 0f, status, event[SessionEvents.details] ?: "")
+    // Загрузка и разбор индикаторов из событий QUALITY_INDICATOR активной сессии.
+    // Чтение — в Dispatchers.IO: DAO выполняет блокирующую JDBC-транзакцию, которую
+    // нельзя выполнять в потоке composition.
+    val indicators by produceState(emptyList<QualityItem>(), sessionId, dataVersion) {
+        val sid = sessionId
+        if (sid == null) {
+            value = emptyList()
+            return@produceState
+        }
+        value = withContext(Dispatchers.IO) {
+            val events = sessionEventDao.findBySession(sid)
+                .filter { it[SessionEvents.eventType] == "QUALITY_INDICATOR" }
+            events.mapNotNull { event ->
+                val msg = event[SessionEvents.message] ?: return@mapNotNull null
+                // Разбор сообщения формата «Название: СТАТУС (0.123)»
+                val colonIdx = msg.indexOf(':')
+                if (colonIdx < 0) return@mapNotNull null
+                val name = msg.substring(0, colonIdx).trim()               // часть до двоеточия — название
+                val rest = msg.substring(colonIdx + 1).trim()              // часть после двоеточия
+                val status = rest.substringBefore(" (").trim()             // статус — до открывающей скобки
+                val valueStr = rest.substringAfter("(", "0").substringBefore(")") // значение — внутри скобок
+                QualityItem(name, valueStr.toFloatOrNull() ?: 0f, status, event[SessionEvents.details] ?: "")
+            }
         }
     }
 

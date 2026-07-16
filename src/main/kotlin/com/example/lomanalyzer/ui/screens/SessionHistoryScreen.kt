@@ -56,6 +56,9 @@ import org.koin.java.KoinJavaComponent.get
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 
 /**
  * Краткая сводка по сессии для отображения в списке истории.
@@ -93,6 +96,7 @@ fun SessionHistoryScreen() {
     val activeSessionId by sessionHolder.sessionId.collectAsState()
     var sessions by remember { mutableStateOf(emptyList<SessionSummary>()) }
     var showDeleteConfirm by remember { mutableStateOf<Int?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     // Однократная загрузка списка сессий при входе на экран
     LaunchedEffect(Unit) {
@@ -152,12 +156,15 @@ fun SessionHistoryScreen() {
             },
             confirmButton = {
                 TextButton(onClick = {
-                    // Мягкое удаление: помечаем сессию удалённой и перезагружаем список
-                    sessionDao.softDelete(sessionId)
-                    sessions = loadSessions(sessionManager)
-                    // Если удалили активную сессию — сбрасываем активную
-                    if (activeSessionId == sessionId) {
-                        sessionHolder.clear()
+                    // Мягкое удаление: помечаем сессию удалённой и перезагружаем список.
+                    // Обе операции блокирующие, поэтому уходят в IO-диспетчер.
+                    coroutineScope.launch {
+                        withContext(Dispatchers.IO) { sessionDao.softDelete(sessionId) }
+                        sessions = loadSessions(sessionManager)
+                        // Если удалили активную сессию — сбрасываем активную
+                        if (activeSessionId == sessionId) {
+                            sessionHolder.clear()
+                        }
                     }
                     showDeleteConfirm = null
                 }) {
@@ -174,25 +181,31 @@ fun SessionHistoryScreen() {
     }
 }
 
-/** Загружает сессии через SessionManager и маппит строки БД в модели SessionSummary. */
-private fun loadSessions(sessionManager: SessionManager): List<SessionSummary> {
-    return sessionManager.listSessions().map { row ->
-        SessionSummary(
-            id = row[AnalysisSessions.id].value,
-            name = row[AnalysisSessions.name],
-            topicQuery = row[AnalysisSessions.topicQuery],
-            // Статус из строки БД; при неизвестном значении откатываемся на CREATED
-            status = try {
-                SessionStatus.valueOf(row[AnalysisSessions.status])
-            } catch (_: Exception) {
-                SessionStatus.CREATED
-            },
-            qualityScore = row[AnalysisSessions.sessionQualityScore],
-            createdAt = row[AnalysisSessions.createdAt],
-            updatedAt = row[AnalysisSessions.updatedAt],
-        )
+/**
+ * Загружает сессии через SessionManager и маппит строки БД в модели SessionSummary.
+ *
+ * Выборка выполняется в Dispatchers.IO: listSessions() — блокирующая
+ * JDBC-транзакция, а вызывающий код работает в UI-потоке композиции.
+ */
+private suspend fun loadSessions(sessionManager: SessionManager): List<SessionSummary> =
+    withContext(Dispatchers.IO) {
+        sessionManager.listSessions().map { row ->
+            SessionSummary(
+                id = row[AnalysisSessions.id].value,
+                name = row[AnalysisSessions.name],
+                topicQuery = row[AnalysisSessions.topicQuery],
+                // Статус из строки БД; при неизвестном значении откатываемся на CREATED
+                status = try {
+                    SessionStatus.valueOf(row[AnalysisSessions.status])
+                } catch (_: Exception) {
+                    SessionStatus.CREATED
+                },
+                qualityScore = row[AnalysisSessions.sessionQualityScore],
+                createdAt = row[AnalysisSessions.createdAt],
+                updatedAt = row[AnalysisSessions.updatedAt],
+            )
+        }
     }
-}
 
 /**
  * Карточка одной сессии в списке истории: значок статуса, имя, тема, дата,
