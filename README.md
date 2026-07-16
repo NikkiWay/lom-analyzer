@@ -1,6 +1,6 @@
 # LOM Analyzer
 
-[![Build & Test](https://github.com/USERNAME/lom-analyzer/actions/workflows/build.yml/badge.svg)](https://github.com/USERNAME/lom-analyzer/actions/workflows/build.yml)
+[![Build & Test](https://github.com/NikkiWay/lom-analyzer/actions/workflows/build.yml/badge.svg)](https://github.com/NikkiWay/lom-analyzer/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF.svg)](https://kotlinlang.org)
 [![JVM](https://img.shields.io/badge/JVM-17-orange.svg)](https://adoptium.net)
@@ -206,7 +206,7 @@ Topic_a  = ⅓·(z(TopVol) + z(TopFocus) + z(Reach))
 ### Сборка и запуск
 
 ```bash
-git clone https://github.com/USERNAME/lom-analyzer.git
+git clone https://github.com/NikkiWay/lom-analyzer.git
 cd lom-analyzer
 
 ./gradlew run        # запуск

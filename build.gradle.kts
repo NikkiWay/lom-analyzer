@@ -106,7 +106,7 @@ compose.desktop {
                 upgradeUuid = "8247cb38-0862-4ca6-ba87-ce2c99a1d4cb"
             }
             linux {
-                debMaintainer = "lom-analyzer@users.noreply.github.com"
+                debMaintainer = "NikkiWay@users.noreply.github.com"
             }
         }
     }
