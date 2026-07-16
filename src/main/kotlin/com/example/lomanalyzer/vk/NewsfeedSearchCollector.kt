@@ -210,22 +210,7 @@ class NewsfeedSearchCollector(
 
     /** Сохраняет один пост newsfeed.search в окно CURRENT (метаданные, счётчики, признаки медиа/репоста). */
     private fun persistPost(sessionId: Int, post: VkPost) {
-        postDao.insert(
-            sessionId = sessionId,
-            vkId = post.id,
-            ownerId = post.ownerId,
-            fromId = post.fromId,
-            publishedAt = post.date,
-            text = post.text,
-            window = "CURRENT",
-            ownTextLength = post.text.length,
-            likes = post.likes?.count ?: 0,
-            reposts = post.reposts?.count ?: 0,
-            comments = post.comments?.count ?: 0,
-            views = post.views?.count,
-            containsMedia = !post.attachments.isNullOrEmpty(),
-            hasCopyHistory = !post.copyHistory.isNullOrEmpty(),
-        )
+        postDao.insertVkPost(sessionId, post, "CURRENT")
     }
 
     /**
