@@ -96,7 +96,7 @@ object TwoLevelBootstrap {
                 val localPos = mutableListOf<Double>()
                 val localNeg = mutableListOf<Double>()
 
-                for (outer in start until end) {
+                repeat(end - start) {
                     // ВНЕШНИЙ уровень: ресэмпл n постов с возвращением (вариативность между постами)
                     val sampledPosts = List(n) { nonEmpty[localRng.nextInt(n)] }
 

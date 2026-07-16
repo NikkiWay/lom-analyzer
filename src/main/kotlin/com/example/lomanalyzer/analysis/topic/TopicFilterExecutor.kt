@@ -172,7 +172,6 @@ class TopicFilterExecutor(
 
         // Compute and store filter quality summary
         // Формируем и сохраняем сводку качества фильтрации
-        val dtFmt = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm").withZone(ZoneId.systemDefault())
         // Колбэк postLookup собирает ValidationPost по id из БД для спорных постов
         lastFilterSummary = FilterQualityComputer.compute(scoredPosts, { postId ->
             val post = postDao.findById(postId) ?: return@compute null

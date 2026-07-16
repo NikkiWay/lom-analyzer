@@ -125,7 +125,6 @@ class QualityCheckExecutor(
         val allPosts = postDao.findBySession(sessionId)
         // Тематические посты текущего окна (CURRENT) — для покрытия комментариями
         val topicPosts = allPosts.filter { it[Posts.isTopicRelevant] == true && it[Posts.window] == "CURRENT" }
-        val totalComments = commentDao.countBySession(sessionId)
 
         // Полнота сбора: пока принимается за 1.0 (весь запрошенный материал собран)
         val collectionCompleteness = 1.0f

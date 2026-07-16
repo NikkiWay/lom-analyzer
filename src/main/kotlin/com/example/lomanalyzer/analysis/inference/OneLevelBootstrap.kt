@@ -115,9 +115,6 @@ object OneLevelBootstrap {
         if (labels.size < 2) return@coroutineScope null
         val n = labels.size
 
-        val posResults = DoubleArray(iterations)
-        val negResults = DoubleArray(iterations)
-
         // Та же схема распараллеливания B итераций по ядрам, что и в bootstrap()
         val cores = Runtime.getRuntime().availableProcessors().coerceAtLeast(2)
         val chunkSize = (iterations + cores - 1) / cores

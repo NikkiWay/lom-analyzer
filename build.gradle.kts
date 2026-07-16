@@ -9,7 +9,10 @@ plugins {
 }
 
 group = "com.example"
-version = "0.1.0-SNAPSHOT"
+
+// Единая версия проекта: совпадает с git-тегом v1.0.0 и с packageVersion
+// нативного дистрибутива ниже.
+version = "1.0.0"
 
 repositories {
     google()
@@ -97,10 +100,13 @@ compose.desktop {
 
             windows {
                 menuGroup = "LOM Analyzer"
-                upgradeUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                // Идентификатор линейки продукта для MSI: по нему установщик отличает
+                // обновление от новой установки. Должен оставаться неизменным между
+                // версиями — менять его нельзя.
+                upgradeUuid = "8247cb38-0862-4ca6-ba87-ce2c99a1d4cb"
             }
             linux {
-                debMaintainer = "lom-analyzer@example.com"
+                debMaintainer = "lom-analyzer@users.noreply.github.com"
             }
         }
     }
@@ -109,6 +115,9 @@ compose.desktop {
 detekt {
     config.setFrom(files("detekt.yml"))
     buildUponDefaultConfig = true
+    // Уже накопленные замечания зафиксированы в baseline и не роняют сборку;
+    // любое НОВОЕ замечание её роняет (см. maxIssues: 0 в detekt.yml).
+    baseline = file("detekt-baseline.xml")
 }
 
 tasks.register("verifyNoDebugIncludesPiiInProd") {

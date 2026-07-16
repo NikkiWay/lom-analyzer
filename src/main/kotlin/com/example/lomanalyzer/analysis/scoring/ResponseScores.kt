@@ -51,7 +51,7 @@ object ResponseScores {
      * @return средний относительный отклик; 0.0 при отсутствии постов или F_a ≤ 0
      * @see Appendix E.4.4
      */
-    fun erTop(reactions: List<Int>, followers: Int): Double {
+    fun topicalEngagementRate(reactions: List<Int>, followers: Int): Double {
         // Нет тематических постов или некорректное F_a → оценка не определена, 0
         if (reactions.isEmpty() || followers <= 0) return 0.0
         // Суммируем реакции по тематическим постам (Long — защита от переполнения)
@@ -72,7 +72,7 @@ object ResponseScores {
      * @return SentimentDistribution {positive, neutral, negative}
      * @see Appendix E.4.4
      */
-    fun resp(commentSentiments: List<String>): SentimentDistribution {
+    fun audienceResponseDistribution(commentSentiments: List<String>): SentimentDistribution {
         // Нет комментариев → отклик не определён, считаем нейтральным (0,1,0)
         if (commentSentiments.isEmpty()) return SentimentDistribution(0.0, 1.0, 0.0)
 

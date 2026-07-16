@@ -175,15 +175,9 @@ val appModule = module {
             orchestrator = get(),
             sessionManager = get(),
             authManager = get(),
-            communityDao = get(),
             postDao = get(),
-            authorDao = get(),
-            lomScoreDao = get(),
-            processedTextDao = get(),
-            sentimentResultDao = get(),
             sessionMetricsDao = get(),
             linkDao = get(),
-            dedupGroupDao = get(),
             vkApiClient = get(),
             baselineCollector = get(),
             currentCollector = get(),
@@ -202,13 +196,7 @@ val appModule = module {
             inferenceExecutor = get(),
             compositeRolesExecutor = get(),
             qualityCheckExecutor = get(),
-            dictionarySentiment = get(),
-            termExtractor = get(),
-            sessionQualityEvaluator = get(),
-            csvExporter = get(),
-            jsonExporter = get(),
             jsonDataImporter = get(),
-            config = get(),
             progressReporter = get(),
             cooldownState = get(),
             logger = get(),
@@ -375,7 +363,6 @@ val appModule = module {
     // ── Content analysis (dictionary sentiment for fallback NLP) ──
     // Словарный сентимент (резервный режим NLP) и извлечение терминов.
     single { DictionarySentiment() }
-    single { TermExtractor() }
 
     // ── Deduplication ──
     // Дедупликация (этап 5). NormalizedLevenshtein — метрика близости по леммам

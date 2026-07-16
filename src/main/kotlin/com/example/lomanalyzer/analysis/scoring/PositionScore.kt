@@ -43,7 +43,7 @@ object PositionScore {
      * @param sentiments список категорий тональности по каждому тематическому посту
      * @return SentimentDistribution с долями (positive, neutral, negative)
      */
-    fun pos(sentiments: List<String>): SentimentDistribution {
+    fun authorPositionDistribution(sentiments: List<String>): SentimentDistribution {
         // Нет тематических постов → позиция не определена, считаем её нейтральной (0,1,0)
         if (sentiments.isEmpty()) return SentimentDistribution(0.0, 1.0, 0.0)
 

@@ -43,7 +43,7 @@ object TopicScores {
      * @return |T_a|
      * @see Appendix E.4.2
      */
-    fun topVol(topicPostCount: Int): Int = topicPostCount
+    fun topicalPostVolume(topicPostCount: Int): Int = topicPostCount
 
     /**
      * TopFocus_a = |T_a| / (|T_a| + |B_a^period|) — степень сосредоточенности на теме.
@@ -54,7 +54,7 @@ object TopicScores {
      * @return доля в [0..1]; 0.0, если постов нет вовсе
      * @see Appendix E.4.2
      */
-    fun topFocus(topicPostCount: Int, nonTopicPostCount: Int): Double {
+    fun topicalFocusShare(topicPostCount: Int, nonTopicPostCount: Int): Double {
         // Знаменатель — все посты автора за период (тематические + фоновые)
         val total = topicPostCount + nonTopicPostCount
         // Нет постов за период → фокус не определён, возвращаем 0
@@ -75,7 +75,7 @@ object TopicScores {
      * @return суммарный охват по всем тематическим постам
      * @see Appendix E.4.2
      */
-    fun reach(viewsOrAudience: List<Long>): Double =
+    fun topicalReach(viewsOrAudience: List<Long>): Double =
         // Совокупный охват — простая сумма охватов отдельных тематических постов
         viewsOrAudience.sum().toDouble()
 }

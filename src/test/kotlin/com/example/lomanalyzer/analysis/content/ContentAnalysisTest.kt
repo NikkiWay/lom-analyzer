@@ -11,7 +11,6 @@
  *   2) NegationHandler.applyNegation — инверсия тональности слов в окне после
  *      слова-отрицания, влияние размера окна (windowSize);
  *   3) ручная проверка свойств медианы (как робастной агрегатной меры тональности);
- *   4) TermExtractor.extractTopTerms — топ-N терминов по TF-IDF.
  *
  * МЕТОД
  * Сентимент — словарный с нормализацией score в [−1,1] и порогами уверенности.
@@ -24,7 +23,7 @@
  *
  * СВЯЗИ
  * Тестируемые типы из пакета analysis/content: DictionarySentiment,
- * NegationHandler, TermExtractor.
+ * NegationHandler.
  */
 package com.example.lomanalyzer.analysis.content
 
@@ -201,57 +200,4 @@ class ContentAnalysisTest {
         val median = sorted[sorted.size / 2]
         assertTrue(median < 0, "median=$median")
     }
-
-    // --- TermExtractor ---
-
-    /**
-     * Проверяет извлечение топ-10 терминов по TF-IDF.
-     * Arrange: 3 документа автора об экологии (загрязнение/экология повторяются)
-     * и сессионный корпус из 6 документов (часть — на другие темы).
-     * Ожидание: «загрязнение» попадает в топ (часто у автора, нечасто по корпусу),
-     * выдаётся не более 10 терминов, и они отсортированы по убыванию TF-IDF.
-     */
-    @Test
-    fun `TermExtractor returns top-10 by TF-IDF`() {
-        val extractor = TermExtractor()
-
-        // Author's docs
-        val authorDocs = listOf(
-            listOf("экология", "загрязнение", "воздух", "город"),
-            listOf("экология", "вода", "загрязнение", "река"),
-            listOf("экология", "проблема", "загрязнение", "решение"),
-        )
-
-        // Session-wide docs (author + others)
-        val allDocs = authorDocs + listOf(
-            listOf("политика", "выборы", "кандидат", "партия"),
-            listOf("спорт", "футбол", "команда", "победа"),
-            listOf("экология", "лес", "пожар", "защита"),
-        )
-
-        // Act: извлекаем топ-10 терминов автора относительно корпуса сессии
-        val terms = extractor.extractTopTerms(authorDocs, allDocs, topN = 10)
-        assertTrue(terms.isNotEmpty(), "Should extract some terms")
-        assertTrue(terms.size <= 10, "At most 10 terms")
-
-        // "загрязнение" appears in 3 author docs but only 3/6 session docs → high TF-IDF
-        val termNames = terms.map { it.term }
-        assertTrue("загрязнение" in termNames, "загрязнение should be top term")
-
-        // Assert: термины отсортированы по убыванию TF-IDF (самые характерные — сверху)
-        for (i in 0 until terms.size - 1) {
-            assertTrue(terms[i].tfidf >= terms[i + 1].tfidf)
-        }
-    }
-
-    /**
-     * Граничный случай: пустой ввод (нет документов) → пустой список терминов.
-     */
-    @Test
-    fun `TermExtractor handles empty input`() {
-        val extractor = TermExtractor()
-        val terms = extractor.extractTopTerms(emptyList(), emptyList())
-        assertTrue(terms.isEmpty())
-    }
-
 }

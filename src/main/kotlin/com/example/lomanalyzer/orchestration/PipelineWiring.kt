@@ -40,18 +40,12 @@
 package com.example.lomanalyzer.orchestration
 
 import com.example.lomanalyzer.analysis.composite.CompositeRolesExecutor
-import com.example.lomanalyzer.analysis.content.DictionarySentiment
 import com.example.lomanalyzer.analysis.quality.QualityCheckExecutor
-import com.example.lomanalyzer.analysis.content.TermExtractor
 import com.example.lomanalyzer.analysis.dedup.DedupPipeline
 import com.example.lomanalyzer.analysis.dedup.OriginalityExecutor
-import com.example.lomanalyzer.analysis.quality.SessionQualityEvaluator
 import com.example.lomanalyzer.analysis.inference.InferenceExecutor
 import com.example.lomanalyzer.analysis.scoring.ScoringExecutor
 import com.example.lomanalyzer.analysis.topic.TopicFilterExecutor
-import com.example.lomanalyzer.config.AppConfig
-import com.example.lomanalyzer.export.CsvExporter
-import com.example.lomanalyzer.export.JsonExporter
 import com.example.lomanalyzer.import.JsonDataImporter
 import com.example.lomanalyzer.nlp.NlpServiceSelector
 import com.example.lomanalyzer.observability.AppEvent
@@ -84,15 +78,9 @@ class PipelineWiring(
     private val orchestrator: PipelineOrchestrator,
     private val sessionManager: SessionManager,
     private val authManager: AuthManager,
-    private val communityDao: CommunityDao,
     private val postDao: PostDao,
-    private val authorDao: AuthorDao,
-    private val lomScoreDao: LomScoreDao,
-    private val processedTextDao: ProcessedTextDao,
-    private val sentimentResultDao: SentimentResultDao,
     private val sessionMetricsDao: SessionMetricsDao,
     private val linkDao: LinkDao,
-    private val dedupGroupDao: DedupGroupDao,
     private val vkApiClient: VkApiClient,
     private val baselineCollector: BaselineCollector,
     private val currentCollector: CurrentCollector,
@@ -111,13 +99,7 @@ class PipelineWiring(
     private val inferenceExecutor: InferenceExecutor,
     private val compositeRolesExecutor: CompositeRolesExecutor,
     private val qualityCheckExecutor: QualityCheckExecutor,
-    private val dictionarySentiment: DictionarySentiment,
-    private val termExtractor: TermExtractor,
-    private val sessionQualityEvaluator: SessionQualityEvaluator,
-    private val csvExporter: CsvExporter,
-    private val jsonExporter: JsonExporter,
     private val jsonDataImporter: JsonDataImporter,
-    private val config: AppConfig,
     private val progressReporter: ProgressReporter,
     private val cooldownState: CooldownState,
     private val logger: Logger,

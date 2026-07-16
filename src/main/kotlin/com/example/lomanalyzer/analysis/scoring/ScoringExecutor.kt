@@ -136,33 +136,33 @@ class ScoringExecutor(
             }
 
             // === Ось 1: структурное влияние (Е.4.1) ===
-            val audScore = StructuralScores.aud(followers)                       // Aud_a = ln(1+F_a)
-            val ageScore = StructuralScores.age(authorAgeDays(author), maxAgeDays) // Age_a (норм. на максимум)
+            val audScore = StructuralScores.audienceScore(followers)                       // Aud_a = ln(1+F_a)
+            val ageScore = StructuralScores.normalizedAccountAge(authorAgeDays(author), maxAgeDays) // Age_a (норм. на максимум)
             // Реакции (L+C+R) по фоновым постам → средний фоновый engagement rate
             val bgReactions = authorBaselinePosts.map { postReactions(it) }
-            val erBgScore = StructuralScores.erBg(bgReactions, followers)        // ER_a^bg
+            val erBgScore = StructuralScores.backgroundEngagementRate(bgReactions, followers)        // ER_a^bg
 
             // === Ось 2: тематическая активность (Е.4.2) ===
-            val topVolScore = TopicScores.topVol(topicCount)                    // TopVol_a = |T_a|
-            val topFocusScore = TopicScores.topFocus(topicCount, authorCurrentNonTopic.size) // TopFocus_a
+            val topVolScore = TopicScores.topicalPostVolume(topicCount)                    // TopVol_a = |T_a|
+            val topFocusScore = TopicScores.topicalFocusShare(topicCount, authorCurrentNonTopic.size) // TopFocus_a
             // Охват каждого тем. поста: просмотры V_i, либо размер аудитории F_a как fallback
             val reachValues = authorTopicPosts.map { post ->
                 val views = post[Posts.views]
                 if (views != null && views > 0) views.toLong()
                 else followers.toLong() // fallback: размер аудитории, если просмотры недоступны
             }
-            val reachScore = TopicScores.reach(reachValues)                     // Reach_a = Σ V_i
+            val reachScore = TopicScores.topicalReach(reachValues)                     // Reach_a = Σ V_i
 
             // === Ось 3: позиция автора (берём метки тональности из заранее загруженной карты) ===
             val postSentiments = authorTopicPosts.mapNotNull { post ->
                 postSentimentMap[post[Posts.id].value]
             }
-            val posDistribution = PositionScore.pos(postSentiments)            // Pos_a = (p+,p0,p-)
+            val posDistribution = PositionScore.authorPositionDistribution(postSentiments)            // Pos_a = (p+,p0,p-)
 
             // === Ось 4: отклик аудитории (Е.4.4) ===
             // Реакции по тематическим постам → тематический engagement rate
             val topicReactions = authorTopicPosts.map { postReactions(it) }
-            val erTopScore = ResponseScores.erTop(topicReactions, followers)   // ER_a^top
+            val erTopScore = ResponseScores.topicalEngagementRate(topicReactions, followers)   // ER_a^top
 
             // Resp_a: тональность всех комментариев под тематическими постами автора
             val topicPostIds = authorTopicPosts.map { it[Posts.id].value }.toSet()
@@ -172,7 +172,7 @@ class ScoringExecutor(
             val commentSentiments = authorComments.map { comment ->
                 commentSentimentMap[comment[Comments.id].value] ?: "NEUTRAL"
             }
-            val respDistribution = ResponseScores.resp(commentSentiments)     // Resp_a = (q+,q0,q-)
+            val respDistribution = ResponseScores.audienceResponseDistribution(commentSentiments)     // Resp_a = (q+,q0,q-)
 
             // === Сохранение всех 11 оценок в LomScores (upsert по (sessionId, authorId)) ===
             lomScoreDao.upsert(

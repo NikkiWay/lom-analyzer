@@ -14,7 +14,7 @@
  * АЛГОРИТМ
  * Шаги теста повторяют этапы 5–9 алгоритма: очистка/токенизация/лемматизация,
  * двухпроходный фильтр в режиме FALLBACK_ONLY, точный дедуп, нормированная оценка
- * аудитории (AudienceComponent), словарный сентимент. См. docs/algorithm.md.
+ * аудитории (StructuralScores.audienceScore), словарный сентимент. См. docs/algorithm.md.
  *
  * ФРЕЙМВОРКИ
  * JUnit 5 (@Test, @BeforeEach); Exposed ORM + JDBC SQLite (временная БД в temp-файле,
@@ -227,7 +227,7 @@ class MvpSmokeTest {
         // Aud_a = ln(1 + F_a) — та же функция, что используется в пайплайне (этап 7).
         val lomScoreDao = LomScoreDao(db)
         val aRaws = authors.map {
-            StructuralScores.aud(
+            StructuralScores.audienceScore(
                 it[com.example.lomanalyzer.storage.tables.Authors.followersCount] ?: 0,
             )
         }

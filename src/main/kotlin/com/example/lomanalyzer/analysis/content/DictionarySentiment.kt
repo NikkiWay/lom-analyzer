@@ -152,7 +152,6 @@ class DictionarySentiment {
      */
     private fun scoreBySignals(lemmas: List<String>): SentimentResult {
         val lowerLemmas = lemmas.map { it.lowercase() }
-        val text = lowerLemmas.joinToString(" ")
 
         var posSignals = 0
         var negSignals = 0
