@@ -1,24 +1,30 @@
 /*
  * НАЗНАЧЕНИЕ
  * DAO (слой доступа к данным) для результатов анализа тональности (таблица
- * sentiment_results). Хранит метку тональности постов/комментариев, метод, признак
+ * sentiment_result). Хранит метку тональности постов И комментариев, метод, признак
  * учёта отрицания и сведения о бутстрапе сентимента (согласованность и варианты).
- * Тональность нужна для оценок позиции автора и отклика аудитории.
+ * Тональность нужна для оценок позиции автора (ось 3) и отклика аудитории (ось 4).
  * Обмен между модулями — только через SQLite.
  *
  * ЧТО ВНУТРИ
  * Класс SentimentResultDao: insert (вставка результата сентимента),
- * findByPostId (точечная выборка), findAllAsMap (быстрая массовая загрузка карты
- * postId/commentId -> метка тональности).
+ * findByEntity (точечная выборка), findAllAsMap (массовая загрузка карты
+ * id -> метка тональности в пределах одного типа сущности).
+ *
+ * МЕТОД
+ * Каждая строка адресуется парой (entityType, entityId). Посты и комментарии
+ * нумеруются независимо, поэтому тип сущности обязателен во всех операциях:
+ * без него id=1 поста и id=1 комментария неразличимы.
  *
  * БИБЛИОТЕКИ
  * Exposed ORM — DSL запросов (insert, selectAll, associate).
  *
  * СВЯЗИ
- * Таблица SentimentResults (storage/tables). postId — id поста/комментария.
+ * Таблица SentimentResults (storage/tables) и enum SentimentEntityType.
  */
 package com.example.lomanalyzer.storage.dao
 
+import com.example.lomanalyzer.storage.tables.SentimentEntityType
 import com.example.lomanalyzer.storage.tables.SentimentResults
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -32,7 +38,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class SentimentResultDao(private val db: Database) {
     /**
      * INSERT результата анализа тональности.
-     * @param postId id поста/комментария, к которому относится результат.
+     * @param entityType тип сущности: POST либо COMMENT.
+     * @param entityId id поста либо комментария (в зависимости от entityType).
      * @param sentiment метка тональности (positive/neutral/negative).
      * @param score числовая оценка тональности или NULL.
      * @param method способ получения тональности.
@@ -41,7 +48,8 @@ class SentimentResultDao(private val db: Database) {
      * @param bootstrapVariants сериализованные варианты бутстрапа или NULL.
      */
     fun insert(
-        postId: Int,
+        entityType: SentimentEntityType,
+        entityId: Int,
         sentiment: String,
         score: Float? = null,
         method: String,
@@ -50,7 +58,8 @@ class SentimentResultDao(private val db: Database) {
         bootstrapVariants: String? = null,
     ) = transaction(db) {
         SentimentResults.insert {
-            it[SentimentResults.postId] = postId
+            it[SentimentResults.entityType] = entityType.name
+            it[SentimentResults.entityId] = entityId
             it[SentimentResults.sentiment] = sentiment
             it[SentimentResults.score] = score
             it[SentimentResults.method] = method
@@ -61,25 +70,28 @@ class SentimentResultDao(private val db: Database) {
     }
 
     /**
-     * SELECT результата тональности по id поста/комментария.
+     * SELECT результата тональности по типу и id сущности.
      * @return ResultRow или null.
      */
-    fun findByPostId(postId: Int): ResultRow? = transaction(db) {
-        SentimentResults.selectAll().where { SentimentResults.postId eq postId }.singleOrNull()
+    fun findByEntity(entityType: SentimentEntityType, entityId: Int): ResultRow? = transaction(db) {
+        SentimentResults.selectAll().where {
+            (SentimentResults.entityType eq entityType.name) and (SentimentResults.entityId eq entityId)
+        }.singleOrNull()
     }
 
     /**
-     * Load all sentiment results as a map of postId/commentId -> sentiment label. Fast bulk read.
+     * Load sentiment results for one entity type as a map of id -> sentiment label.
      *
-     * Массовая загрузка всех результатов тональности одним запросом в карту
-     * postId/commentId -> метка тональности (ускоряет доступ без частых одиночных
-     * выборок). Мапит каждую ResultRow в пару ключ-значение через associate.
-     * @return Map id -> метка тональности.
+     * Массовая загрузка результатов тональности одним запросом в карту
+     * id -> метка тональности. Выборка всегда ограничена одним типом сущности:
+     * посты и комментарии нумеруются независимо, поэтому общая карта по обоим
+     * типам молча теряла бы строки при совпадении идентификаторов.
+     * @param entityType тип сущности, по которому строится карта.
+     * @return Map id сущности -> метка тональности.
      */
-    fun findAllAsMap(): Map<Int, String> = transaction(db) {
-        // SELECT всех строк; associate строит Map из (postId -> sentiment)
-        SentimentResults.selectAll().associate {
-            it[SentimentResults.postId].value to it[SentimentResults.sentiment]
-        }
+    fun findAllAsMap(entityType: SentimentEntityType): Map<Int, String> = transaction(db) {
+        SentimentResults.selectAll()
+            .where { SentimentResults.entityType eq entityType.name }
+            .associate { it[SentimentResults.entityId] to it[SentimentResults.sentiment] }
     }
 }

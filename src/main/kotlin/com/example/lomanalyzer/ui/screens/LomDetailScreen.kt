@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lomanalyzer.orchestration.ActiveSessionHolder
 import com.example.lomanalyzer.storage.dao.*
+import com.example.lomanalyzer.storage.tables.SentimentEntityType
 import com.example.lomanalyzer.storage.tables.*
 import com.example.lomanalyzer.ui.components.*
 import com.example.lomanalyzer.ui.navigation.AppNavigator
@@ -213,7 +214,7 @@ fun LomDetailScreen() {
                 val dtFmt = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm").withZone(ZoneId.systemDefault()) }
                 posts.take(50).forEach { post ->
                     // Тональность поста из результатов анализа (SentimentResultDao)
-                    val sentiment = sentimentDao.findByPostId(post[Posts.id].value)
+                    val sentiment = sentimentDao.findByEntity(SentimentEntityType.POST, post[Posts.id].value)
                     PostCard(post, dtFmt, sentiment)
                 }
                 // Если публикаций больше 50, показываем подпись с остатком

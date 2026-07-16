@@ -36,6 +36,7 @@ import com.example.lomanalyzer.storage.dao.CommentDao
 import com.example.lomanalyzer.storage.dao.PostDao
 import com.example.lomanalyzer.storage.dao.ProcessedTextDao
 import com.example.lomanalyzer.storage.dao.SentimentResultDao
+import com.example.lomanalyzer.storage.tables.SentimentEntityType
 import com.example.lomanalyzer.storage.tables.Comments
 import com.example.lomanalyzer.storage.tables.Posts
 import kotlinx.serialization.encodeToString
@@ -167,7 +168,8 @@ class PreprocessingExecutor(
                     val offset = chunkIdx * BATCH_SIZE
                     for ((j, score) in scores.withIndex()) {
                         sentimentResultDao.insert(
-                            postId = currentPosts[offset + j].postId,
+                            entityType = SentimentEntityType.POST,
+                            entityId = currentPosts[offset + j].postId,
                             sentiment = score.label.uppercase(),
                             score = score.score,
                             method = "python_rubert",
@@ -179,7 +181,8 @@ class PreprocessingExecutor(
                     val offset = chunkIdx * BATCH_SIZE
                     for (j in chunk.indices) {
                         sentimentResultDao.insert(
-                            postId = currentPosts[offset + j].postId,
+                            entityType = SentimentEntityType.POST,
+                            entityId = currentPosts[offset + j].postId,
                             sentiment = "NEUTRAL", score = 0.5f, method = "fallback_error",
                         )
                     }
@@ -194,9 +197,21 @@ class PreprocessingExecutor(
             for (cp in currentPosts) {
                 try {
                     val s = nlpService.scoreSentiment(cp.cleanText)
-                    sentimentResultDao.insert(cp.postId, s.label.uppercase(), s.score, "kotlin_rusentilex")
+                    sentimentResultDao.insert(
+                        entityType = SentimentEntityType.POST,
+                        entityId = cp.postId,
+                        sentiment = s.label.uppercase(),
+                        score = s.score,
+                        method = "kotlin_rusentilex",
+                    )
                 } catch (_: Exception) {
-                    sentimentResultDao.insert(cp.postId, "NEUTRAL", 0.5f, "fallback_error")
+                    sentimentResultDao.insert(
+                        entityType = SentimentEntityType.POST,
+                        entityId = cp.postId,
+                        sentiment = "NEUTRAL",
+                        score = 0.5f,
+                        method = "fallback_error",
+                    )
                 }
             }
         }
@@ -216,7 +231,8 @@ class PreprocessingExecutor(
                     val offset = chunkIdx * BATCH_SIZE
                     for ((j, score) in scores.withIndex()) {
                         sentimentResultDao.insert(
-                            postId = commentsWithText[offset + j][Comments.id].value,
+                            entityType = SentimentEntityType.COMMENT,
+                            entityId = commentsWithText[offset + j][Comments.id].value,
                             sentiment = score.label.uppercase(),
                             score = score.score,
                             method = "python_rubert",
@@ -227,10 +243,18 @@ class PreprocessingExecutor(
                     logger.warn("Batch comment sentiment failed: ${e.message}")
                     val offset = chunkIdx * BATCH_SIZE
                     for (j in chunk.indices) {
-                        sentimentResultDao.insert(
-                            postId = commentsWithText[offset + j][Comments.id].value,
-                            sentiment = "NEUTRAL", score = 0.5f, method = "fallback_error",
-                        )
+                        // Запасная запись сама по себе может упасть (например, строка уже
+                        // существует). Гасим её отдельно: иначе исключение вышло бы из
+                        // execute() и обрушило всю сессию на стадии препроцессинга.
+                        try {
+                            sentimentResultDao.insert(
+                                entityType = SentimentEntityType.COMMENT,
+                                entityId = commentsWithText[offset + j][Comments.id].value,
+                                sentiment = "NEUTRAL", score = 0.5f, method = "fallback_error",
+                            )
+                        } catch (inner: Exception) {
+                            logger.warn("Fallback comment sentiment insert failed: ${inner.message}")
+                        }
                     }
                 }
                 val done = ((chunkIdx + 1) * BATCH_SIZE).coerceAtMost(commentsWithText.size)
@@ -245,9 +269,26 @@ class PreprocessingExecutor(
                 val text = comment[Comments.text] ?: ""
                 try {
                     val s = nlpService.scoreSentiment(text)
-                    sentimentResultDao.insert(cid, s.label.uppercase(), s.score, "kotlin_rusentilex")
+                    sentimentResultDao.insert(
+                        entityType = SentimentEntityType.COMMENT,
+                        entityId = cid,
+                        sentiment = s.label.uppercase(),
+                        score = s.score,
+                        method = "kotlin_rusentilex",
+                    )
                 } catch (_: Exception) {
-                    sentimentResultDao.insert(cid, "NEUTRAL", 0.5f, "fallback_error")
+                    // Запасная запись гасится отдельно — см. комментарий в батчевой ветке.
+                    try {
+                        sentimentResultDao.insert(
+                            entityType = SentimentEntityType.COMMENT,
+                            entityId = cid,
+                            sentiment = "NEUTRAL",
+                            score = 0.5f,
+                            method = "fallback_error",
+                        )
+                    } catch (inner: Exception) {
+                        logger.warn("Fallback comment sentiment insert failed: ${inner.message}")
+                    }
                 }
             }
         }

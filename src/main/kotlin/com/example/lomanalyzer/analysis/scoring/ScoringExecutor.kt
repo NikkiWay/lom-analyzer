@@ -40,6 +40,7 @@ import com.example.lomanalyzer.orchestration.ProgressEvent
 import com.example.lomanalyzer.orchestration.ProgressReporter
 import com.example.lomanalyzer.orchestration.StageExecutor
 import com.example.lomanalyzer.storage.dao.*
+import com.example.lomanalyzer.storage.tables.SentimentEntityType
 import com.example.lomanalyzer.storage.tables.*
 
 /**
@@ -88,8 +89,11 @@ class ScoringExecutor(
         // Окно CURRENT — посты периода темы; BASELINE — фоновый период (для ER_bg)
         val currentPosts = allPosts.filter { it[Posts.window] == "CURRENT" }
         val baselinePosts = allPosts.filter { it[Posts.window] == "BASELINE" }
-        // Карта «id сущности → метка тональности» (посты и комментарии вместе)
-        val sentimentMap = sentimentResultDao.findAllAsMap()
+        // Карты «id → метка тональности» — отдельно по постам и по комментариям.
+        // Единой картой их держать нельзя: post.id и comment.id нумеруются
+        // независимо и пересекаются (см. V11__sentiment_result_entity_type.sql).
+        val postSentimentMap = sentimentResultDao.findAllAsMap(SentimentEntityType.POST)
+        val commentSentimentMap = sentimentResultDao.findAllAsMap(SentimentEntityType.COMMENT)
         val allComments = commentDao.findBySession(sessionId)
 
         // Тематические посты = окно CURRENT И прошедшие тематический фильтр (is_topic_relevant)
@@ -151,7 +155,7 @@ class ScoringExecutor(
 
             // === Ось 3: позиция автора (берём метки тональности из заранее загруженной карты) ===
             val postSentiments = authorTopicPosts.mapNotNull { post ->
-                sentimentMap[post[Posts.id].value]
+                postSentimentMap[post[Posts.id].value]
             }
             val posDistribution = PositionScore.pos(postSentiments)            // Pos_a = (p+,p0,p-)
 
@@ -166,7 +170,7 @@ class ScoringExecutor(
             val totalComments = authorComments.size
             // Метка комментария из карты тональностей; при отсутствии считаем NEUTRAL
             val commentSentiments = authorComments.map { comment ->
-                sentimentMap[comment[Comments.id].value] ?: "NEUTRAL"
+                commentSentimentMap[comment[Comments.id].value] ?: "NEUTRAL"
             }
             val respDistribution = ResponseScores.resp(commentSentiments)     // Resp_a = (q+,q0,q-)
 

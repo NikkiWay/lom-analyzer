@@ -39,6 +39,7 @@ import com.example.lomanalyzer.orchestration.ProgressEvent
 import com.example.lomanalyzer.orchestration.ProgressReporter
 import com.example.lomanalyzer.orchestration.StageExecutor
 import com.example.lomanalyzer.storage.dao.*
+import com.example.lomanalyzer.storage.tables.SentimentEntityType
 import com.example.lomanalyzer.storage.tables.*
 
 /**
@@ -83,7 +84,11 @@ class InferenceExecutor(
         val baselinePosts = allPosts.filter { it[Posts.window] == "BASELINE" }
         // Из текущего окна оставляем только тематически релевантные посты (после фильтра этапа 6)
         val topicPosts = currentPosts.filter { it[Posts.isTopicRelevant] == true }
-        val sentimentMap = sentimentResultDao.findAllAsMap()  // карта id-сущности -> метка тональности
+        // Карты «id -> метка тональности» — раздельно по постам и комментариям:
+        // их идентификаторы нумеруются независимо и пересекаются
+        // (см. V11__sentiment_result_entity_type.sql).
+        val postSentimentMap = sentimentResultDao.findAllAsMap(SentimentEntityType.POST)
+        val commentSentimentMap = sentimentResultDao.findAllAsMap(SentimentEntityType.COMMENT)
         val allComments = commentDao.findBySession(sessionId)
 
         val total = scores.size
@@ -152,7 +157,7 @@ class InferenceExecutor(
             if (authorTopicPosts.size >= 2) {
                 // Берём метки тональности тех постов, для которых она вычислена
                 val sentLabels = authorTopicPosts.mapNotNull {
-                    sentimentMap[it[Posts.id].value]
+                    postSentimentMap[it[Posts.id].value]
                 }
                 if (sentLabels.size >= 2) {
                     // Бутстрап распределения долей p+/p- по постам
@@ -174,7 +179,7 @@ class InferenceExecutor(
                 val clusters = authorTopicPosts.map { post ->
                     val postDbId = post[Posts.id].value
                     val postComments = allComments.filter { it[Comments.postId].value == postDbId }
-                    postComments.mapNotNull { sentimentMap[it[Comments.id].value] }
+                    postComments.mapNotNull { commentSentimentMap[it[Comments.id].value] }
                 }
                 // Оставляем только посты, под которыми есть комментарии с тональностью
                 val nonEmptyClusters = clusters.filter { it.isNotEmpty() }
