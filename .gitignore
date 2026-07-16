@@ -1,13 +1,16 @@
 # Gradle
 .gradle/
 build/
-gradle/wrapper/gradle-wrapper.jar
 
 # Kotlin
 *.class
 *.jar
 *.war
 *.ear
+
+# The Gradle wrapper JAR must be version-controlled: without it `./gradlew`
+# cannot bootstrap on a fresh clone (and CI fails). Re-included after *.jar.
+!gradle/wrapper/gradle-wrapper.jar
 
 # IDEA
 .idea/
