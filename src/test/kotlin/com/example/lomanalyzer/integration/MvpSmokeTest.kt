@@ -35,6 +35,7 @@ import com.example.lomanalyzer.analysis.dedup.HashablePost
 import com.example.lomanalyzer.analysis.lom.AudienceComponent
 import com.example.lomanalyzer.analysis.topic.NgramMatcher
 import com.example.lomanalyzer.analysis.topic.TopicRelevanceFilter
+import com.example.lomanalyzer.analysis.topic.TopicStratum
 import com.example.lomanalyzer.config.ResourceLoader
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.preprocessing.TextCleaner
@@ -51,6 +52,7 @@ import com.example.lomanalyzer.storage.tables.Posts
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -95,14 +97,15 @@ class MvpSmokeTest {
     /**
      * Сквозной прогон пайплайна на минимальном корпусе.
      * Проверяет, что этапы стыкуются и дают ожидаемые объёмы и значения:
-     * импорт даёт валидный sessionId; в сессии 50 постов и 5 авторов;
-     * тематическая фильтрация находит хотя бы один тематический пост; точных
+     * импорт даёт валидный sessionId; в сессии 50 постов и 5 авторов; проход 1
+     * фильтра находит 5 постов с явными ключевыми словами, а без прохода 2 все
+     * посты получают стратум DISPUTED (контракт режима FALLBACK_ONLY); точных
      * дубликатов в корпусе нет; рассчитываются 5 LomScore; словарный сентимент
      * на негативных леммах даёт NEGATIVE; фиксируются 5 записей метрик этапов.
      */
     @Test
     @Suppress("LongMethod")
-    fun `full pipeline produces LomScores and RiskSignal`() = runBlocking {
+    fun `full pipeline produces LomScores and RiskSignal`() = runBlocking<Unit> {
         // 1. Импорт тестового корпуса: сначала пробуем найти JSON на classpath...
         val corpusJson = MvpSmokeTest::class.java
             .getResourceAsStream("/test_corpus_minimal.json")
@@ -147,15 +150,25 @@ class MvpSmokeTest {
             )
         }
 
-        // 3. Тематическая фильтрация (этап 6): n-граммы по теме «экология»
+        // 3. Тематическая фильтрация (этап 6): n-граммы по теме «экология».
+        // N-граммы обязаны пройти ту же нормализацию, что и токены постов: ниже посты
+        // приводятся Snowball-стеммером (stemFallback), поэтому «экология» в тексте даёт
+        // основу «эколог», и сырое слово «экология» не совпало бы с ней никогда.
+        // Ровно так же поступает production-код — см. TopicFilterExecutor.parseAndLemmatizeNgrams,
+        // который прогоняет пользовательские n-граммы через тот же лемматизатор.
+        fun stemNgram(vararg words: String): List<String> =
+            lemmatizer.stemFallback(words.toList()).map { it.lemma }
+
         val ngramMatcher = NgramMatcher(
-            primaryNgrams = listOf(listOf("экология"), listOf("загрязнение")),
-            secondaryNgrams = listOf(listOf("воздух"), listOf("вода")),
-            excludedNgrams = listOf(listOf("экологичный", "продукт")),
+            primaryNgrams = listOf(stemNgram("экология"), stemNgram("загрязнение")),
+            secondaryNgrams = listOf(stemNgram("воздух"), stemNgram("вода")),
+            excludedNgrams = listOf(stemNgram("экологичный", "продукт")),
         )
         // Режим FALLBACK_ONLY: только первый проход L1, без RuBERT
         val topicFilter = TopicRelevanceFilter(nlpMode = "FALLBACK_ONLY")
         var topicalCount = 0
+        var postsWithKeywordHit = 0
+        val strata = mutableMapOf<TopicStratum, Int>()
 
         for (post in posts) {
             val text = post[Posts.text] ?: ""
@@ -165,6 +178,8 @@ class MvpSmokeTest {
             // Сопоставление с n-граммами темы и расчёт релевантности
             val matchResult = ngramMatcher.match(lemmas)
             val scoreResult = topicFilter.score(matchResult, text)
+            if (matchResult.primaryHits > 0) postsWithKeywordHit++
+            strata[scoreResult.stratum] = (strata[scoreResult.stratum] ?: 0) + 1
             // Сохраняем признак темы и оценки L1/L2/combined в БД
             postDao.updateTopicRelevance(
                 post[Posts.id].value, scoreResult.relevant,
@@ -172,8 +187,25 @@ class MvpSmokeTest {
             )
             if (scoreResult.relevant) topicalCount++
         }
-        // Корпус содержит тематические посты — их должно быть хотя бы несколько
-        assertTrue(topicalCount > 0, "Should have some topical posts")
+
+        // Проход 1 действительно находит ключевые слова: ровно 5 постов корпуса
+        // содержат основные n-граммы («экология»/«загрязнение») в явном виде.
+        assertEquals(5, postsWithKeywordHit, "Pass 1 should find the 5 posts with explicit keywords")
+
+        // Контракт режима FALLBACK_ONLY: без прохода 2 ни один пост не принимается
+        // автоматически. Максимальный достижимый L1 на этом корпусе — 0.433
+        // (1 основное + 1 дополнительное попадание = 1.3/3), что ниже порога
+        // CONFIDENT_THRESHOLD = 0.50; для 0.50 нужно ≥2 попаданий основных n-грамм.
+        // Поэтому все посты получают стратум DISPUTED и уходят аналитику на ручную
+        // проверку (TopicValidationScreen) — это штатное поведение, а не сбой.
+        assertEquals(posts.size, strata[TopicStratum.DISPUTED], "Without pass 2 every post is DISPUTED")
+        assertEquals(0, topicalCount, "FALLBACK_ONLY accepts nothing automatically on this corpus")
+
+        // Корпус намеренно рассчитан на двухпроходный фильтр: 25 из 50 постов размечены
+        // как тематические, но часть из них («Качество воды из-под крана…») вовсе не
+        // содержит ключевых слов и распознаётся только семантически, по reference_texts
+        // из metadata.topic_config. Полное покрытие этих 25 постов проверяется в режиме
+        // FULL с работающим sidecar, а не здесь.
 
         // 4. Дедупликация (этап 5, точные копии): строим хэшируемые посты
         val hashablePosts = posts.map {
@@ -233,8 +265,15 @@ class MvpSmokeTest {
         metricsDao.insert(sessionId, "RISK_SCORING", 15)
         val metrics = metricsDao.findBySession(sessionId)
         assertEquals(5, metrics.size)
+    }
 
-        // Уборка: удаляем временный файл БД
+    /**
+     * Уборка после каждого теста: удаляет временный файл БД. Вынесено в @AfterEach,
+     * чтобы файл удалялся и при упавшей проверке, а тест-метод не возвращал значение
+     * (JUnit 5 обнаруживает только @Test-методы, возвращающие void).
+     */
+    @AfterEach
+    fun cleanup() {
         Files.deleteIfExists(tempDb)
     }
 }
