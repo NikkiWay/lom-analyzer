@@ -208,12 +208,22 @@ Topic_a  = ⅓·(z(TopVol) + z(TopFocus) + z(Reach))
 ```bash
 git clone https://github.com/NikkiWay/lom-analyzer.git
 cd lom-analyzer
-
-./gradlew run        # запуск
-./gradlew build      # сборка
-./gradlew test       # тесты
-./gradlew detekt     # статический анализ
+./gradlew run
 ```
+
+| Команда | Действие |
+|---|---|
+| `./gradlew run` | запустить приложение |
+| `./gradlew build` | собрать проект |
+| `./gradlew test` | прогнать тесты |
+| `./gradlew detekt` | статический анализ |
+
+Вызывать нужно именно `gradlew` — обёртку из репозитория: она сама подтянет
+Gradle 8.11.1, на котором собирается проект и работает CI. Установленный в
+системе `gradle` может оказаться другой версии.
+
+В `cmd.exe` префикс `./` не работает — там команда пишется как `gradlew run`,
+в PowerShell — `.\gradlew run`.
 
 Нативный дистрибутив (MSI / DMG / DEB):
 
@@ -223,10 +233,21 @@ cd lom-analyzer
 
 ### Python-сайдкар (режим FULL)
 
+Linux и macOS:
+
 ```bash
 cd nlp/python
 python3.12 -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Windows (PowerShell):
+
+```powershell
+cd nlp\python
+py -3.12 -m venv venv
+venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
@@ -247,9 +268,11 @@ pip install -r requirements.txt
 ## Тесты и статический анализ
 
 ```bash
-./gradlew test      # 211 тестов, JUnit 5
-./gradlew detekt    # detekt 1.23.7
+./gradlew test
+./gradlew detekt
 ```
+
+211 тестов на JUnit 5; статический анализ — detekt 1.23.7.
 
 Покрыты формулы оценок, робастная статистика (медиана, IQR, квантили типа 7), корректность бутстрап-интервалов, двухпроходная фильтрация, дедупликация, тональность с отрицаниями, шифрование токена и хеширование PII, DAO, оркестрация и отмена, rate limiter / backoff / батчер VK, а также сквозной прогон пайплайна на минимальном корпусе (`MvpSmokeTest`).
 

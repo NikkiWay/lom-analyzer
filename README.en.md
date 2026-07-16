@@ -210,12 +210,22 @@ Stages are declared in `orchestration/PipelineStage.kt`, executors registered in
 ```bash
 git clone https://github.com/NikkiWay/lom-analyzer.git
 cd lom-analyzer
-
-./gradlew run        # run
-./gradlew build      # build
-./gradlew test       # tests
-./gradlew detekt     # static analysis
+./gradlew run
 ```
+
+| Command | Action |
+|---|---|
+| `./gradlew run` | run the application |
+| `./gradlew build` | build the project |
+| `./gradlew test` | run the tests |
+| `./gradlew detekt` | static analysis |
+
+Invoke `gradlew`, the wrapper committed to the repository: it fetches Gradle
+8.11.1, the version the project is built with and the one CI uses. A `gradle`
+installed system-wide may be a different version.
+
+`cmd.exe` does not accept the `./` prefix — there the command is `gradlew run`;
+in PowerShell it is `.\gradlew run`.
 
 Native distribution (MSI / DMG / DEB):
 
@@ -225,10 +235,21 @@ Native distribution (MSI / DMG / DEB):
 
 ### Python sidecar (FULL mode)
 
+Linux and macOS:
+
 ```bash
 cd nlp/python
 python3.12 -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Windows (PowerShell):
+
+```powershell
+cd nlp\python
+py -3.12 -m venv venv
+venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
@@ -249,9 +270,11 @@ Ready-made synthetic datasets live in [`examples/`](examples/). Load one on the 
 ## Tests and static analysis
 
 ```bash
-./gradlew test      # 211 tests, JUnit 5
-./gradlew detekt    # detekt 1.23.7
+./gradlew test
+./gradlew detekt
 ```
+
+211 tests on JUnit 5; static analysis by detekt 1.23.7.
 
 Coverage spans the scoring formulas, robust statistics (median, IQR, type-7 quantiles), bootstrap interval correctness, two-pass filtering, deduplication, sentiment with negation, token encryption and PII hashing, the DAO layer, orchestration and cancellation, the VK rate limiter / backoff / batcher, and an end-to-end pipeline run over a minimal corpus (`MvpSmokeTest`).
 
