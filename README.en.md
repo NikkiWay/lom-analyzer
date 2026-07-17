@@ -103,6 +103,12 @@ Quadrant chart (Struct_a × Topic_a) with threshold lines, plus a table of every
 
 ![Dashboard](docs/screenshots/dashboard.png)
 
+### Author detail
+
+Role, position and response attributes, data-sufficiency badge, per-axis scores with confidence intervals, and the author's topical posts.
+
+![Author detail](docs/screenshots/author-detail.png)
+
 ### Session setup
 
 Topic, n-grams, reference texts, observation windows, community selection or JSON import.
