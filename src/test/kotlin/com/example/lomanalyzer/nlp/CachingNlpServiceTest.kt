@@ -253,6 +253,34 @@ class CachingNlpServiceTest {
         assertEquals(fresh.negative, cached.negative, 1e-6, "негатив обязан пережить кэш")
     }
 
+    /**
+     * Записи, закэшированные под другой версией модели, не используются.
+     *
+     * Версия — часть ключа кэша, и меняется она не только при смене модели, но и
+     * когда меняется состав сохраняемого результата. Иначе запись, сделанная до
+     * появления нового поля, отдавалась бы как готовая, и поле не вычислялось бы
+     * никогда: модель при попадании в кэш не вызывается вовсе.
+     */
+    @Test
+    fun `entries cached under another model version are not reused`() = runBlocking {
+        val texts = listOf("экология", "загрязнение")
+        caching.batchSentiment(texts)
+        assertEquals(1, delegate.batchSentimentCalls)
+
+        // Тот же кэш и тот же делегат, но версия результатов другая
+        val newer = CachingNlpService(
+            delegate = delegate,
+            nlpResultDao = dao,
+            modelVersion = "test-v2",
+            logger = Logger("nlp-cache-test"),
+        )
+        val result = newer.batchSentiment(texts)
+
+        assertEquals(2, delegate.batchSentimentCalls, "смена версии обязана привести к пересчёту")
+        assertEquals(listOf("экология", "загрязнение"), delegate.sentimentRequested.takeLast(2))
+        assertEquals(2, result.size)
+    }
+
     /** При частичном попадании в модель уходят только некэшированные тексты, порядок сохраняется. */
     @Test
     fun `partial sentiment hit asks the model only for uncached texts`() = runBlocking {

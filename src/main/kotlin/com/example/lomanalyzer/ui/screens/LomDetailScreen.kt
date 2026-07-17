@@ -393,9 +393,11 @@ private fun CiDetail(value: Float, ci: CiInfo, fractionScale: Boolean) {
 @Composable
 @Suppress("FunctionNaming")
 private fun PostCard(post: org.jetbrains.exposed.sql.ResultRow, dtFmt: DateTimeFormatter, sentLabel: String?) {
-    // Текст (обрезан до 300 символов) и дата публикации
+    // Текст (обрезан до 300 символов) и дата публикации.
+    // published_at хранится в секундах Unix epoch — так его отдаёт VK API (поле date)
+    // и так же он приходит при импорте JSON.
     val text = post[Posts.text]?.take(300) ?: ""
-    val date = dtFmt.format(Instant.ofEpochMilli(post[Posts.publishedAt]))
+    val date = dtFmt.format(Instant.ofEpochSecond(post[Posts.publishedAt].toLong()))
 
     Surface(shape = RoundedCornerShape(8.dp), color = AppColors.surfaceVariant, modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
         Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {

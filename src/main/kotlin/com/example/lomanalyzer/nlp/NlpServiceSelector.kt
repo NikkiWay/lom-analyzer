@@ -74,7 +74,7 @@ class NlpServiceSelector(
         if (started) {
             // Режим FULL: sidecar поднят, обращаемся к нему по HTTP
             mode = "FULL"
-            modelVersion = "python_v1"
+            modelVersion = SIDECAR_MODEL_VERSION
             rawService = PythonSidecarNlpService(
                 httpClient = httpClient,
                 baseUrl = pythonServiceManager.baseUrl(),
@@ -108,5 +108,20 @@ class NlpServiceSelector(
     /** Останавливает Python sidecar при завершении работы. */
     fun shutdown() {
         pythonServiceManager.stop()
+    }
+
+    companion object {
+        /**
+         * Версия результатов sidecar — часть ключа кэша nlp_result.
+         *
+         * Меняется не только при смене модели, но и когда меняется состав
+         * сохраняемого результата: запись со старой версией остаётся в кэше и
+         * отдаётся как готовая, поэтому недостающие поля так и не будут вычислены.
+         *
+         * v2 — добавлено распределение вероятностей тональности (V13): записи v1
+         * содержат только метку с оценкой, и по ним оси позиции и отклика
+         * считались бы по долям меток даже при работающей модели.
+         */
+        private const val SIDECAR_MODEL_VERSION = "python_v2"
     }
 }
