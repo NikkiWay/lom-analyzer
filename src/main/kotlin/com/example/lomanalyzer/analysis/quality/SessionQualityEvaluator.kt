@@ -23,6 +23,7 @@
 package com.example.lomanalyzer.analysis.quality
 
 import com.example.lomanalyzer.core.QualityStatus
+import kotlinx.serialization.Serializable
 
 /**
  * Индикаторы качества сессии (диплом 2.2.8, таблица 2.5, Приложение Г).
@@ -42,6 +43,7 @@ import com.example.lomanalyzer.core.QualityStatus
  * @param isPrimary true — основной индикатор (влияет на общую категорию), false — технический.
  * @param description человекочитаемое описание смысла индикатора.
  */
+@Serializable
 data class QualityIndicator(
     val name: String,
     val value: Float,

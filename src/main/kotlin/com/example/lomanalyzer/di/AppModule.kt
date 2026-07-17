@@ -463,6 +463,7 @@ val appModule = module {
             authorDao = get(),
             sessionEventDao = get(),
             sentimentResultDao = get(),
+            sessionDao = get(),
             sessionQualityEvaluator = get(),
             sessionEventService = get(),
             progressReporter = get(),

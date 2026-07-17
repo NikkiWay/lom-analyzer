@@ -27,6 +27,7 @@ package com.example.lomanalyzer.analysis.quality
 
 import com.example.lomanalyzer.analysis.sufficiency.DataSufficiencyIndicator
 import com.example.lomanalyzer.core.DataSufficiency
+import com.example.lomanalyzer.core.QualityStatus
 import com.example.lomanalyzer.observability.Logger
 import com.example.lomanalyzer.orchestration.PipelineStage
 import com.example.lomanalyzer.orchestration.ProgressEvent
@@ -35,6 +36,8 @@ import com.example.lomanalyzer.orchestration.StageExecutor
 import com.example.lomanalyzer.storage.dao.*
 import com.example.lomanalyzer.storage.tables.*
 import com.example.lomanalyzer.vk.SessionEventService
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 /**
  * Этап 10 алгоритма (диплом 2.1.5, 2.2.8):
@@ -51,6 +54,7 @@ class QualityCheckExecutor(
     private val authorDao: AuthorDao,
     private val sessionEventDao: SessionEventDao,
     private val sentimentResultDao: SentimentResultDao,
+    private val sessionDao: SessionDao,
     private val sessionQualityEvaluator: SessionQualityEvaluator,
     private val sessionEventService: SessionEventService,
     private val progressReporter: ProgressReporter,
@@ -226,15 +230,28 @@ class QualityCheckExecutor(
             sessionEventDao.insert(
                 sessionId = sessionId,
                 eventType = "QUALITY_INDICATOR",
-                message = "${indicator.name}: ${indicator.status.name} (%.3f)".format(indicator.value),
+                // Формат общий с экраном качества, который читает значение обратно
+                message = QualityIndicatorMessage.format(indicator),
                 details = indicator.description,
             )
         }
 
+        val passedCount = qualityResult.indicators.count { it.status == QualityStatus.PASSED }
         sessionEventService.logInfo(sessionId,
             "Качество сессии: ${qualityResult.overallStatus.name} " +
-                "(${qualityResult.indicators.count { it.status == com.example.lomanalyzer.core.QualityStatus.PASSED }}/" +
-                "${qualityResult.indicators.size} пройдено)")
+                "($passedCount/${qualityResult.indicators.size} пройдено)")
+
+        // Итоговые показатели сессии — доля пройденных индикаторов. Раньше
+        // updateQualityScore не вызывал никто, поэтому session_quality_score оставался
+        // пустым, а история сессий не показывала качество вовсе. coverageRatio не
+        // передаём: смысл этой колонки нигде не определён.
+        sessionDao.updateQualityScore(
+            id = sessionId,
+            score = if (qualityResult.indicators.isNotEmpty()) {
+                passedCount.toFloat() / qualityResult.indicators.size
+            } else 0f,
+            qualityGatesJson = Json.encodeToString(qualityResult.indicators),
+        )
 
         progressReporter.update(ProgressEvent(
             stage = "Качество сессии: ${qualityResult.overallStatus.name}",

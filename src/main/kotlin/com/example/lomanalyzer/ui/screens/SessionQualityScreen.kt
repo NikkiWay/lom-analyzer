@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.lomanalyzer.analysis.quality.QualityIndicatorMessage
 import com.example.lomanalyzer.orchestration.ActiveSessionHolder
 import com.example.lomanalyzer.storage.dao.SessionEventDao
 import com.example.lomanalyzer.storage.tables.SessionEvents
@@ -77,14 +78,14 @@ fun SessionQualityScreen() {
                 .filter { it[SessionEvents.eventType] == "QUALITY_INDICATOR" }
             events.mapNotNull { event ->
                 val msg = event[SessionEvents.message] ?: return@mapNotNull null
-                // Разбор сообщения формата «Название: СТАТУС (0.123)»
-                val colonIdx = msg.indexOf(':')
-                if (colonIdx < 0) return@mapNotNull null
-                val name = msg.substring(0, colonIdx).trim()               // часть до двоеточия — название
-                val rest = msg.substring(colonIdx + 1).trim()              // часть после двоеточия
-                val status = rest.substringBefore(" (").trim()             // статус — до открывающей скобки
-                val valueStr = rest.substringAfter("(", "0").substringBefore(")") // значение — внутри скобок
-                QualityItem(name, valueStr.toFloatOrNull() ?: 0f, status, event[SessionEvents.details] ?: "")
+                // Разбор — тем же кодом, что и запись (QualityIndicatorMessage)
+                val parsed = QualityIndicatorMessage.parse(msg) ?: return@mapNotNull null
+                QualityItem(
+                    name = parsed.name,
+                    value = parsed.value,
+                    status = parsed.status.name,
+                    description = event[SessionEvents.details] ?: "",
+                )
             }
         }
     }
