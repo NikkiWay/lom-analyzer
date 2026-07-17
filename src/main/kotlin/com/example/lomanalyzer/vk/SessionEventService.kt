@@ -71,6 +71,25 @@ class SessionEventService(
         )
     }
 
+    /**
+     * Фиксирует отключение прохода 2 тематического фильтра (тип SEMANTIC_PASS_DISABLED).
+     *
+     * Отдельный тип, а не текстовое предупреждение: по нему этап проверки качества
+     * определяет, что сессия считалась урезанным фильтром. Сессия при этом
+     * завершается успешно, и по статусу COMPLETED отличить её от полноценной нельзя —
+     * хотя состав тематической выборки, а с ним и все оценки, получены иначе.
+     *
+     * @param reason причина отключения (для показа аналитику).
+     */
+    fun logSemanticPassDisabled(sessionId: Int, reason: String) {
+        sessionEventDao.insert(
+            sessionId = sessionId,
+            eventType = "SEMANTIC_PASS_DISABLED",
+            message = "Проход 2 тематического фильтра отключён: $reason",
+            details = "Пограничные посты отсеиваются по одним ключевым словам, состав выборки сужен",
+        )
+    }
+
     /** Фиксирует обнаружение закрытого аккаунта (тип CLOSED_ACCOUNT); такой автор исключается из обработки. */
     fun logClosedAccount(sessionId: Int, vkId: Int) {
         sessionEventDao.insert(

@@ -158,9 +158,9 @@ fun SessionLogScreen() {
                             // Цветной бейдж типа события (ошибки — красный, прогресс — основной цвет и т.д.)
                             val typeColor = when (type) {
                                 "ERROR", "API_ERROR" -> Color(0xFFC62828)
+                                "SEMANTIC_PASS_DISABLED", "CLOSED_ACCOUNT" -> Color(0xFFE65100)
                                 "PROGRESS" -> AppColors.primary
                                 "INFO" -> Color(0xFF2E7D32)
-                                "CLOSED_ACCOUNT" -> Color(0xFFE65100)
                                 "QUALITY_INDICATOR" -> Color(0xFF6A1B9A)
                                 else -> AppColors.textSecondary
                             }

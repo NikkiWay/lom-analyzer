@@ -100,6 +100,27 @@ class SessionDao(private val db: Database) {
     }
 
     /**
+     * UPDATE фактического режима NLP и версий моделей — вызывается после того, как
+     * NLP инициализирован и стало известно, что удалось поднять.
+     *
+     * При создании сессии в nlp_mode попадает значение из параметров, то есть
+     * намерение: реальный режим определяется позже и зависит от того, поднялся ли
+     * sidecar. Пока факт не записывался, сессия, посчитанная словарём, ничем не
+     * отличалась от посчитанной моделью, а nlp_model_versions оставался пустым —
+     * и по результатам нельзя было сказать, чем они получены.
+     *
+     * @param mode фактический режим: FULL или FALLBACK_ONLY.
+     * @param modelVersions версии реально использованных моделей (JSON).
+     */
+    fun updateNlpRuntime(id: Int, mode: String, modelVersions: String) = transaction(db) {
+        AnalysisSessions.update({ AnalysisSessions.id eq id }) {
+            it[nlpMode] = mode
+            it[nlpModelVersions] = modelVersions
+            it[updatedAt] = Instant.now().toEpochMilli()
+        }
+    }
+
+    /**
      * SELECT всех «живых» сессий (deletedAt IS NULL), новые сверху (createdAt DESC).
      * @return список ResultRow.
      */

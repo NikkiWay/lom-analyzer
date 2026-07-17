@@ -57,6 +57,7 @@ enum class AppEvent {
     PYTHON_STARTED,
     PYTHON_RESTARTED,
     PYTHON_FAILED_PERMANENT,
+    PYTHON_MODELS_WARMED,
     NLP_MODE_DOWNGRADED,
     NLP_MODE_SELECTED,
 
@@ -67,6 +68,7 @@ enum class AppEvent {
 
     // Topic filtering — тематическая фильтрация (этап 6, двухпроходная L1/L2)
     TOPIC_FILTER_APPLIED,
+    TOPIC_SEMANTIC_PASS_DISABLED,
     TOPIC_THRESHOLD_CHANGED,
     STOPWORD_ADDED,
     VALIDATION_VOTE,

@@ -7,16 +7,22 @@
  * перезапускать sidecar при сбое. Останавливается из App.kt при выходе.
  *
  * ЧТО ВНУТРИ
- * Класс PythonServiceManager: свойства port/secret/process (только чтение извне),
- * колбэк onPermanentFailure; методы start (с ретраями), stop, baseUrl; приватные
- * findFreePort, generateSecret, waitForHealth, resolvePythonExecutable; константы
- * диапазона портов и таймаутов health-проверки.
+ * Класс PythonServiceManager: свойства port/secret/process/modelVersions (только
+ * чтение извне), колбэк onPermanentFailure; методы start (с ретраями), stop,
+ * baseUrl; приватные findFreePort, generateSecret, waitForHealth, warmUpModels,
+ * resolvePythonExecutable; константы диапазона портов и таймаутов.
  *
  * АЛГОРИТМ / ПОТОК ВЫПОЛНЕНИЯ
  * start пытается до maxRetries раз: выбрать порт → сгенерировать секрет → запустить
- * процесс python с main.py (порт+секрет) → дождаться health. Из окружения процесса
- * вычищаются прокси-переменные (SOCKS-прокси ломает загрузку моделей huggingface).
- * При исчерпании попыток вызывается onPermanentFailure и возвращается false.
+ * процесс python с main.py (порт+секрет) → дождаться health → прогреть модели. Из
+ * окружения процесса вычищаются прокси-переменные (SOCKS-прокси ломает загрузку
+ * моделей huggingface). При исчерпании попыток вызывается onPermanentFailure и
+ * возвращается false.
+ *
+ * Health отвечает сразу, но модели грузятся лениво — первым их ждал рабочий запрос
+ * и отваливался по таймауту, из-за чего вызывающая сторона молча переходила на
+ * упрощённый путь до конца сессии. Прогрев (/warmup) переносит загрузку туда, где
+ * её никто не торопит, и заодно отдаёт версии моделей для записи в сессию.
  *
  * БИБЛИОТЕКИ
  * Ktor HttpClient — health-запросы к sidecar с заголовком X-Auth-Token; java.net.ServerSocket
@@ -32,6 +38,7 @@ package com.example.lomanalyzer.orchestration
 import com.example.lomanalyzer.observability.AppEvent
 import com.example.lomanalyzer.observability.Logger
 import io.ktor.client.*
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -61,6 +68,14 @@ class PythonServiceManager(
     /** Секрет авторизации (hex), передаётся sidecar и в заголовке X-Auth-Token. */
     var secret: String = ""
         private set
+    /**
+     * Версии моделей, загруженных при прогреве (JSON от /warmup); null, если
+     * прогрев не удался. Сохраняется в сессию, чтобы по её результатам можно было
+     * сказать, чем именно она посчитана.
+     */
+    var modelVersions: String? = null
+        private set
+
     /** Ссылка на запущенный процесс sidecar (null, если не запущен). */
     var process: Process? = null
         private set
@@ -118,6 +133,9 @@ class PythonServiceManager(
                         else AppEvent.PYTHON_RESTARTED,
                         mapOf("port" to port, "attempt" to attempt),
                     )
+                    // Health означает лишь, что процесс отвечает: модели грузятся
+                    // лениво, и первым их ждёт рабочий запрос — под своим таймаутом.
+                    warmUpModels()
                     return true
                 }
 
@@ -168,6 +186,36 @@ class PythonServiceManager(
         return bytes.joinToString("") { "%02x".format(it) }
     }
 
+    /**
+     * Заранее загружает тяжёлые модели sidecar и запоминает их версии.
+     *
+     * Модели грузятся лениво, при первом обращении к эндпоинту, и холодная загрузка
+     * длится дольше любого разумного таймаута запроса. Поэтому её ждал первый же
+     * рабочий вызов: он отваливался по таймауту, вызывающая сторона считала модель
+     * недоступной и молча переходила на упрощённый путь — до конца сессии. Прогрев
+     * переносит загрузку туда, где её никто не торопит.
+     *
+     * Отказ прогрева не мешает старту: sidecar жив, а деградацию — если она
+     * случится — заметит и запишет тот, кто ей воспользуется.
+     */
+    @Suppress("TooGenericExceptionCaught")
+    private suspend fun warmUpModels() {
+        try {
+            val resp = httpClient.post("http://127.0.0.1:$port/warmup") {
+                header("X-Auth-Token", secret)
+                // Свой таймаут: общий (30 с) рассчитан на рабочие запросы к готовой
+                // модели, а здесь ожидание включает загрузку, а то и скачивание весов.
+                timeout { requestTimeoutMillis = WARMUP_TIMEOUT_MS }
+            }
+            val body = resp.bodyAsText()
+            modelVersions = body
+            logger.event(AppEvent.PYTHON_MODELS_WARMED, mapOf("models" to body))
+        } catch (e: Exception) {
+            // Прогрев не удался: первый рабочий вызов снова рискует упереться в таймаут
+            logger.warn("Sidecar model warm-up failed: ${e.message}")
+        }
+    }
+
     /** Опрашивает /health до таймаута; @return true, как только sidecar готов. */
     @Suppress("TooGenericExceptionCaught")
     private suspend fun waitForHealth(): Boolean {
@@ -209,6 +257,14 @@ class PythonServiceManager(
         private const val HEALTH_TIMEOUT_MS = 5000L
         /** Интервал между опросами health, мс. */
         private const val HEALTH_POLL_INTERVAL_MS = 500L
+        /**
+         * Предел ожидания прогрева моделей, мс (10 минут).
+         *
+         * Много больше рабочих таймаутов намеренно: при первом запуске сюда входит
+         * скачивание весов с HuggingFace, а на холодной машине — ещё и распаковка.
+         * Ограничение нужно лишь как страховка от зависшего процесса.
+         */
+        private const val WARMUP_TIMEOUT_MS = 600_000L
         /** Длина секрета авторизации в байтах (в hex даёт вдвое длиннее). */
         private const val SECRET_LENGTH = 32
         /** Путь к скрипту запуска sidecar (FastAPI). */

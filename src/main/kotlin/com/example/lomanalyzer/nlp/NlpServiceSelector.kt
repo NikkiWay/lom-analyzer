@@ -45,6 +45,20 @@ class NlpServiceSelector(
     var mode: String = "FALLBACK_ONLY"
         private set
 
+    /**
+     * Версии фактически используемых моделей (JSON) — для записи в сессию.
+     *
+     * В режиме FULL их отдаёт sidecar при прогреве; в режиме fallback модели нет,
+     * и указывается словарная реализация. Значение описывает то, что реально
+     * считало сессию, а не то, что было запрошено при её создании.
+     */
+    val modelVersions: String
+        get() = if (mode == "FULL") {
+            pythonServiceManager.modelVersions ?: """{"models":"неизвестны: прогрев не удался"}"""
+        } else {
+            """{"models":{"sentiment":"kotlin_rusentilex","lemmatizer":"lucene_snowball"}}"""
+        }
+
     /** Выбранный (и, возможно, кэширующий) сервис; заполняется в initialize(). */
     private var selectedService: NlpService? = null
 

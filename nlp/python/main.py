@@ -93,6 +93,14 @@ os.environ["SENTENCE_TRANSFORMERS_HOME"] = args.model_cache_dir
 # запуск использует не все модели сразу.
 _models = {}
 
+# Идентификаторы моделей на HuggingFace: возвращаются из /warmup и сохраняются в
+# сессию, чтобы по её результатам можно было сказать, чем именно она посчитана.
+_MODEL_VERSIONS = {
+    "sentiment": "seara/rubert-tiny2-russian-sentiment",
+    "embedder": "cointegrated/rubert-tiny2",
+    "morph": "pymorphy3",
+}
+
 
 def get_sentiment_pipeline():
     """Возвращает (создавая при первом вызове) transformers-pipeline для sentiment.
@@ -223,10 +231,44 @@ async def health(x_auth_token: str = Header(...)):
     """Проверка живости сервиса. Возвращает {'status': 'ok'} при валидном токене.
 
     Используется Kotlin-клиентом, чтобы убедиться, что sidecar запущен и отвечает,
-    прежде чем слать рабочие запросы.
+    прежде чем слать рабочие запросы. Отвечает сразу: живость не означает, что
+    модели загружены, — для этого есть /warmup.
     """
     verify_token(x_auth_token)
     return {"status": "ok"}
+
+
+@app.post("/warmup")
+def warmup(x_auth_token: str = Header(...)):
+    """Загружает тяжёлые модели заранее и сообщает, что удалось загрузить.
+
+    Модели грузятся лениво, при первом обращении к эндпоинту, и холодная загрузка
+    занимает больше, чем таймаут одного запроса. Из-за этого её ждал первый рабочий
+    вызов: он отваливался по таймауту, вызывающая сторона считала модель недоступной
+    и молча переходила на упрощённый путь — на всю сессию. Прогрев переносит
+    загрузку туда, где её никто не торопит.
+
+    Каждая модель грузится независимо: отказ одной не должен оставлять остальные
+    холодными, иначе одна недоступная модель воспроизводит ровно ту проблему,
+    ради которой прогрев и делался.
+
+    Возвращает {'models': {имя: версия}, 'failed': {имя: причина}} — Kotlin-сторона
+    пишет это в сессию, чтобы по её результатам было видно, чем она посчитана.
+    """
+    verify_token(x_auth_token)
+    loaders = {
+        "sentiment": get_sentiment_pipeline,
+        "embedder": get_embedder,
+        "morph": get_morph,
+    }
+    loaded, failed = {}, {}
+    for name, load in loaders.items():
+        try:
+            load()
+            loaded[name] = _MODEL_VERSIONS[name]
+        except Exception as exc:  # noqa: BLE001 — причина уходит в ответ и в лог
+            failed[name] = f"{type(exc).__name__}: {exc}"
+    return {"models": loaded, "failed": failed}
 
 
 @app.post("/lemmatize")

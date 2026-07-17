@@ -49,6 +49,7 @@ import com.example.lomanalyzer.storage.dao.SessionDao
 import com.example.lomanalyzer.storage.tables.AnalysisSessions
 import com.example.lomanalyzer.storage.tables.Posts
 import com.example.lomanalyzer.storage.tables.ProcessedTexts
+import com.example.lomanalyzer.vk.SessionEventService
 import kotlinx.serialization.json.Json
 import java.time.Instant
 import java.time.ZoneId
@@ -69,6 +70,7 @@ class TopicFilterExecutor(
     private val nlpServiceSelector: NlpServiceSelector,
     private val lemmatizer: LemmatizerProxy,
     private val progressReporter: ProgressReporter,
+    private val sessionEventService: SessionEventService,
     private val logger: Logger,
 ) : StageExecutor {
 
@@ -112,11 +114,21 @@ class TopicFilterExecutor(
             ?: emptyList()
 
         var semanticScorer: SemanticScorer? = null
-        if (nlpMode == "FULL" && referenceTexts.isNotEmpty()) {
+        // Причина отсутствия прохода 2; null — проход работает
+        var semanticPassOffReason: String? = when {
+            nlpMode != "FULL" -> "nlp_mode=$nlpMode"
+            referenceTexts.isEmpty() -> "нет эталонных текстов темы"
+            else -> null
+        }
+        if (semanticPassOffReason == null) {
             // Строим эталонный эмбеддинг темы; используем scorer только если он успешно инициализирован
             val scorer = SemanticScorer(nlpServiceSelector.getService())
             scorer.initializeReference(referenceTexts)
-            if (scorer.isInitialized()) semanticScorer = scorer
+            if (scorer.isInitialized()) {
+                semanticScorer = scorer
+            } else {
+                semanticPassOffReason = "не удалось построить эталонный эмбеддинг (sidecar недоступен или медленный)"
+            }
         }
 
         // Фильтр-решатель, объединяющий проходы 1 и 2
@@ -128,6 +140,18 @@ class TopicFilterExecutor(
             "nlp_mode" to nlpMode,
             "semantic_scorer" to (semanticScorer != null),
         ))
+
+        // Без прохода 2 решение по пограничным постам принимается по одним ключевым
+        // словам, и вся пограничная полоса уходит в отсев — состав тематической
+        // выборки меняется, а с ним и все оценки. Раньше это происходило молча:
+        // сессия завершалась как COMPLETED, и отличить её от полноценной было нельзя.
+        if (semanticPassOffReason != null) {
+            logger.event(AppEvent.TOPIC_SEMANTIC_PASS_DISABLED, mapOf(
+                "session_id" to sessionId,
+                "reason" to semanticPassOffReason,
+            ))
+            sessionEventService.logSemanticPassDisabled(sessionId, semanticPassOffReason)
+        }
 
         // Apply filter to all posts and collect results for summary
         // Прогоняем фильтр по всем постам сессии, собирая результаты для сводки

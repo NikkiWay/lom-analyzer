@@ -102,8 +102,9 @@ class UiIntegrationTest {
             apiRetryRate = 0.02f,
         ))
 
-        // Ровно 8 индикаторов качества
-        assertEquals(8, result.indicators.size)
+        // Ровно 10 индикаторов качества: к восьми исходным добавлены доля
+        // неизмеренной тональности и доступность семантического прохода фильтра
+        assertEquals(10, result.indicators.size)
         assertTrue(result.allPrimaryPassed)
         assertEquals(com.example.lomanalyzer.core.QualityStatus.PASSED, result.overallStatus)
     }

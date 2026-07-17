@@ -170,6 +170,34 @@ class SessionQualityEvaluator {
             description = "Доля запросов к VK API, потребовавших повтора",
         ))
 
+        // Доля подставленных нейтральных меток: при сбое модели текст записывается
+        // как NEUTRAL, то есть значение не измерено, а подставлено. Индикатор основной:
+        // при высокой доле оси позиции и отклика теряют смысл, а сессия внешне выглядит
+        // завершённой. Пороги строгие (PASSED ≤0.02, BORDERLINE ≤0.10).
+        indicators.add(QualityIndicator(
+            name = "Доля неизмеренной тональности",
+            value = input.sentimentFallbackRatio,
+            status = when {
+                input.sentimentFallbackRatio <= 0.02f -> QualityStatus.PASSED
+                input.sentimentFallbackRatio <= 0.10f -> QualityStatus.BORDERLINE
+                else -> QualityStatus.FAILED
+            },
+            isPrimary = true,
+            description = "Доля текстов, где тональность не измерена, а подставлена нейтральной из-за сбоя модели",
+        ))
+
+        // Доступность второго прохода тематического фильтра. Без него решение по
+        // пограничным постам принимается по одним ключевым словам, и вся пограничная
+        // полоса отвергается — состав тематической выборки меняется, а значит меняются
+        // и все оценки. Двоичный индикатор: 1 — проход работал, 0 — нет.
+        indicators.add(QualityIndicator(
+            name = "Семантический проход фильтра",
+            value = if (input.semanticPassAvailable) 1f else 0f,
+            status = if (input.semanticPassAvailable) QualityStatus.PASSED else QualityStatus.FAILED,
+            isPrimary = true,
+            description = "Работал ли проход 2 (RuBERT); без него пограничные посты отсеиваются по ключевым словам",
+        ))
+
         // ── Общая категория сессии (только по основным индикаторам) ──
         val primaryStatuses = indicators.filter { it.isPrimary }.map { it.status }
         val overallStatus = when {
@@ -208,6 +236,8 @@ class SessionQualityEvaluator {
  * @param avgCiWidth средняя ширина доверительных интервалов бутстрапа.
  * @param closedAccountRatio доля закрытых профилей в реестре авторов [0..1].
  * @param apiRetryRate доля запросов к VK API, потребовавших повтора [0..1].
+ * @param sentimentFallbackRatio доля текстов с подставленной нейтральной меткой [0..1].
+ * @param semanticPassAvailable работал ли проход 2 тематического фильтра.
  */
 data class QualityInput(
     // Основные индикаторы
@@ -216,6 +246,8 @@ data class QualityInput(
     val commentCoverage: Float = 0.0f,
     val reliableRatio: Float = 0.0f,
     val unreliableRatio: Float = 1.0f,
+    val sentimentFallbackRatio: Float = 0.0f,
+    val semanticPassAvailable: Boolean = true,
     // Технические диагностические индикаторы
     val dedupEfficiency: Float = 1.0f,
     val avgCiWidth: Float = 0.0f,

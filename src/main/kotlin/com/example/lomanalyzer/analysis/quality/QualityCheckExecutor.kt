@@ -50,6 +50,7 @@ class QualityCheckExecutor(
     private val linkDao: LinkDao,
     private val authorDao: AuthorDao,
     private val sessionEventDao: SessionEventDao,
+    private val sentimentResultDao: SentimentResultDao,
     private val sessionQualityEvaluator: SessionQualityEvaluator,
     private val sessionEventService: SessionEventService,
     private val progressReporter: ProgressReporter,
@@ -187,12 +188,33 @@ class QualityCheckExecutor(
         val apiErrors = events.count { it[SessionEvents.eventType] == "API_ERROR" }
         val apiRetryRate = if (apiRequests > 0) apiErrors.toFloat() / apiRequests else 0f
 
+        // Доля текстов сессии, где тональность не измерена, а подставлена нейтральной
+        // после сбоя модели. Карты методов берём по обоим типам сущностей и оставляем
+        // только идентификаторы этой сессии: sentiment_result хранит все сессии сразу.
+        val postMethods = sentimentResultDao.findMethodsAsMap(SentimentEntityType.POST)
+        val commentMethods = sentimentResultDao.findMethodsAsMap(SentimentEntityType.COMMENT)
+        val sessionPostIds = allPosts.map { it[Posts.id].value }.toSet()
+        val sessionCommentIds = commentDao.findBySession(sessionId).map { it[Comments.id].value }.toSet()
+        val sessionMethods = postMethods.filterKeys { it in sessionPostIds }.values +
+            commentMethods.filterKeys { it in sessionCommentIds }.values
+        val sentimentFallbackRatio = if (sessionMethods.isNotEmpty()) {
+            sessionMethods.count { it == "fallback_error" }.toFloat() / sessionMethods.size
+        } else 0f
+
+        // Работал ли проход 2 тематического фильтра: его отключение пишется
+        // отдельным типом события (см. SessionEventService.logSemanticPassDisabled)
+        val semanticPassAvailable = events.none {
+            it[SessionEvents.eventType] == "SEMANTIC_PASS_DISABLED"
+        }
+
         val qualityResult = sessionQualityEvaluator.evaluate(QualityInput(
             collectionCompleteness = collectionCompleteness,
             topicFilteringQuality = topicFilteringQuality,
             commentCoverage = commentCoverage,
             reliableRatio = reliableRatio,
             unreliableRatio = unreliableRatio,
+            sentimentFallbackRatio = sentimentFallbackRatio,
+            semanticPassAvailable = semanticPassAvailable,
             dedupEfficiency = dedupEfficiency,
             avgCiWidth = avgCiWidth,
             closedAccountRatio = closedRatio,

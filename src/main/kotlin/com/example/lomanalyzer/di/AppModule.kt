@@ -176,6 +176,7 @@ val appModule = module {
             sessionManager = get(),
             authManager = get(),
             postDao = get(),
+            sessionDao = get(),
             sessionMetricsDao = get(),
             linkDao = get(),
             vkApiClient = get(),
@@ -345,6 +346,7 @@ val appModule = module {
             nlpServiceSelector = get(),
             lemmatizer = get(),
             progressReporter = get(),
+            sessionEventService = get(),
             logger = get(),
         )
     }
@@ -460,6 +462,7 @@ val appModule = module {
             linkDao = get(),
             authorDao = get(),
             sessionEventDao = get(),
+            sentimentResultDao = get(),
             sessionQualityEvaluator = get(),
             sessionEventService = get(),
             progressReporter = get(),

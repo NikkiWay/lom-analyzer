@@ -79,6 +79,7 @@ class PipelineWiring(
     private val sessionManager: SessionManager,
     private val authManager: AuthManager,
     private val postDao: PostDao,
+    private val sessionDao: SessionDao,
     private val sessionMetricsDao: SessionMetricsDao,
     private val linkDao: LinkDao,
     private val vkApiClient: VkApiClient,
@@ -122,6 +123,14 @@ class PipelineWiring(
                 "mode" to nlpServiceSelector.mode,
                 "session_id" to sessionId,
             ))
+            // Записываем в сессию фактический режим и версии моделей: при её создании
+            // в nlp_mode попало намерение из параметров, а реальный режим известен
+            // только сейчас — после попытки поднять sidecar.
+            sessionDao.updateNlpRuntime(
+                id = sessionId,
+                mode = nlpServiceSelector.mode,
+                modelVersions = nlpServiceSelector.modelVersions,
+            )
             sessionEventService.logInfo(sessionId, "NLP инициализирован: режим ${nlpServiceSelector.mode}")
 
             // Контрольная точка фазы 1 (после инициализации)

@@ -97,6 +97,22 @@ class SentimentResultDao(private val db: Database) {
     }
 
     /**
+     * Массовая загрузка методов расчёта одного типа сущности.
+     *
+     * Нужна проверке качества: по методу видно, измерена ли тональность моделью
+     * или подставлена после сбоя (fallback_error). Без этого сессия, где модель
+     * отвалилась на большинстве текстов, выглядит так же, как посчитанная целиком.
+     *
+     * @param entityType тип сущности, по которому строится карта.
+     * @return Map id сущности -> метод расчёта.
+     */
+    fun findMethodsAsMap(entityType: SentimentEntityType): Map<Int, String> = transaction(db) {
+        SentimentResults.selectAll()
+            .where { SentimentResults.entityType eq entityType.name }
+            .associate { it[SentimentResults.entityId] to it[SentimentResults.method] }
+    }
+
+    /**
      * Массовая загрузка распределений вероятностей одного типа сущности.
      *
      * В карту попадают только строки, у которых распределение есть: его даёт
