@@ -129,8 +129,12 @@ class UiIntegrationTest {
     }
 
     /**
-     * Safe-режим CSV-экспорта обезличивает данные: в файле есть колонка author_hash,
-     * а исходные VK ID (123) и имя автора (Test User) отсутствуют (PII хэшируется).
+     * Safe-режим CSV-экспорта обезличивает данные: вместо VK ID и имени автора в
+     * файле стоит колонка author_hash с хэшем.
+     *
+     * Идентификатор проверяется по значению ячейки, а не поиском подстроки по всему
+     * файлу: соль сессии случайна, хэш выводится в hex, и цифры исходного id
+     * встречаются в нём сами по себе — поиск подстроки давал бы случайные падения.
      */
     @Test
     fun `CsvExporter safe mode hashes PII`() {
@@ -143,10 +147,19 @@ class UiIntegrationTest {
         try {
             // Безопасный экспорт (с хэшированием PII)
             exporter.exportSafe(rows, tempFile)
-            val content = tempFile.readText()
-            assertTrue(content.contains("author_hash"))
-            assertFalse(content.contains("123")) // VK ID should be hashed
-            assertFalse(content.contains("Test User")) // Name should not appear
+            val lines = tempFile.readLines()
+            val header = lines.first().split(",")
+            val cells = lines[1].split(",")
+
+            assertTrue(header.contains("author_hash"), "в заголовке обязана быть колонка author_hash")
+            val authorCell = cells[header.indexOf("author_hash")]
+            assertNotEquals("123", authorCell, "VK ID обязан быть заменён хэшем")
+            assertTrue(
+                authorCell.matches(Regex("[0-9a-f]{64}")),
+                "author_hash обязан быть hex-хэшем SHA-256, получено: $authorCell",
+            )
+            // Имя состоит из букв и пробела, в hex-хэше и числах встретиться не может
+            assertFalse(tempFile.readText().contains("Test User"), "имя автора не выгружается")
         } finally {
             tempFile.delete()
         }
