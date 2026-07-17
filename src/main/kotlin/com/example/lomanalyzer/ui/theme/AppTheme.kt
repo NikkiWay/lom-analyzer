@@ -80,6 +80,10 @@ object AppColors {
     val border = Color(0xFFE2E8F0)
     val divider = Color(0xFFE2E8F0)
 
+    // Граница поля ввода в неактивном состоянии. Заметно темнее границы карточки:
+    // поле требует различимого контура, иначе на светлом фоне неотличимо от подписи.
+    val inputBorder = Color(0xFFCBD5E1)
+
     // Цвета уровней риска (фон + граница) для индикаторов
     val riskHigh = Color(0xFFFEE2E2)
     val riskHighBorder = Color(0xFFFCA5A5)
@@ -146,6 +150,30 @@ fun AppTheme(content: @Composable () -> Unit) {
 }
 
 // ── Переиспользуемые layout-композаблы ───────────────────────────────────────
+
+/**
+ * Цвета поля ввода: контур виден и в неактивном состоянии.
+ *
+ * Material рисует контур неактивного OutlinedTextField цветом onSurface с
+ * прозрачностью 12%: на светлом фоне такое поле не читается как поле — видна
+ * только подпись и введённый текст. Здесь контур задан сплошным цветом, а
+ * активное поле подсвечивается основным цветом палитры.
+ *
+ * Применяется ко всем полям ввода приложения, чтобы формы выглядели одинаково.
+ */
+@Composable
+fun appTextFieldColors(): TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+    textColor = AppColors.textPrimary,
+    cursorColor = AppColors.primary,
+    focusedBorderColor = AppColors.primary,
+    unfocusedBorderColor = AppColors.inputBorder,
+    disabledBorderColor = AppColors.border,
+    errorBorderColor = AppColors.error,
+    focusedLabelColor = AppColors.primary,
+    unfocusedLabelColor = AppColors.textSecondary,
+    placeholderColor = AppColors.textTertiary,
+    backgroundColor = Color.White,
+)
 
 /**
  * Карточка-секция: белая карточка со скруглением, тенью и внутренними отступами;

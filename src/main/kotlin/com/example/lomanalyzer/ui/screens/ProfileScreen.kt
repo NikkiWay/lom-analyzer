@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,6 +53,7 @@ import com.example.lomanalyzer.storage.tables.AnalysisSessions
 import com.example.lomanalyzer.ui.theme.AppColors
 import com.example.lomanalyzer.ui.theme.ScreenHeader
 import com.example.lomanalyzer.ui.theme.SectionCard
+import com.example.lomanalyzer.ui.theme.appTextFieldColors
 import org.koin.java.KoinJavaComponent.get
 import java.nio.file.Files
 import java.time.Instant
@@ -119,7 +121,7 @@ fun ProfileScreen() {
                 InfoRow("Имя", sessionInfo.displayName)
                 InfoRow("VK ID", sessionInfo.vkUserId.toString())
                 InfoRow("App ID", sessionInfo.vkAppId)
-                InfoRow("Токен", if (tokenVault.hasToken()) "Сохранён (зашифрован)" else "Отсутствует")
+                InfoRow("Токен", if (tokenVault.hasToken()) "Сохранён (зашифрован)" else "Отсутствует", showDivider = false)
             } else {
                 Text("Нет данных сессии", color = AppColors.textTertiary, fontSize = 13.sp)
             }
@@ -140,7 +142,7 @@ fun ProfileScreen() {
                 fontSize = 13.sp,
                 color = AppColors.textSecondary,
             )
-            InfoRow("Хранилище", if (tokenVault.hasStoredVault()) "Создано" else "Не создано")
+            InfoRow("Хранилище", if (tokenVault.hasStoredVault()) "Создано" else "Не создано", showDivider = false)
 
             Spacer(Modifier.height(4.dp))
             ActionButton("Сменить пароль", Icons.Outlined.LockReset) {
@@ -201,7 +203,7 @@ fun ProfileScreen() {
             InfoRow("Директория", config.appDataDir.toString())
             InfoRow("База данных", fileSize(config.appDataDir.resolve("lom_analyzer.db")))
             InfoRow("Хранилище токенов", fileSize(config.tokenVaultFile))
-            InfoRow("Логи", dirSize(config.logsDir))
+            InfoRow("Логи", dirSize(config.logsDir), showDivider = false)
 
             Spacer(Modifier.height(4.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -341,20 +343,47 @@ private fun SectionTitle(icon: ImageVector, title: String) {
 
 /**
  * Строка «метка слева — значение справа» для отображения сведений.
+ *
+ * Подпись занимает фиксированную ширину, значение — остаток строки и переносится
+ * по словам: среди значений встречаются пути к каталогам, которые иначе сжимали
+ * бы подпись до нечитаемого состояния. Разделитель снизу задаёт границу строки —
+ * без него набор строк читается как сплошной текст.
+ *
  * @param label подпись поля.
  * @param value значение поля.
+ * @param showDivider рисовать ли разделитель; у последней строки секции не нужен.
  */
 @Composable
 @Suppress("FunctionNaming")
-private fun InfoRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(label, fontSize = 13.sp, color = AppColors.textSecondary)
-        Text(value, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+private fun InfoRow(label: String, value: String, showDivider: Boolean = true) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Text(
+                label,
+                fontSize = 13.sp,
+                color = AppColors.textSecondary,
+                modifier = Modifier.width(LABEL_WIDTH),
+            )
+            Text(
+                value,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.End,
+                modifier = Modifier.weight(1f),
+            )
+        }
+        if (showDivider) {
+            Divider(color = AppColors.divider)
+        }
     }
 }
+
+/** Ширина колонки подписей в строках сведений: выравнивает значения по секции. */
+private val LABEL_WIDTH = 150.dp
 
 /**
  * Строка активной сессии в профиле: id, имя, дата, статус и кнопка удаления.
@@ -559,6 +588,7 @@ private fun ChangePasswordDialog(
                     color = AppColors.textSecondary,
                 )
                 OutlinedTextField(
+                    colors = appTextFieldColors(),
                     value = newPassword,
                     onValueChange = { newPassword = it; error = null },
                     label = { Text("Новый пароль") },
@@ -567,6 +597,7 @@ private fun ChangePasswordDialog(
                     modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
+                    colors = appTextFieldColors(),
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it; error = null },
                     label = { Text("Подтвердите пароль") },

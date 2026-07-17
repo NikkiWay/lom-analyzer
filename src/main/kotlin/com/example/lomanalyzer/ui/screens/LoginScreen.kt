@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lomanalyzer.security.AuthManager
 import com.example.lomanalyzer.ui.theme.AppColors
+import com.example.lomanalyzer.ui.theme.appTextFieldColors
 import kotlinx.coroutines.launch
 import java.awt.Desktop
 import java.net.URI
@@ -242,6 +243,7 @@ private fun ChooseMethodContent(
     onTokenLogin: () -> Unit,
 ) {
     OutlinedTextField(
+        colors = appTextFieldColors(),
         value = vkAppId,
         onValueChange = onVkAppIdChange,
         label = { Text("ID приложения VK") },
@@ -288,6 +290,7 @@ private fun ChooseMethodContent(
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             // Manual token
             OutlinedTextField(
+                colors = appTextFieldColors(),
                 value = manualToken,
                 onValueChange = onTokenChange,
                 label = { Text("Access Token") },
@@ -346,6 +349,7 @@ private fun WaitingRedirectContent(
     }
 
     OutlinedTextField(
+        colors = appTextFieldColors(),
         value = redirectUrl,
         onValueChange = onUrlChange,
         label = { Text("URL после авторизации") },

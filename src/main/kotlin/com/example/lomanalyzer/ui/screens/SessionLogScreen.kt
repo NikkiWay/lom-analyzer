@@ -40,6 +40,7 @@ import com.example.lomanalyzer.ui.theme.AppColors
 import com.example.lomanalyzer.ui.theme.EmptyStateMessage
 import com.example.lomanalyzer.ui.theme.ScreenHeader
 import com.example.lomanalyzer.ui.theme.SectionCard
+import com.example.lomanalyzer.ui.theme.appTextFieldColors
 import org.koin.java.KoinJavaComponent.get
 import java.time.Instant
 import java.time.ZoneId
@@ -98,6 +99,7 @@ fun SessionLogScreen() {
         SectionCard {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 OutlinedTextField(
+                    colors = appTextFieldColors(),
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
                     placeholder = { Text("Поиск по сообщениям...", fontSize = 13.sp) },

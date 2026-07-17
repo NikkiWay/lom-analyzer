@@ -55,6 +55,7 @@ import com.example.lomanalyzer.ui.navigation.NavRoute
 import com.example.lomanalyzer.ui.theme.AppColors
 import com.example.lomanalyzer.ui.theme.ScreenHeader
 import com.example.lomanalyzer.ui.theme.SectionCard
+import com.example.lomanalyzer.ui.theme.appTextFieldColors
 import org.koin.java.KoinJavaComponent.get
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -108,21 +109,27 @@ fun SetupScreen() {
 
             val shape = RoundedCornerShape(10.dp)
             OutlinedTextField(
-                name, { name = it },
+                value = name,
+                onValueChange = { name = it },
+                colors = appTextFieldColors(),
                 label = { Text("Название сессии") },
                 placeholder = { Text("Например: Политическая повестка Q1") },
                 leadingIcon = { Icon(Icons.AutoMirrored.Outlined.Label, null, Modifier.size(18.dp)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth(), shape = shape,
             )
             OutlinedTextField(
-                topicQuery, { topicQuery = it },
+                value = topicQuery,
+                onValueChange = { topicQuery = it },
+                colors = appTextFieldColors(),
                 label = { Text("Тема исследования") },
                 placeholder = { Text("Ключевое слово или фраза") },
                 leadingIcon = { Icon(Icons.Outlined.Topic, null, Modifier.size(18.dp)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth(), shape = shape,
             )
             OutlinedTextField(
-                region, { region = it },
+                value = region,
+                onValueChange = { region = it },
+                colors = appTextFieldColors(),
                 label = { Text("Регион (необязательно)") },
                 placeholder = { Text("Например: Москва") },
                 leadingIcon = { Icon(Icons.Outlined.Place, null, Modifier.size(18.dp)) },
@@ -233,17 +240,23 @@ fun SetupScreen() {
 
             val shape = RoundedCornerShape(10.dp)
             OutlinedTextField(
-                primaryNgrams, { primaryNgrams = it },
+                value = primaryNgrams,
+                onValueChange = { primaryNgrams = it },
+                colors = appTextFieldColors(),
                 label = { Text("Первичные") },
                 singleLine = true, modifier = Modifier.fillMaxWidth(), shape = shape,
             )
             OutlinedTextField(
-                secondaryNgrams, { secondaryNgrams = it },
+                value = secondaryNgrams,
+                onValueChange = { secondaryNgrams = it },
+                colors = appTextFieldColors(),
                 label = { Text("Вторичные") },
                 singleLine = true, modifier = Modifier.fillMaxWidth(), shape = shape,
             )
             OutlinedTextField(
-                excludedNgrams, { excludedNgrams = it },
+                value = excludedNgrams,
+                onValueChange = { excludedNgrams = it },
+                colors = appTextFieldColors(),
                 label = { Text("Исключённые") },
                 singleLine = true, modifier = Modifier.fillMaxWidth(), shape = shape,
             )
@@ -253,7 +266,9 @@ fun SetupScreen() {
         SectionCard {
             SectionTitle(Icons.Outlined.Description, "Референсные тексты (3-10)")
             OutlinedTextField(
-                referenceTexts, { referenceTexts = it },
+                value = referenceTexts,
+                onValueChange = { referenceTexts = it },
+                colors = appTextFieldColors(),
                 label = { Text("Тексты") },
                 modifier = Modifier.fillMaxWidth().heightIn(min = 80.dp, max = 150.dp),
                 maxLines = 10,
@@ -270,14 +285,18 @@ fun SetupScreen() {
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 OutlinedTextField(
-                    baselineDays, { baselineDays = it },
+                    value = baselineDays,
+                    onValueChange = { baselineDays = it },
+                    colors = appTextFieldColors(),
                     label = { Text("Базовое окно (дни)") },
                     leadingIcon = { Icon(Icons.Outlined.History, null, Modifier.size(18.dp)) },
                     modifier = Modifier.weight(1f), singleLine = true,
                     shape = RoundedCornerShape(10.dp),
                 )
                 OutlinedTextField(
-                    currentDays, { currentDays = it },
+                    value = currentDays,
+                    onValueChange = { currentDays = it },
+                    colors = appTextFieldColors(),
                     label = { Text("Текущее окно (дни)") },
                     leadingIcon = { Icon(Icons.Outlined.Today, null, Modifier.size(18.dp)) },
                     modifier = Modifier.weight(1f), singleLine = true,

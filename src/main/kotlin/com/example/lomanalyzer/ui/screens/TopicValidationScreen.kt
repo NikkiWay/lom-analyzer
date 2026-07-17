@@ -61,6 +61,7 @@ import com.example.lomanalyzer.analysis.topic.ValidationPost
 import com.example.lomanalyzer.ui.theme.AppColors
 import com.example.lomanalyzer.ui.theme.SectionCard
 import com.example.lomanalyzer.ui.theme.StatusBadge
+import com.example.lomanalyzer.ui.theme.appTextFieldColors
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -226,6 +227,7 @@ fun TopicValidationScreen(
                 }
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
+                        colors = appTextFieldColors(),
                         value = stopPhrase,
                         onValueChange = { stopPhrase = it },
                         label = { Text("Стоп-фраза") },
@@ -259,6 +261,7 @@ fun TopicValidationScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             OutlinedTextField(
+                colors = appTextFieldColors(),
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 placeholder = { Text("Поиск по тексту, автору, сообществу...", fontSize = 12.sp) },
