@@ -43,3 +43,6 @@ Thumbs.db
 # Environment / secrets
 .env
 *.key
+
+# Служебные файлы компилятора Kotlin (логи падений, кэш сборки)
+.kotlin/
