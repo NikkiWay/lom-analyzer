@@ -69,6 +69,8 @@ class MigrationImmutabilityTest {
             "ee64cf18da32194d1190ff67bbd728d98955f2a724b641312da511a978d68a2a",
         "V13__sentiment_probabilities.sql" to
             "b5c86e6e26315df925615794ae54274ae5382d7bc0af7af27cf38c87e801e95d",
+        "V14__drop_unused_role_mode.sql" to
+            "e8f0a6e2d32d92b2f0d1ac522f2fdc783d85dbf5a19036851a83e6534c24de10",
     )
 
     /** SHA-256 содержимого файла с нормализованными переводами строк. */

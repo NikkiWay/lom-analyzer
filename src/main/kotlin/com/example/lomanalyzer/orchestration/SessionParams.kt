@@ -28,7 +28,6 @@ package com.example.lomanalyzer.orchestration
  * @param referenceTexts эталонные тексты темы для L2-фильтра (RuBERT cosine).
  * @param region код региона для фильтрации/контекста (null — без ограничения).
  * @param nlpMode режим NLP: FULL (Python sidecar) или fallback на Kotlin.
- * @param roleMode режим классификации ролей (по умолчанию QUADRANT — 4 квадранта).
  * @param baselineWindowDays окно фоновых данных в днях (по умолчанию 60).
  * @param currentWindowDays окно тематического периода в днях (по умолчанию 30).
  * @param importJsonPath путь к JSON для импорта данных вместо сбора из VK (или null).
@@ -42,7 +41,6 @@ data class SessionParams(
     val referenceTexts: List<String> = emptyList(),
     val region: String? = null,
     val nlpMode: String = "FULL",
-    val roleMode: String = "QUADRANT",
     val baselineWindowDays: Int = 60,
     val currentWindowDays: Int = 30,
     val importJsonPath: String? = null,

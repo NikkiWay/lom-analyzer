@@ -62,8 +62,6 @@ object AnalysisSessions : IntIdTable("analysis_session") {
     val currentWindowDays = integer("current_window_days").default(30)
     /** Режим NLP: "FULL" (Python sidecar) или ограниченный fallback; по умолчанию "FULL". */
     val nlpMode = text("nlp_mode").default("FULL")
-    /** Режим назначения ролей; по умолчанию "QUADRANT" (квадрантная классификация). */
-    val roleMode = text("role_mode").default("QUADRANT")
     /** Версии используемых NLP-моделей (JSON) — для воспроизводимости; может отсутствовать. */
     val nlpModelVersions = text("nlp_model_versions").nullable()
     /** Версия базы эталонных текстов; может отсутствовать. */

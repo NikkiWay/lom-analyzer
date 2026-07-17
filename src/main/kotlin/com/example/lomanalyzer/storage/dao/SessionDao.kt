@@ -40,7 +40,6 @@ class SessionDao(private val db: Database) {
      *        фильтра (основные/вспомогательные/исключающие), сериализованные строкой.
      * @param referenceTexts эталонные тексты для L2-фильтрации (RuBERT) или NULL.
      * @param nlpMode режим NLP (по умолчанию FULL).
-     * @param roleMode режим классификации ролей (по умолчанию QUADRANT — квадрантный).
      * @param baselineWindowDays окно фонового периода в днях (по умолчанию 60).
      * @param currentWindowDays окно текущего периода в днях (по умолчанию 30).
      * @param importJsonPath путь к импортируемому JSON или NULL.
@@ -56,7 +55,6 @@ class SessionDao(private val db: Database) {
         referenceTexts: String? = null,
         region: String? = null,
         nlpMode: String = "FULL",
-        roleMode: String = "QUADRANT",
         baselineWindowDays: Int = 60,
         currentWindowDays: Int = 30,
         importJsonPath: String? = null,
@@ -72,7 +70,6 @@ class SessionDao(private val db: Database) {
             it[AnalysisSessions.referenceTexts] = referenceTexts
             it[AnalysisSessions.region] = region
             it[AnalysisSessions.nlpMode] = nlpMode
-            it[AnalysisSessions.roleMode] = roleMode
             it[AnalysisSessions.baselineWindowDays] = baselineWindowDays
             it[AnalysisSessions.currentWindowDays] = currentWindowDays
             it[AnalysisSessions.importJsonPath] = importJsonPath

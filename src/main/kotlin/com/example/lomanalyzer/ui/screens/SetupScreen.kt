@@ -12,7 +12,6 @@
  * CommunityChip — чип выбранного сообщества с кнопкой удаления.
  * formatCount — форматирование числа подписчиков (K/M).
  * SectionTitle — заголовок секции с иконкой.
- * RoleModeChip — переключатель режима классификации ролей (Quadrant/GMM).
  *
  * ФРЕЙМВОРКИ
  * Compose Desktop (Material) — UI и поля ввода; Koin — получение SessionManager,
@@ -85,7 +84,6 @@ fun SetupScreen() {
     var referenceTexts by remember { mutableStateOf("") }        // референсные тексты (по строкам), для L2-семантики
     var baselineDays by remember { mutableStateOf("60") }        // базовое окно (фон), дни
     var currentDays by remember { mutableStateOf("30") }         // текущее окно (событийная активность), дни
-    var roleMode by remember { mutableStateOf("QUADRANT") }      // режим классификации ролей: QUADRANT или GMM
     var lastCreatedId by remember { mutableStateOf<Int?>(null) } // id только что созданной сессии (активирует кнопку «Начать сбор»)
     val coroutineScope = rememberCoroutineScope()
     var importJsonPath by remember { mutableStateOf<String?>(null) } // путь к JSON-файлу импорта (минуя VK API)
@@ -303,13 +301,6 @@ fun SetupScreen() {
                     shape = RoundedCornerShape(10.dp),
                 )
             }
-
-            // Выбор режима классификации ролей: квадрантный (всегда) или GMM (нужно >= 50 авторов)
-            Text("Режим классификации ролей", style = MaterialTheme.typography.subtitle2)
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                RoleModeChip("Quadrant", roleMode == "QUADRANT") { roleMode = "QUADRANT" }
-                RoleModeChip("GMM (n>=50)", roleMode == "GMM") { roleMode = "GMM" }
-            }
         }
 
         // ── Кнопки действий: создать сессию и запустить сбор ──
@@ -335,7 +326,6 @@ fun SetupScreen() {
                             excludedNgrams = excludedNgrams.split(",").map { it.trim() }.filter { it.isNotBlank() },
                             referenceTexts = referenceTexts.split("\n").map { it.trim() }.filter { it.isNotBlank() },
                             region = region.ifBlank { null },
-                            roleMode = roleMode,
                             baselineWindowDays = baselineDays.toIntOrNull() ?: 60,
                             currentWindowDays = currentDays.toIntOrNull() ?: 30,
                             importJsonPath = importJsonPath,
@@ -477,36 +467,3 @@ private fun SectionTitle(icon: androidx.compose.ui.graphics.vector.ImageVector, 
     }
 }
 
-/**
- * Радио-чип выбора режима классификации ролей (Quadrant или GMM).
- * @param label подпись режима.
- * @param selected выбран ли этот режим.
- * @param onClick колбэк выбора режима.
- */
-@Composable
-@Suppress("FunctionNaming")
-private fun RoleModeChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = if (selected) AppColors.primaryLight else AppColors.surfaceVariant,
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            RadioButton(
-                selected = selected,
-                onClick = onClick,
-                modifier = Modifier.size(18.dp),
-                colors = RadioButtonDefaults.colors(selectedColor = AppColors.primary),
-            )
-            Text(
-                label,
-                fontSize = 13.sp,
-                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                color = if (selected) AppColors.primary else AppColors.textSecondary,
-            )
-        }
-    }
-}
