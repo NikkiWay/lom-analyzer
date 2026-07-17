@@ -66,10 +66,9 @@ class PreprocessingExecutor(
     @Suppress("LongMethod", "TooGenericExceptionCaught", "CyclomaticComplexMethod")
     override suspend fun execute(sessionId: Int, stage: PipelineStage) {
         logger.event(AppEvent.PREPROCESSING_STARTED, mapOf("session_id" to sessionId))
-        // Режим берём у селектора. Раньше здесь стояло приведение
-        // `getService() as? PythonSidecarNlpService`, но getService() возвращает
-        // декоратор CachingNlpService, и приведение всегда давало null: пакетный
-        // режим не включался ни разу, даже при работающем sidecar.
+        // Режим — у селектора, а не по типу сервиса: getService() возвращает
+        // декоратор CachingNlpService, и проверка приведением к типу sidecar
+        // всегда давала бы null, отключая пакетный режим при живом sidecar.
         val nlpService = nlpServiceSelector.getService()
         val usePython = nlpServiceSelector.mode == "FULL"
 

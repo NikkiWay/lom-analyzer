@@ -78,8 +78,8 @@ class SentimentEntityTypeTest {
 
     /**
      * Пост и комментарий с совпадающими id хранят собственные метки тональности.
-     * Именно этот сценарий раньше падал с UNIQUE constraint failed на первом же
-     * комментарии и обрушивал всю сессию на стадии препроцессинга.
+     * Без составного ключа (entity_type, entity_id) вставка второй строки нарушила
+     * бы UNIQUE constraint и обрушила сессию на стадии препроцессинга.
      */
     @Test
     fun `post and comment sharing an id keep independent sentiment rows`() {

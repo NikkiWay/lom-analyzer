@@ -153,8 +153,8 @@ class QualityCheckExecutor(
             confidentPosts.toFloat() / totalScoredPosts else 0f
 
         // Покрытие комментариями: доля тематических постов, имеющих >= 5 комментариев.
-        // Счётчики берём одним группированным запросом: раньше здесь был вызов
-        // countByPost на каждый пост, и каждый — полное сканирование comment.
+        // Счётчики — одним группированным запросом: подсчёт на каждый пост в отдельности
+        // означал бы полное сканирование comment столько раз, сколько постов в сессии.
         val commentCountsByPost = commentDao.countBySessionGroupedByPost(sessionId)
         val postsWithComments = topicPosts.count { post ->
             // Поста нет в карте — комментариев нет вовсе
@@ -175,9 +175,8 @@ class QualityCheckExecutor(
             allIntervals.map { (it[BootstrapIntervals.ciHi] - it[BootstrapIntervals.ciLo]) }.average().toFloat()
         } else 0f
 
-        // Доля закрытых аккаунтов среди авторов сессии. Профили читаем одной
-        // выборкой: точечный findById на каждого автора давал отдельный запрос
-        // к БД в цикле (N+1).
+        // Доля закрытых аккаунтов среди авторов сессии. Профили — одной выборкой:
+        // точечный поиск на каждого автора дал бы запрос к БД в цикле (N+1).
         val sessionAuthors = linkDao.getAuthorsForSession(sessionId)
         val authorsById = authorDao.findAll().associateBy { it[Authors.id].value }
         val closedCount = sessionAuthors.count { sa ->
@@ -241,10 +240,8 @@ class QualityCheckExecutor(
             "Качество сессии: ${qualityResult.overallStatus.name} " +
                 "($passedCount/${qualityResult.indicators.size} пройдено)")
 
-        // Итоговые показатели сессии — доля пройденных индикаторов. Раньше
-        // updateQualityScore не вызывал никто, поэтому session_quality_score оставался
-        // пустым, а история сессий не показывала качество вовсе. coverageRatio не
-        // передаём: смысл этой колонки нигде не определён.
+        // Итоговая оценка сессии — доля пройденных индикаторов; её показывает
+        // история сессий. Состав индикаторов сохраняется в quality_gates_json.
         sessionDao.updateQualityScore(
             id = sessionId,
             score = if (qualityResult.indicators.isNotEmpty()) {

@@ -130,8 +130,8 @@ class JsonDataImporterTest {
     /**
      * Прогресс публикуется СО СЧЁТЧИКАМИ.
      *
-     * Регрессия: импорт сообщал только текст этапа, а экран сбора считает долю как
-     * completedItems/totalItems — и всю загрузку показывал 0 %.
+     * Экран сбора считает долю как completedItems/totalItems: без счётчиков
+     * индикатор простаивает на нуле всю загрузку.
      */
     @Test
     fun `reports progress with item counts`() {
