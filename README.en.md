@@ -11,6 +11,8 @@ It collects posts on a given topic, finds the authors discussing it, and measure
 
 [Русская версия](README.md) · [Algorithm](docs/algorithm.md) · [Formulas](docs/formulas.md) · [Architecture](docs/architecture.md)
 
+> **Automatic collection through the VK API is currently unavailable** — the API access rules changed. Everything else works: data is loaded from a prepared JSON file on the Setup screen and the pipeline runs end to end. A demo dataset and a setup example live in [`examples/`](examples/).
+
 > Documentation, code comments and the user interface are in Russian: the tool analyses Russian-language content and was built as a master's thesis project at ITMO University. This file summarises the project in English.
 
 ---
@@ -93,19 +95,13 @@ Without the Python sidecar the second pass is unavailable: borderline posts take
 
 ## Interface
 
-> **Every screenshot below was taken on a synthetic dataset** (see [`docs/synthetic_datasets_spec.md`](docs/synthetic_datasets_spec.md)). Names of public figures are used in it as author labels; **the metrics, sentiment and roles shown are artificially generated and are not measurements of real people.**
+The screenshots below come from a run on the [`examples/dataset_demo.json`](examples/dataset_demo.json) demo dataset; its authors and communities are fictional.
 
 ### Dashboard
 
-Quadrant chart (Struct_a × Topic_a) with threshold lines, plus a table of every author with their 11 scores and role. The side panel documents each metric and its formula.
+Quadrant chart (Struct_a × Topic_a) with threshold lines, plus a table of every author with their 11 scores and role. Dot colour is the author's position, dot size grows with topical engagement. The side panel documents each metric and its formula.
 
 ![Dashboard](docs/screenshots/dashboard.png)
-
-### Author detail
-
-Role, position and response attributes, data-sufficiency badge, per-axis scores, and the author's topical posts with sentiment.
-
-![Author detail](docs/screenshots/author-detail.png)
 
 ### Session setup
 
@@ -113,12 +109,31 @@ Topic, n-grams, reference texts, observation windows, community selection or JSO
 
 ![Session setup](docs/screenshots/setup.png)
 
+### Topic validation
+
+Topical selection broken down by source, with manual review of the filter's decisions.
+
+![Topic validation](docs/screenshots/topic-validation.png)
+
 ### Session quality and log
+
+The quality indicators answer whether the numbers can be trusted: some failures do not stop the run, so a session completes successfully yet was computed by a coarser path. The log shows the full run history.
 
 <table>
 <tr>
 <td width="50%"><img src="docs/screenshots/session-quality.png" alt="Session quality"></td>
 <td width="50%"><img src="docs/screenshots/session-log.png" alt="Session log"></td>
+</tr>
+</table>
+
+### Guide and profile
+
+Built-in help on both the workflow and the method; the profile screen manages the token, master password, sessions and data.
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/guide.png" alt="User guide"></td>
+<td width="50%"><img src="docs/screenshots/profile.png" alt="Profile"></td>
 </tr>
 </table>
 
@@ -292,6 +307,7 @@ The application handles personal data, so:
 
 ## Known limitations
 
+- **Automatic collection through the VK API is currently unavailable**: the API access rules changed. Data is loaded by importing a prepared JSON file — the whole pipeline from preprocessing to roles runs, skipping only the collection stage.
 - Without the Python sidecar the second filter pass is unavailable and borderline posts fall to manual validation. On narrow topics this noticeably increases the disputed share.
 - Role thresholds are session medians, so a role is always relative to the sample: "authoritative leader" means "above this session's median".
 - `Reach_a` falls back to follower count when VK does not report view counts.
