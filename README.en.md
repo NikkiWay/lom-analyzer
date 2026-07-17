@@ -265,7 +265,7 @@ The database is created automatically in the OS data directory (`%LOCALAPPDATA%\
 
 ### Demo without VK API
 
-Ready-made synthetic datasets live in [`examples/`](examples/). Load one on the Setup screen via JSON import to exercise the whole pipeline without touching VK.
+[`examples/`](examples/) holds a session setup example and a demo dataset. Import the dataset as JSON on the Setup screen: the pipeline runs end to end with no VK access.
 
 ## Tests and static analysis
 
@@ -288,7 +288,7 @@ The application handles personal data, so:
 - **Exports are de-identified by default** — author identifiers are salted-hashed (`PiiHasher`). Raw export requires explicit confirmation and is written to the event log.
 - **Data never leaves the machine**: SQLite is local, and the sidecar listens on loopback behind a shared secret.
 - **Private profiles are excluded** from analysis.
-- Every dataset under `examples/` is synthetic.
+- The authors and communities in the `examples/dataset_demo.json` demo dataset are fictional.
 
 ## Known limitations
 
